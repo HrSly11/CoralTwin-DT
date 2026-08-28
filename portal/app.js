@@ -316,7 +316,7 @@ function initMap() {
 // =============================================================================
 // 5. 3D WEBGL EARTH GLOBE PROJECTION (THREE.JS)
 // =============================================================================
-let globeScene, globeCamera, globeRenderer, globeGroup, globeControls;
+let globeScene, globeCamera, globeRenderer, globeGroup, globeControls, cloudMesh;
 let isGlobeInitialized = false;
 let globeRaycaster = new THREE.Raycaster();
 let globeMouse = new THREE.Vector2();
@@ -338,56 +338,76 @@ function initThreeJSGlobe() {
   container.appendChild(globeRenderer.domElement);
 
   // Lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
   globeScene.add(ambientLight);
 
-  const sunLight = new THREE.DirectionalLight(0x38BDF8, 1.2);
-  sunLight.position.set(10, 8, 10);
-  globeScene.add(sunLight);
+  const sunLight1 = new THREE.DirectionalLight(0xffffff, 1.4);
+  sunLight1.position.set(8, 6, 8);
+  globeScene.add(sunLight1);
+
+  const sunLight2 = new THREE.DirectionalLight(0x38BDF8, 0.6);
+  sunLight2.position.set(-8, -4, -8);
+  globeScene.add(sunLight2);
 
   globeGroup = new THREE.Group();
 
-  // 3D Earth Sphere Geometry
+  // 3D Earth Sphere Geometry (Google Earth Photorealistic Sphere)
   const sphereRadius = 2.4;
-  const earthGeom = new THREE.SphereGeometry(sphereRadius, 48, 48);
+  const earthGeom = new THREE.SphereGeometry(sphereRadius, 64, 64);
 
-  // Oceanic Bathymetric Material
-  const earthMat = new THREE.MeshPhongMaterial({
-    color: 0x0B192C,
-    emissive: 0x030712,
-    specular: 0x38BDF8,
-    shininess: 25,
-    wireframe: false
+  const textureLoader = new THREE.TextureLoader();
+
+  // Photorealistic NASA Blue Marble Surface Texture (Continents, Vegetation, Deserts, Oceans)
+  const textureUrl = "textures/earth_atmos.jpg";
+  const earthTexture = textureLoader.load(
+    textureUrl,
+    () => { if (globeRenderer) globeRenderer.render(globeScene, globeCamera); },
+    undefined,
+    () => {
+      // CDN Fallback if local path has any CORS restriction
+      earthMat.map = textureLoader.load("https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/earth_atmos_2048.jpg");
+      earthMat.needsUpdate = true;
+    }
+  );
+
+  const earthMat = new THREE.MeshStandardMaterial({
+    map: earthTexture,
+    roughness: 0.65,
+    metalness: 0.1
   });
   const earthMesh = new THREE.Mesh(earthGeom, earthMat);
   globeGroup.add(earthMesh);
 
+  // Atmospheric Cloud Layer
+  const cloudGeom = new THREE.SphereGeometry(sphereRadius * 1.018, 64, 64);
+  const cloudTexture = textureLoader.load(
+    "textures/earth_clouds.png",
+    undefined,
+    undefined,
+    () => {
+      cloudMat.map = textureLoader.load("https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/earth_clouds_1024.png");
+      cloudMat.needsUpdate = true;
+    }
+  );
+  const cloudMat = new THREE.MeshStandardMaterial({
+    map: cloudTexture,
+    transparent: true,
+    opacity: 0.45,
+    blending: THREE.AdditiveBlending
+  });
+  cloudMesh = new THREE.Mesh(cloudGeom, cloudMat);
+  globeGroup.add(cloudMesh);
+
   // Atmospheric Glow Ring
-  const atmosphereGeom = new THREE.SphereGeometry(sphereRadius * 1.04, 32, 32);
+  const atmosphereGeom = new THREE.SphereGeometry(sphereRadius * 1.045, 32, 32);
   const atmosphereMat = new THREE.MeshBasicMaterial({
     color: 0x38BDF8,
     transparent: true,
-    opacity: 0.12,
+    opacity: 0.18,
     side: THREE.BackSide
   });
   const atmosphereMesh = new THREE.Mesh(atmosphereGeom, atmosphereMat);
   globeGroup.add(atmosphereMesh);
-
-  // Lat/Lon Grid Lines
-  const gridMat = new THREE.LineBasicMaterial({ color: 0x1E293B, transparent: true, opacity: 0.6 });
-  for (let lat = -60; lat <= 60; lat += 30) {
-    const r = sphereRadius * Math.cos(lat * Math.PI / 180);
-    const y = sphereRadius * Math.sin(lat * Math.PI / 180);
-    const circleGeom = new THREE.BufferGeometry();
-    const points = [];
-    for (let i = 0; i <= 64; i++) {
-      const theta = (i / 64) * Math.PI * 2;
-      points.push(new THREE.Vector3(r * Math.cos(theta), y, r * Math.sin(theta)));
-    }
-    circleGeom.setFromPoints(points);
-    const line = new THREE.Line(circleGeom, gridMat);
-    globeGroup.add(line);
-  }
 
   // Plot 30 Reef Stations on the 3D Globe
   STATIONS_DB.forEach(st => {
