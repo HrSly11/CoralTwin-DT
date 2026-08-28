@@ -177,13 +177,41 @@ Licensed under the MIT License and compliant with FAIR data principles.
 
 ## References
 
-1. Anthony, K. R. N., Kleypas, J. A., & Gattuso, J.-P. (2011). Ocean acidification and warming will lower coral reef resilience. *Global Change Biology*, 17(5), 1798–1808.
-2. Beyer, H. L., Kennedy, E. V., Beger, M., et al. (2018). Risk-sensitive planning for conserving coral reefs under rapid climate change. *Conservation Letters*, 11(6), e12587.
-3. Hoegh-Guldberg, O., Mumby, P. J., Hooten, A. J., et al. (2007). Coral reefs under rapid climate change and ocean acidification. *Science*, 318(5857), 1737–1742.
-4. Hughes, T. P., Anderson, K. D., Connolly, S. R., et al. (2018). Spatial and temporal patterns of mass bleaching of corals in the Anthropocene. *Science*, 359(6371), 80–83.
-5. Liu, G., Heron, S. F., Eakin, C. M., et al. (2014). NOAA Coral Reef Watch 50 km and 5 km satellite coral bleaching monitoring products. *Remote Sensing*, 6(11), 11579–11606.
-6. Lyons, M. B., Roelfsema, C. M., Kennedy, E. V., et al. (2020). Mapping the world's coral reefs using high-resolution satellite imagery and machine learning. *Ecological Indicators*, 117, 106659.
-7. Mumby, P. J., Hastings, A., & Edwards, A. J. (2007). Thresholds and the resilience of Caribbean coral reefs. *Nature*, 450(7166), 98–101.
-8. Rasheed, A., San, O., & Kvamsdal, T. (2020). Digital twin: Values, challenges and enablers from a modeling perspective. *IEEE Access*, 8, 21980–22012.
-9. Skirving, W., Heron, S. F., Marsh, B. L., et al. (2019). Heat stress metrics for coral bleaching. *NOAA Technical Report NESDIS*, 152, 1–45.
-10. Voolstra, C. R., Buitrago-López, C., Perna, G., et al. (2021). Standardized short-term acute thermal stress assays for rapidly assessing coral heat tolerance. *Nature Protocols*, 16(9), 4382–4414.
+1. Albright, R., Caldeira, L., Hosfelt, J., et al. (2016). Reversal of ocean acidification enhances net coral reef calcification. *Nature*, 531(7594), 362–365.
+2. Albright, R., Takeshita, Y., Koweek, D. A., et al. (2018). Carbon dioxide addition to a coral reef fends off ocean acidification in situ. *Nature*, 555(7697), 516–519.
+3. Anthony, K. R. N., Kleypas, J. A., & Gattuso, J.-P. (2011). Ocean acidification and warming will lower coral reef resilience. *Global Change Biology*, 17(5), 1798–1808.
+4. Beyer, H. L., Kennedy, E. V., Beger, M., et al. (2018). Risk-sensitive planning for conserving coral reefs under rapid climate change. *Conservation Letters*, 11(6), e12587.
+5. Borth, M., Stulp, F., Peters, S., & Verhagen, W. (2023). Digital twins in environmental science: A review of applications, opportunities, and challenges. *Environmental Modelling & Software*, 168, 105790.
+6. Boström-Einarsson, L., Babcock, R. C., Bayraktarov, E., et al. (2020). Condition, cost, and feasibility of coral restoration interventions: a global review. *PLOS ONE*, 15(1), e0226631.
+7. Bozec, Y.-M., O'Farrell, S., Bruggemann, J. H., & Mumby, P. J. (2016). Spatial configuration of coral recruitment modulates the resilience of Caribbean reefs. *Ecology*, 97(2), 512–524.
+8. Breiman, L. (2001). Random forests. *Machine Learning*, 45(1), 5–32.
+9. Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 785–794.
+10. Cyronak, T., Andersson, A. J., D'Angelo, S., et al. (2018). Taking the metabolic pulse of the world’s coral reefs. *PLOS ONE*, 13(1), e0190872.
+11. Dixon, A. M., Forster, P. M., Heron, S. F., et al. (2022). Future loss of local thermal refugia for coral reefs under global warming. *PLOS Climate*, 1(2), e0000004.
+12. Drenkard, E. J., Cohen, A. L., McCorkle, D. C., et al. (2013). Calcification by juvenile corals under ocean acidification. *Coral Reefs*, 32(3), 727–740.
+13. Evensen, N. R., Fine, M., Perna, G., et al. (2023). Thermal tolerance of coral recruits and adult colonies: implications for active reef restoration. *Restoration Ecology*, 31(2), e13812.
+14. Eyre, B. D., Cyronak, T., Drupp, P., et al. (2018). Coral reefs will transition to net dissolving before end of century. *Science*, 359(6378), 908–911.
+15. Grieves, M., & Vickers, J. (2017). Digital Twin: Mitigating Unpredictable, Undesirable Emergent Behavior in Complex Systems. *Transdisciplinary Perspectives on System Complexity*, Springer, 85–113.
+16. Hastings, A. (2010). Timescales, dynamics, and ecological understanding. *Ecology*, 91(12), 3471–3480.
+17. Hedley, J. D., Roelfsema, C. M., Chollett, I., et al. (2016). Remote sensing of coral reefs for monitoring and management: a review. *Remote Sensing*, 8(2), 118.
+18. Heron, S. F., Maynard, J. A., van Hooidonk, R., & Eakin, C. M. (2016). Warming trends and bleaching stress of the world's coral reefs 1985–2012. *Scientific Reports*, 6(1), 38402.
+19. Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. *Neural Computation*, 9(8), 1735–1780.
+20. Hoegh-Guldberg, O., Mumby, P. J., Hooten, A. J., et al. (2007). Coral reefs under rapid climate change and ocean acidification. *Science*, 318(5857), 1737–1742.
+21. Hoegh-Guldberg, O., Poloczanska, E. S., Skirving, W., & Dove, S. (2017). Coral reef ecosystems under climate change and ocean acidification. *Frontiers in Marine Science*, 4, 158.
+22. Hughes, T. P., Kerry, J. T., Álvarez-Noriega, M., et al. (2017). Global warming and recurrent mass bleaching of corals. *Nature*, 543(7645), 373–377.
+23. Hughes, T. P., Anderson, K. D., Connolly, S. R., et al. (2018). Spatial and temporal patterns of mass bleaching of corals in the Anthropocene. *Science*, 359(6371), 80–83.
+24. Hughes, T. P., Kerry, J. T., Connolly, S. R., et al. (2021). Emergent properties in the responses of coral reef communities to recurrent bleaching events. *Nature Climate Change*, 11(11), 1007–1013.
+25. Kleypas, J., Allemand, D., Anthony, K., et al. (2021). Designing a plan for mitigating the impacts of climate change on coral reefs. *Biological Conservation*, 262, 109278.
+26. Liu, G., Heron, S. F., Eakin, C. M., et al. (2014). NOAA Coral Reef Watch 50 km and 5 km satellite coral bleaching monitoring products. *Remote Sensing*, 6(11), 11579–11606.
+27. Lundberg, S. M., Erion, G., Chen, H., et al. (2020). From local explanations to global understanding with explainable AI for trees. *Nature Machine Intelligence*, 2(1), 56–67.
+28. Lyons, M. B., Roelfsema, C. M., Kennedy, E. V., et al. (2020). Mapping the world's coral reefs using high-resolution satellite imagery and machine learning. *Ecological Indicators*, 117, 106659.
+29. Mumby, P. J., Hastings, A., & Edwards, A. J. (2007). Thresholds and the resilience of Caribbean coral reefs. *Nature*, 450(7166), 98–101.
+30. Mumby, P. J., Wolff, N. H., Bozec, Y.-M., et al. (2014). Towards a mechanistic understanding of coral reef resilience. *Bulletin of Marine Science*, 90(1), 257–285.
+31. Quigley, K. M., Alvarez Roa, C., Torda, G., et al. (2022). Synergistic benefits of assisted evolution and outplanting for coral reef persistence under climate change. *Nature Climate Change*, 12(6), 568–577.
+32. Rasheed, A., San, O., & Kvamsdal, T. (2020). Digital twin: Values, challenges and enablers from a modeling perspective. *IEEE Access*, 8, 21980–22012.
+33. Rinkevich, B. (2019). The active reef restoration toolbox is a world-wide reality that validates the need for a multifaceted toolset. *Global Ecology and Conservation*, 20, e00732.
+34. Roberts, D. R., Bahn, V., Ciuti, S., et al. (2017). Cross-validation strategies for data with temporal, spatial, hierarchical or phylogenetic structure. *Ecography*, 40(8), 913–929.
+35. Roelfsema, C., Kovacs, E., Lyons, M., et al. (2021). Workflow for the generation of global coral reef habitat maps using Sentinel-2 and PlanetScope satellite imagery. *Remote Sensing of Environment*, 265, 112638.
+36. Skirving, W., Heron, S. F., Marsh, B. L., et al. (2019). Heat stress metrics for coral bleaching. *NOAA Technical Report NESDIS*, 152, 1–45.
+37. Sully, S., Burkepile, D. E., Donovan, M. K., et al. (2019). A global analysis of coral bleaching over the past two decades. *Nature Communications*, 10(1), 1264.
+38. Wilkinson, M. D., Dumontier, M., Aalbersberg, I. J., et al. (2016). The FAIR Guiding Principles for scientific data management and stewardship. *Scientific Data*, 3(1), 160018.

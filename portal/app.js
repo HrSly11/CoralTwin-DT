@@ -57,6 +57,7 @@ const I18N = {
     odeTurfLabel: "Turf Algae (%)",
     srpiTitle: "Spatial Restoration Priority Index (SRPI) Decision Matrix",
     srpiSubtitle: "Multi-Criteria Hydrodynamic Refugia Ranking & Open RFC-7946 GeoJSON Layers",
+    basinGlobal: "Mapamundi (Global)",
     filterAll: "All Stations",
     filterTier1: "Tier 1: Outplanting",
     filterTier2: "Tier 2: Marine Reserve",
@@ -86,6 +87,7 @@ const I18N = {
     riskMed: "Riesgo Medio",
     riskHigh: "Alto Riesgo",
     mapInstruction: "Hacé clic en cualquier estación del mapa o seleccionala abajo:",
+    basinGlobal: "Mapamundi (Global)",
     coral3dTitle: "Colonia 3D en Gemelo Digital (WebGL)",
     coral3dSubtitle: "Shader Procedural de Blanqueamiento Biofísico en Tiempo Real",
     coral3dHelp: "Arrastrá para Rotar | Scroll para Zoom",
@@ -174,6 +176,23 @@ function setLanguage(lang) {
   populateTable(STATIONS_DB);
 }
 
+function focusBasin(basin) {
+  if (!mapInstance) return;
+  if (basin === "global") {
+    mapInstance.setView([10.0, 0.0], 2);
+  } else if (basin === "caribbean") {
+    mapInstance.setView([19.0, -78.0], 5);
+  } else if (basin === "gbr") {
+    mapInstance.setView([-18.0, 148.0], 5);
+  } else if (basin === "coraltriangle") {
+    mapInstance.setView([-2.0, 125.0], 5);
+  } else if (basin === "redsea") {
+    mapInstance.setView([22.0, 38.0], 5);
+  } else if (basin === "indianocean") {
+    mapInstance.setView([-2.0, 65.0], 4);
+  }
+}
+
 // =============================================================================
 // 2. 30 GLOBAL BENCHMARK REEF STATIONS DATABASE
 // =============================================================================
@@ -242,11 +261,27 @@ function initMap() {
     worldCopyJump: true
   });
 
-  // High-res Ocean Bathymetry Base Layer (ESRI World Oceans)
-  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
+  // Base Layers
+  const esriOcean = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
     attribution: "ESRI Ocean & NOAA Coral Reef Watch",
     maxZoom: 13
-  }).addTo(mapInstance);
+  });
+  const esriSat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+    attribution: "ESRI World Imagery",
+    maxZoom: 13
+  });
+  const darkMatter = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    attribution: "CartoDB Dark Matter",
+    maxZoom: 13
+  });
+
+  esriOcean.addTo(mapInstance);
+
+  L.control.layers({
+    "ESRI Ocean Bathymetry": esriOcean,
+    "Satellite Imagery": esriSat,
+    "Tactical Dark Mode": darkMatter
+  }, null, { position: "topright" }).addTo(mapInstance);
 
   // Add Stations
   STATIONS_DB.forEach(st => {
