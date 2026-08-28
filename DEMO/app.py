@@ -298,8 +298,19 @@ with tab2:
         }
         df_imp = pd.DataFrame(list(feat_impact.items()), columns=["Driver", "Attribution"])
         df_imp["Color"] = df_imp["Attribution"].apply(lambda x: "#E53E3E" if x > 0 else "#3182CE")
-        fig_bar = px.bar(df_imp, x="Attribution", y="Driver", orientation="h", color="Color", color_discrete_map="identity")
-        fig_bar.update_layout(margin=dict(l=0, r=0, t=10, b=0), height=200, showlegend=False)
+
+        fig_bar = go.Figure(go.Bar(
+            x=df_imp["Attribution"],
+            y=df_imp["Driver"],
+            orientation="h",
+            marker_color=df_imp["Color"]
+        ))
+        fig_bar.update_layout(
+            margin=dict(l=0, r=0, t=10, b=0),
+            height=200,
+            xaxis_title="Marginal Risk Attribution (TreeSHAP Score)",
+            showlegend=False
+        )
         st.plotly_chart(fig_bar, use_container_width=True)
 
 # ==============================================================================
