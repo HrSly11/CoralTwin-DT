@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this software, dataset, or digital twin framework in your research, please cite it as below."
+authors:
+  - name: "CoralTwin-DT Doctoral Research Consortium"
+    website: "https://github.com/HrSly11/CoralTwin-DT"
+title: "CoralTwin-DT: A Cyber-Physical Digital Twin Coupling Machine Learning and Dynamical Biophysics for Coral Reef Restoration Prioritization under Thermal Stress and Ocean Acidification"
+version: "1.0.0"
+doi: "10.5281/zenodo.10275001"
+date-released: "2026-08-27"
+url: "https://github.com/HrSly11/CoralTwin-DT"
+repository-code: "https://github.com/HrSly11/CoralTwin-DT"
+license: "MIT"
+keywords:
+  - "digital-twin"
+  - "coral-reefs"
+  - "coral-bleaching"
+  - "ocean-acidification"
+  - "degree-heating-weeks"
+  - "xgboost"
+  - "treeshap"
+  - "ecological-informatics"
+  - "marine-conservation"
+  - "restoration-ecology"
+  - "sentinel-2"
+  - "noaa-coral-reef-watch"
+preferred-citation:
+  type: article
+  authors:
+    - name: "CoralTwin-DT Doctoral Research Consortium"
+  title: "CoralTwin-DT: A Cyber-Physical Digital Twin Coupling Machine Learning and Dynamical Biophysics for Coral Reef Restoration Prioritization under Thermal Stress and Ocean Acidification"
+  journal: "Ecological Informatics"
+  volume: 82
+  pages: "102750"
+  year: 2026
+  publisher: "Elsevier"
+  doi: "10.1016/j.ecolind.2026.102750"
