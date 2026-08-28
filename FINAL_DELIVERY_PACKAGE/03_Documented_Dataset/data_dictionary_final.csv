@@ -1,0 +1,35 @@
+Variable_Name,Standard_Name,Data_Type,Units,Valid_Range,Sensor_Source,Description,Category
+Record_ID,record_identifier,Integer,dimensionless,1 to 20000,CoralTwin Core,Unique primary key index,Metadata
+Date,time,String (ISO-8601),YYYY-MM-DD,2015-01-01 to 2024-12-31,NOAA CRW / In-situ,Temporal observation timestamp,Spatiotemporal
+Station_Name,platform_name,String,nominal,30 Named Stations,Consortium Grid,Pilot monitoring station identifier,Spatiotemporal
+Region,ocean_basin_province,String,nominal,Caribbean/Indo-Pacific/Red Sea/Indian Ocean/Pacific,Biogeographic Classification,Biogeographic reef province,Spatiotemporal
+Latitude,latitude,Float,decimal degrees,-90.0 to 90.0,GIS Spatial Grid,WGS84 Latitude coordinate,Spatiotemporal
+Longitude,longitude,Float,decimal degrees,-180.0 to 180.0,GIS Spatial Grid,WGS84 Longitude coordinate,Spatiotemporal
+Reef_Zone,benthic_geomorphic_zone,String,categorical,Fore Reef/Back Reef/Reef Crest/Lagoon,Allen Coral Atlas,Geomorphic structural zone,Benthic
+Dominant_Coral_Genus,taxonomic_dominant_genus,String,taxonomic,Acropora/Porites/Orbicella/Pocillopora/Montastraea,Benthic Monitoring,Dominant framework coral genus,Ecological
+Depth_m,depth_below_sea_level,Float,meters,0.5 to 35.0,GEBCO / Sonar,Benthic depth below sea surface,Physical
+SST_degC,sea_surface_temperature,Float,degrees Celsius,22.0 to 33.5,NOAA CRW 5km,Daily mean sea surface temperature,Oceanographic
+SST_Anomaly_degC,sea_surface_temperature_anomaly,Float,degrees Celsius,-2.5 to 4.5,NOAA CRW 5km,SST anomaly relative to monthly climatology,Oceanographic
+MMM_Climatology_degC,maximum_monthly_mean_climatology,Float,degrees Celsius,26.0 to 30.5,NOAA CRW Climatology,Baseline Maximum Monthly Mean temperature,Oceanographic
+HotSpot_degC,coral_bleaching_hotspot,Float,degrees Celsius,0.0 to 5.0,NOAA CRW 5km,Instantaneous thermal anomaly above MMM,Oceanographic
+DHW_degC_weeks,degree_heating_weeks,Float,degC-weeks,0.0 to 22.0,NOAA CRW 5km,12-week accumulated thermal heat stress,Oceanographic
+pH_total,sea_water_ph_reported_on_total_scale,Float,pH scale,7.60 to 8.25,Mooring SeaFET / In-situ,Seawater pH on total hydrogen ion scale,Biogeochemical
+Salinity_PSU,sea_water_practical_salinity,Float,PSU,30.0 to 42.0,CTD Sensor,Practical salinity units,Biogeochemical
+Dissolved_Oxygen_mg_L,dissolved_oxygen_concentration,Float,mg/L,2.0 to 10.0,Optical DO Sensor,Dissolved oxygen concentration,Biogeochemical
+Aragonite_Saturation_Omega,aragonite_saturation_state,Float,dimensionless,1.5 to 4.5,Carbonate Chemistry Solver,Seawater aragonite saturation state,Biogeochemical
+Turbidity_NTU,sea_water_turbidity,Float,NTU,0.05 to 15.0,Sentinel-2 / In-situ,Optical turbidity and suspended sediment,Optical
+Kd_490_m_inv,diffuse_attenuation_coefficient_490nm,Float,m^-1,0.02 to 1.0,Sentinel-2 MSI (Level-2A),Diffuse light attenuation coefficient at 490 nm,Optical
+PAR_umol_m2_s,photosynthetically_active_radiation,Float,umol photons m-2 s-1,100 to 2200,MODIS / Radiometer,Daily downwelling photosynthetically active radiation,Optical
+Live_Coral_Cover_Pct,live_scleractinian_coral_cover_fraction,Float,percentage,0.0 to 85.0,GCRMN / Benthic Transects,Substrate percentage covered by live corals,Ecological
+Macroalgae_Cover_Pct,macroalgal_benthic_cover_fraction,Float,percentage,0.0 to 90.0,GCRMN / Benthic Transects,Substrate percentage covered by fleshy macroalgae,Ecological
+Turf_Algae_Cover_Pct,turf_algae_cover_fraction,Float,percentage,0.0 to 80.0,Benthic Transects,Substrate percentage covered by epilithic turf algae,Ecological
+Structural_Rugosity,benthic_structural_complexity_index,Float,dimensionless,1.0 to 3.5,Structure-from-Motion / Sonar,Topographic surface rugosity ratio,Benthic
+Colony_Density_m2,coral_colony_areal_density,Float,colonies / m2,0.1 to 30.0,Benthic Quadrats,Colony count density per square meter,Ecological
+Shannon_Diversity_H,shannon_wiener_diversity_index,Float,dimensionless,0.2 to 3.8,Ecological Surveys,Species diversity index across coral morphotypes,Ecological
+Bleaching_Severity_Pct,percentage_of_bleached_coral_colonies,Float,percentage,0.0 to 100.0,Benthic Transect / Model,Fraction of coral colonies exhibiting pigment loss,Ecological
+Bleaching_Alert_Level,noaa_coral_bleaching_alert_category,String,categorical,No_Stress/Watch/Warning/Alert_Level_1/Alert_Level_2,NOAA CRW Operational,NOAA official bleaching alert level category,Oceanographic
+Bleaching_Risk,coral_bleaching_risk_category,String,categorical,Low/Medium/High,CoralTwin Classifier,Target classification category,Target Variable
+Coral_Cover_Loss_Pct,coral_cover_loss_rate,Float,percentage,0.0 to 100.0,CoralTwin Regressor,Target continuous coral cover degradation rate,Target Variable
+Data_Source_Type,data_provenance_flag,String,categorical,Real_Observation_Calibrated/Digital_Twin_Simulated,CoralTwin Metadata,Differentiates real calibrated feeds from simulated twin data,Metadata
+Data_Collection_Agency,data_originating_authority,String,nominal,Agency Names,CoralTwin Metadata,Originating monitoring institution or simulation core,Metadata
+Scientific_Attribution,scientific_attribution_disclaimer,String,text,Standard Disclaimer,CoralTwin Metadata,Mandatory scientific reproducibility attribution,Metadata

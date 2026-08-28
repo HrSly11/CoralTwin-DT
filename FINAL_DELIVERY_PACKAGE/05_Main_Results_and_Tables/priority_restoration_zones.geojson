@@ -1,0 +1,536 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.55089264,
+          17.1994329
+        ]
+      },
+      "properties": {
+        "Station_Name": "Belize_Atoll_06",
+        "Region": "Caribbean",
+        "Reef_Zone": "Reef Crest",
+        "Depth_m": 5.0,
+        "SRPI": 0.46,
+        "Priority_Tier": "Tier_3_Low_Monitoring",
+        "Thermal_Refugia_Score": 0.279,
+        "Live_Coral_Cover_Pct": 28.9,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.90013598,
+          17.15061304
+        ]
+      },
+      "properties": {
+        "Station_Name": "Belize_Barrier_05",
+        "Region": "Caribbean",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 15.0,
+        "SRPI": 0.444,
+        "Priority_Tier": "Tier_3_Low_Monitoring",
+        "Thermal_Refugia_Score": 0.111,
+        "Live_Coral_Cover_Pct": 30.6,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.55004292,
+          -8.59945414
+        ]
+      },
+      "properties": {
+        "Station_Name": "CoralTriangle_Komodo_18",
+        "Region": "Indo-Pacific",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 16.0,
+        "SRPI": 0.602,
+        "Priority_Tier": "Tier_1_High_Priority_Restoration",
+        "Thermal_Refugia_Score": 0.0,
+        "Live_Coral_Cover_Pct": 40.0,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          130.14993814,
+          -1.9502812200000001
+        ]
+      },
+      "properties": {
+        "Station_Name": "CoralTriangle_Misool_17",
+        "Region": "Indo-Pacific",
+        "Reef_Zone": "Reef Crest",
+        "Depth_m": 5.2,
+        "SRPI": 0.557,
+        "Priority_Tier": "Tier_1_High_Priority_Restoration",
+        "Thermal_Refugia_Score": 0.321,
+        "Live_Coral_Cover_Pct": 48.4,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          130.50022414,
+          -0.54963186
+        ]
+      },
+      "properties": {
+        "Station_Name": "CoralTriangle_RajaAmpat_16",
+        "Region": "Indo-Pacific",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 10.5,
+        "SRPI": 0.632,
+        "Priority_Tier": "Tier_1_High_Priority_Restoration",
+        "Thermal_Refugia_Score": 0.424,
+        "Live_Coral_Cover_Pct": 37.4,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.75024996,
+          1.6506117999999999
+        ]
+      },
+      "properties": {
+        "Station_Name": "CoralTriangle_Sulawesi_19",
+        "Region": "Indo-Pacific",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 12.0,
+        "SRPI": 0.485,
+        "Priority_Tier": "Tier_2_Secondary_Conservation",
+        "Thermal_Refugia_Score": 0.076,
+        "Live_Coral_Cover_Pct": 45.0,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9802023,
+          20.35089076
+        ]
+      },
+      "properties": {
+        "Station_Name": "Cozumel_Shallow_08",
+        "Region": "Caribbean",
+        "Reef_Zone": "Lagoon",
+        "Depth_m": 3.1,
+        "SRPI": 0.314,
+        "Priority_Tier": "Tier_3_Low_Monitoring",
+        "Thermal_Refugia_Score": 0.417,
+        "Live_Coral_Cover_Pct": 21.3,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.01921328,
+          20.29943354
+        ]
+      },
+      "properties": {
+        "Station_Name": "Cozumel_South_07",
+        "Region": "Caribbean",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 18.2,
+        "SRPI": 0.482,
+        "Priority_Tier": "Tier_2_Secondary_Conservation",
+        "Thermal_Refugia_Score": 0.18,
+        "Live_Coral_Cover_Pct": 32.5,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -81.45084678,
+          24.549916659999997
+        ]
+      },
+      "properties": {
+        "Station_Name": "Florida_Keys_Lowers_12",
+        "Region": "Caribbean",
+        "Reef_Zone": "Reef Crest",
+        "Depth_m": 4.5,
+        "SRPI": 0.504,
+        "Priority_Tier": "Tier_2_Secondary_Conservation",
+        "Thermal_Refugia_Score": 0.329,
+        "Live_Coral_Cover_Pct": 21.4,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -80.39926814,
+          25.01903402
+        ]
+      },
+      "properties": {
+        "Station_Name": "Florida_Keys_Uppers_11",
+        "Region": "Caribbean",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 9.5,
+        "SRPI": 0.448,
+        "Priority_Tier": "Tier_3_Low_Monitoring",
+        "Thermal_Refugia_Score": 0.361,
+        "Live_Coral_Cover_Pct": 34.8,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          147.19970826000002,
+          -18.24989694
+        ]
+      },
+      "properties": {
+        "Station_Name": "GreatBarrier_Central_14",
+        "Region": "Indo-Pacific",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 13.5,
+        "SRPI": 0.682,
+        "Priority_Tier": "Tier_1_High_Priority_Restoration",
+        "Thermal_Refugia_Score": 0.108,
+        "Live_Coral_Cover_Pct": 36.9,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          147.14997742,
+          -18.299557659999998
+        ]
+      },
+      "properties": {
+        "Station_Name": "GreatBarrier_Lagoon_15",
+        "Region": "Indo-Pacific",
+        "Reef_Zone": "Lagoon",
+        "Depth_m": 3.8,
+        "SRPI": 0.445,
+        "Priority_Tier": "Tier_3_Low_Monitoring",
+        "Thermal_Refugia_Score": 0.01,
+        "Live_Coral_Cover_Pct": 43.9,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.45028820000002,
+          -14.4998426
+        ]
+      },
+      "properties": {
+        "Station_Name": "GreatBarrier_Northern_13",
+        "Region": "Indo-Pacific",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 11.0,
+        "SRPI": 0.515,
+        "Priority_Tier": "Tier_2_Secondary_Conservation",
+        "Thermal_Refugia_Score": 0.326,
+        "Live_Coral_Cover_Pct": 42.6,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.80033108,
+          21.45032442
+        ]
+      },
+      "properties": {
+        "Station_Name": "Hawaii_Kaneohe_23",
+        "Region": "Pacific",
+        "Reef_Zone": "Lagoon",
+        "Depth_m": 3.5,
+        "SRPI": 0.388,
+        "Priority_Tier": "Tier_3_Low_Monitoring",
+        "Thermal_Refugia_Score": 0.613,
+        "Live_Coral_Cover_Pct": 24.2,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.69902984,
+          21.29961682
+        ]
+      },
+      "properties": {
+        "Station_Name": "Hawaii_OahuFore_24",
+        "Region": "Pacific",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 11.2,
+        "SRPI": 0.548,
+        "Priority_Tier": "Tier_2_Secondary_Conservation",
+        "Thermal_Refugia_Score": 0.402,
+        "Live_Coral_Cover_Pct": 34.7,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.849817,
+          18.30988378
+        ]
+      },
+      "properties": {
+        "Station_Name": "Mesoamerican_Back_03",
+        "Region": "Caribbean",
+        "Reef_Zone": "Back Reef",
+        "Depth_m": 6.8,
+        "SRPI": 0.288,
+        "Priority_Tier": "Tier_3_Low_Monitoring",
+        "Thermal_Refugia_Score": 0.535,
+        "Live_Coral_Cover_Pct": 21.2,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.81994206,
+          18.278946400000002
+        ]
+      },
+      "properties": {
+        "Station_Name": "Mesoamerican_Crest_02",
+        "Region": "Caribbean",
+        "Reef_Zone": "Reef Crest",
+        "Depth_m": 4.2,
+        "SRPI": 0.461,
+        "Priority_Tier": "Tier_2_Secondary_Conservation",
+        "Thermal_Refugia_Score": 0.266,
+        "Live_Coral_Cover_Pct": 27.8,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.79946892,
+          18.25048112
+        ]
+      },
+      "properties": {
+        "Station_Name": "Mesoamerican_Fore_01",
+        "Region": "Caribbean",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 12.5,
+        "SRPI": 0.601,
+        "Priority_Tier": "Tier_1_High_Priority_Restoration",
+        "Thermal_Refugia_Score": 0.695,
+        "Live_Coral_Cover_Pct": 26.9,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.88012314,
+          18.35045122
+        ]
+      },
+      "properties": {
+        "Station_Name": "Mesoamerican_Lagoon_04",
+        "Region": "Caribbean",
+        "Reef_Zone": "Lagoon",
+        "Depth_m": 2.5,
+        "SRPI": 0.391,
+        "Priority_Tier": "Tier_3_Low_Monitoring",
+        "Thermal_Refugia_Score": 0.132,
+        "Live_Coral_Cover_Pct": 23.9,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.35005076,
+          26.200020499999997
+        ]
+      },
+      "properties": {
+        "Station_Name": "Okinawa_Kerama_20",
+        "Region": "Indo-Pacific",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 14.5,
+        "SRPI": 0.487,
+        "Priority_Tier": "Tier_2_Secondary_Conservation",
+        "Thermal_Refugia_Score": 0.027,
+        "Live_Coral_Cover_Pct": 39.0,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.45040002,
+          7.29952444
+        ]
+      },
+      "properties": {
+        "Station_Name": "Palau_RockIslands_25",
+        "Region": "Indo-Pacific",
+        "Reef_Zone": "Lagoon",
+        "Depth_m": 4.8,
+        "SRPI": 0.277,
+        "Priority_Tier": "Tier_3_Low_Monitoring",
+        "Thermal_Refugia_Score": 0.068,
+        "Live_Coral_Cover_Pct": 49.0,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.94976878,
+          29.4501284
+        ]
+      },
+      "properties": {
+        "Station_Name": "RedSea_Aqaba_21",
+        "Region": "Red Sea",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 15.5,
+        "SRPI": 0.618,
+        "Priority_Tier": "Tier_1_High_Priority_Restoration",
+        "Thermal_Refugia_Score": 1.0,
+        "Live_Coral_Cover_Pct": 35.0,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.84937002,
+          27.20034918
+        ]
+      },
+      "properties": {
+        "Station_Name": "RedSea_Shallow_22",
+        "Region": "Red Sea",
+        "Reef_Zone": "Reef Crest",
+        "Depth_m": 4.0,
+        "SRPI": 0.553,
+        "Priority_Tier": "Tier_2_Secondary_Conservation",
+        "Thermal_Refugia_Score": 0.738,
+        "Live_Coral_Cover_Pct": 39.6,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.49974478,
+          16.379621999999998
+        ]
+      },
+      "properties": {
+        "Station_Name": "Roatan_North_09",
+        "Region": "Caribbean",
+        "Reef_Zone": "Fore Reef",
+        "Depth_m": 14.0,
+        "SRPI": 0.465,
+        "Priority_Tier": "Tier_2_Secondary_Conservation",
+        "Thermal_Refugia_Score": 0.204,
+        "Live_Coral_Cover_Pct": 22.9,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.54983778,
+          16.31975796
+        ]
+      },
+      "properties": {
+        "Station_Name": "Roatan_South_10",
+        "Region": "Caribbean",
+        "Reef_Zone": "Back Reef",
+        "Depth_m": 8.0,
+        "SRPI": 0.336,
+        "Priority_Tier": "Tier_3_Low_Monitoring",
+        "Thermal_Refugia_Score": 0.218,
+        "Live_Coral_Cover_Pct": 28.4,
+        "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital"
+      }
+    }
+  ]
+}
