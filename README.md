@@ -1,5 +1,6 @@
 # CoralTwin-DT: Digital Twin of Coral Reefs under Thermal Stress and Ocean Acidification for Restoration and Conservation Prioritization
 
+[![Release: v1.0.0](https://img.shields.io/badge/Release-v1.0.0-purple.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python: 3.10 | 3.11](https://img.shields.io/badge/Python-3.10%20%7C%203.11-blue.svg)](https://www.python.org/)
 [![Reproducibility: 100% Verified](https://img.shields.io/badge/Reproducibility-100%25%20Verified-brightgreen.svg)](12_Reproducibility/README_reproducibility.md)
