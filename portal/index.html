@@ -156,15 +156,26 @@
             </h2>
             <p class="text-xs text-slate-400" data-i18n="mapSubtitle">NOAA CRW 5km Satellite Thermal Grids & Sentinel-2 MSI Multi-Basin Ingestion</p>
           </div>
-          <div class="flex items-center gap-2 text-xs font-mono">
-            <span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" data-i18n="riskLow">Low Risk</span>
-            <span class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30" data-i18n="riskMed">Med Risk</span>
-            <span class="px-2 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30" data-i18n="riskHigh">High Risk</span>
+          <div class="flex items-center gap-3">
+            <!-- 2D / 3D Projection Toggle -->
+            <div class="flex items-center gap-1 bg-slate-800 border border-slate-700 rounded-lg p-0.5 font-mono text-xs shadow-inner">
+              <button id="proj-btn-2d" class="px-2.5 py-1 rounded font-bold transition text-slate-950 bg-cyan-400" onclick="setMapProjection('2d')">
+                <i class="fa-solid fa-map mr-1"></i> <span data-i18n="proj2D">2D Plano</span>
+              </button>
+              <button id="proj-btn-3d" class="px-2.5 py-1 rounded font-bold transition text-slate-400 hover:text-slate-200" onclick="setMapProjection('3d')">
+                <i class="fa-solid fa-earth-americas mr-1"></i> <span data-i18n="proj3D">3D Globo</span>
+              </button>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 text-xs font-mono">
+              <span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" data-i18n="riskLow">Low Risk</span>
+              <span class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30" data-i18n="riskMed">Med Risk</span>
+              <span class="px-2 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30" data-i18n="riskHigh">High Risk</span>
+            </div>
           </div>
         </div>
 
         <!-- Quick Basin & Mapamundi Navigation Bar -->
-        <div class="flex items-center gap-1.5 flex-wrap mb-2 text-xs font-mono">
+        <div id="basin-nav-bar" class="flex items-center gap-1.5 flex-wrap mb-2 text-xs font-mono">
           <button id="btn-basin-global" class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500 hover:text-slate-950 transition font-bold" onclick="focusBasin('global')">
             <i class="fa-solid fa-globe mr-1"></i> <span data-i18n="basinGlobal">Mapamundi (Global)</span>
           </button>
@@ -185,7 +196,15 @@
           </button>
         </div>
 
-        <div id="leaflet-map" class="w-full h-80 rounded-lg overflow-hidden border border-slate-700/60 z-10 shadow-inner"></div>
+        <!-- Map Viewport Wrapper (Holds both 2D Leaflet and 3D Earth Globe) -->
+        <div id="map-viewport-wrapper" class="relative w-full h-80 rounded-lg overflow-hidden border border-slate-700/60 shadow-inner">
+          <div id="leaflet-map" class="w-full h-full"></div>
+          <div id="globe3d-container" class="w-full h-full hidden relative bg-slate-950">
+            <div class="absolute bottom-2 left-2 text-[10px] text-slate-400 bg-slate-900/80 px-2 py-1 rounded pointer-events-none backdrop-blur-sm z-20">
+              <i class="fa-solid fa-hand-pointer mr-1"></i> <span data-i18n="globeHelp">Drag to Rotate Globe | Click a station</span>
+            </div>
+          </div>
+        </div>
 
         <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
           <span data-i18n="mapInstruction">Click any reef station on the map or select below:</span>

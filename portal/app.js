@@ -1,8 +1,8 @@
 /**
  * CoralTwin-DT: Cyber-Physical Command Center Engine
  * ===================================================
- * Complete WebGL 3D, Leaflet Geospatial, Machine Learning, and
- * Dynamical Runge-Kutta ODE Simulation logic for CoralTwin-DT.
+ * Complete WebGL 3D, Leaflet Geospatial, 3D Earth Globe, Machine Learning,
+ * and Dynamical Runge-Kutta ODE Simulation logic for CoralTwin-DT.
  * Features full bilingual i18n support (English & Spanish).
  * 
  * Author: CoralTwin-DT Engineering Consortium
@@ -28,7 +28,11 @@ const I18N = {
     riskLow: "Low Risk",
     riskMed: "Med Risk",
     riskHigh: "High Risk",
+    proj2D: "2D Flat Map",
+    proj3D: "3D Earth Globe",
+    globeHelp: "Drag to Rotate Globe | Scroll to Zoom | Click any Reef Beacon",
     mapInstruction: "Click any reef station on the map or select below:",
+    basinGlobal: "Mapamundi (Global)",
     coral3dTitle: "3D WebGL Digital Twin Colony",
     coral3dSubtitle: "Real-Time Procedural Biophysical Bleaching Shader",
     coral3dHelp: "Drag to Rotate | Scroll to Zoom",
@@ -57,7 +61,6 @@ const I18N = {
     odeTurfLabel: "Turf Algae (%)",
     srpiTitle: "Spatial Restoration Priority Index (SRPI) Decision Matrix",
     srpiSubtitle: "Multi-Criteria Hydrodynamic Refugia Ranking & Open RFC-7946 GeoJSON Layers",
-    basinGlobal: "Mapamundi (Global)",
     filterAll: "All Stations",
     filterTier1: "Tier 1: Outplanting",
     filterTier2: "Tier 2: Marine Reserve",
@@ -86,6 +89,9 @@ const I18N = {
     riskLow: "Bajo Riesgo",
     riskMed: "Riesgo Medio",
     riskHigh: "Alto Riesgo",
+    proj2D: "2D Plano",
+    proj3D: "3D Globo",
+    globeHelp: "Arrastrá para Girar el Globo | Scroll para Zoom | Clic en un arrecife",
     mapInstruction: "Hacé clic en cualquier estación del mapa o seleccionala abajo:",
     basinGlobal: "Mapamundi (Global)",
     coral3dTitle: "Colonia 3D en Gemelo Digital (WebGL)",
@@ -132,6 +138,7 @@ const I18N = {
 };
 
 let currentLang = localStorage.getItem("coraltwin_lang") || "es";
+let currentProjection = "2d";
 
 function setLanguage(lang) {
   currentLang = lang;
@@ -174,23 +181,6 @@ function setLanguage(lang) {
   triggerAIInference();
   triggerODESimulation();
   populateTable(STATIONS_DB);
-}
-
-function focusBasin(basin) {
-  if (!mapInstance) return;
-  if (basin === "global") {
-    mapInstance.setView([10.0, 0.0], 2);
-  } else if (basin === "caribbean") {
-    mapInstance.setView([19.0, -78.0], 5);
-  } else if (basin === "gbr") {
-    mapInstance.setView([-18.0, 148.0], 5);
-  } else if (basin === "coraltriangle") {
-    mapInstance.setView([-2.0, 125.0], 5);
-  } else if (basin === "redsea") {
-    mapInstance.setView([22.0, 38.0], 5);
-  } else if (basin === "indianocean") {
-    mapInstance.setView([-2.0, 65.0], 4);
-  }
 }
 
 // =============================================================================
@@ -247,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =============================================================================
-// 4. LEAFLET OCEAN BATHYMETRY MAP
+// 4. LEAFLET 2D OCEAN BATHYMETRY MAP
 // =============================================================================
 let mapInstance;
 let mapMarkers = [];
@@ -323,6 +313,219 @@ function initMap() {
   });
 }
 
+// =============================================================================
+// 5. 3D WEBGL EARTH GLOBE PROJECTION (THREE.JS)
+// =============================================================================
+let globeScene, globeCamera, globeRenderer, globeGroup, globeControls;
+let isGlobeInitialized = false;
+let globeRaycaster = new THREE.Raycaster();
+let globeMouse = new THREE.Vector2();
+let globeMarkerMeshes = [];
+
+function initThreeJSGlobe() {
+  if (isGlobeInitialized) return;
+  const container = document.getElementById("globe3d-container");
+  const width = container.clientWidth || 600;
+  const height = container.clientHeight || 320;
+
+  globeScene = new THREE.Scene();
+  globeCamera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+  globeCamera.position.set(0, 0, 7.5);
+
+  globeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  globeRenderer.setSize(width, height);
+  globeRenderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(globeRenderer.domElement);
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+  globeScene.add(ambientLight);
+
+  const sunLight = new THREE.DirectionalLight(0x38BDF8, 1.2);
+  sunLight.position.set(10, 8, 10);
+  globeScene.add(sunLight);
+
+  globeGroup = new THREE.Group();
+
+  // 3D Earth Sphere Geometry
+  const sphereRadius = 2.4;
+  const earthGeom = new THREE.SphereGeometry(sphereRadius, 48, 48);
+
+  // Oceanic Bathymetric Material
+  const earthMat = new THREE.MeshPhongMaterial({
+    color: 0x0B192C,
+    emissive: 0x030712,
+    specular: 0x38BDF8,
+    shininess: 25,
+    wireframe: false
+  });
+  const earthMesh = new THREE.Mesh(earthGeom, earthMat);
+  globeGroup.add(earthMesh);
+
+  // Atmospheric Glow Ring
+  const atmosphereGeom = new THREE.SphereGeometry(sphereRadius * 1.04, 32, 32);
+  const atmosphereMat = new THREE.MeshBasicMaterial({
+    color: 0x38BDF8,
+    transparent: true,
+    opacity: 0.12,
+    side: THREE.BackSide
+  });
+  const atmosphereMesh = new THREE.Mesh(atmosphereGeom, atmosphereMat);
+  globeGroup.add(atmosphereMesh);
+
+  // Lat/Lon Grid Lines
+  const gridMat = new THREE.LineBasicMaterial({ color: 0x1E293B, transparent: true, opacity: 0.6 });
+  for (let lat = -60; lat <= 60; lat += 30) {
+    const r = sphereRadius * Math.cos(lat * Math.PI / 180);
+    const y = sphereRadius * Math.sin(lat * Math.PI / 180);
+    const circleGeom = new THREE.BufferGeometry();
+    const points = [];
+    for (let i = 0; i <= 64; i++) {
+      const theta = (i / 64) * Math.PI * 2;
+      points.push(new THREE.Vector3(r * Math.cos(theta), y, r * Math.sin(theta)));
+    }
+    circleGeom.setFromPoints(points);
+    const line = new THREE.Line(circleGeom, gridMat);
+    globeGroup.add(line);
+  }
+
+  // Plot 30 Reef Stations on the 3D Globe
+  STATIONS_DB.forEach(st => {
+    const phi = (90 - st.lat) * (Math.PI / 180);
+    const theta = (st.lon + 180) * (Math.PI / 180);
+
+    const x = -(sphereRadius * Math.sin(phi) * Math.cos(theta));
+    const z = (sphereRadius * Math.sin(phi) * Math.sin(theta));
+    const y = (sphereRadius * Math.cos(phi));
+
+    const colorHex = st.risk === "Low" ? 0x10B981 : (st.risk === "Medium" ? 0xF59E0B : 0xF43F5E);
+    
+    // Beacon Pin
+    const pinGeom = new THREE.CylinderGeometry(0.02, 0.02, 0.25, 6);
+    const pinMat = new THREE.MeshBasicMaterial({ color: colorHex });
+    const pin = new THREE.Mesh(pinGeom, pinMat);
+
+    // Glowing Station Sphere
+    const beaconGeom = new THREE.SphereGeometry(0.08, 12, 12);
+    const beaconMat = new THREE.MeshBasicMaterial({ color: colorHex });
+    const beacon = new THREE.Mesh(beaconGeom, beaconMat);
+    beacon.position.set(0, 0.15, 0);
+    pin.add(beacon);
+
+    pin.position.set(x, y, z);
+    pin.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(x, y, z).normalize());
+    pin.userData = { station: st };
+
+    globeGroup.add(pin);
+    globeMarkerMeshes.push(beacon);
+  });
+
+  globeScene.add(globeGroup);
+
+  // Orbit Controls
+  globeControls = new THREE.OrbitControls(globeCamera, globeRenderer.domElement);
+  globeControls.enableDamping = true;
+  globeControls.dampingFactor = 0.05;
+  globeControls.autoRotate = true;
+  globeControls.autoRotateSpeed = 0.8;
+  globeControls.minDistance = 3.8;
+  globeControls.maxDistance = 12.0;
+
+  // Globe Click Interaction
+  container.addEventListener("click", (event) => {
+    const rect = container.getBoundingClientRect();
+    globeMouse.x = ((event.clientX - rect.left) / container.clientWidth) * 2 - 1;
+    globeMouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
+
+    globeRaycaster.setFromCamera(globeMouse, globeCamera);
+    const intersects = globeRaycaster.intersectObjects(globeMarkerMeshes);
+    if (intersects.length > 0) {
+      const parentPin = intersects[0].object.parent;
+      if (parentPin && parentPin.userData.station) {
+        selectStation(parentPin.userData.station);
+      }
+    }
+  });
+
+  // Animation Loop
+  function animateGlobe() {
+    requestAnimationFrame(animateGlobe);
+    if (currentProjection === "3d") {
+      globeControls.update();
+      globeRenderer.render(globeScene, globeCamera);
+    }
+  }
+  animateGlobe();
+
+  isGlobeInitialized = true;
+}
+
+function setMapProjection(mode) {
+  currentProjection = mode;
+  const btn2D = document.getElementById("proj-btn-2d");
+  const btn3D = document.getElementById("proj-btn-3d");
+  const leafletDiv = document.getElementById("leaflet-map");
+  const globeDiv = document.getElementById("globe3d-container");
+
+  if (mode === "2d") {
+    btn2D.className = "px-2.5 py-1 rounded font-bold transition text-slate-950 bg-cyan-400";
+    btn3D.className = "px-2.5 py-1 rounded font-bold transition text-slate-400 hover:text-slate-200";
+    leafletDiv.classList.remove("hidden");
+    globeDiv.classList.add("hidden");
+    if (mapInstance) {
+      setTimeout(() => mapInstance.invalidateSize(), 150);
+    }
+  } else {
+    btn3D.className = "px-2.5 py-1 rounded font-bold transition text-slate-950 bg-cyan-400";
+    btn2D.className = "px-2.5 py-1 rounded font-bold transition text-slate-400 hover:text-slate-200";
+    leafletDiv.classList.add("hidden");
+    globeDiv.classList.remove("hidden");
+    if (!isGlobeInitialized) {
+      initThreeJSGlobe();
+    } else {
+      const container = document.getElementById("globe3d-container");
+      globeCamera.aspect = container.clientWidth / container.clientHeight;
+      globeCamera.updateProjectionMatrix();
+      globeRenderer.setSize(container.clientWidth, container.clientHeight);
+    }
+  }
+}
+
+function focusBasin(basin) {
+  if (currentProjection === "2d" && mapInstance) {
+    if (basin === "global") {
+      mapInstance.setView([10.0, 0.0], 2);
+    } else if (basin === "caribbean") {
+      mapInstance.setView([19.0, -78.0], 5);
+    } else if (basin === "gbr") {
+      mapInstance.setView([-18.0, 148.0], 5);
+    } else if (basin === "coraltriangle") {
+      mapInstance.setView([-2.0, 125.0], 5);
+    } else if (basin === "redsea") {
+      mapInstance.setView([22.0, 38.0], 5);
+    } else if (basin === "indianocean") {
+      mapInstance.setView([-2.0, 65.0], 4);
+    }
+  } else if (currentProjection === "3d" && isGlobeInitialized) {
+    let targetLat = 0, targetLon = 0;
+    if (basin === "caribbean") { targetLat = 19.0; targetLon = -78.0; }
+    else if (basin === "gbr") { targetLat = -18.0; targetLon = 148.0; }
+    else if (basin === "coraltriangle") { targetLat = -2.0; targetLon = 125.0; }
+    else if (basin === "redsea") { targetLat = 22.0; targetLon = 38.0; }
+    else if (basin === "indianocean") { targetLat = -2.0; targetLon = 65.0; }
+
+    const phi = (90 - targetLat) * (Math.PI / 180);
+    const theta = (targetLon + 180) * (Math.PI / 180);
+    const r = 7.5;
+    globeCamera.position.set(
+      -(r * Math.sin(phi) * Math.cos(theta)),
+      (r * Math.cos(phi)),
+      (r * Math.sin(phi) * Math.sin(theta))
+    );
+    globeControls.update();
+  }
+}
+
 function selectStation(st) {
   selectedStation = st;
   document.getElementById("station-selector").value = st.id;
@@ -344,7 +547,9 @@ function selectStation(st) {
 
   // Trigger AI and 3D update
   triggerAIInference();
-  mapInstance.panTo([st.lat, st.lon]);
+  if (currentProjection === "2d" && mapInstance) {
+    mapInstance.panTo([st.lat, st.lon]);
+  }
 }
 
 function populateStationSelector() {
@@ -363,7 +568,7 @@ function populateStationSelector() {
 }
 
 // =============================================================================
-// 5. THREE.JS 3D PROCEDURAL CORAL DIGITAL TWIN
+// 6. THREE.JS 3D PROCEDURAL CORAL DIGITAL TWIN
 // =============================================================================
 function initThreeJSCoral() {
   const container = document.getElementById("coral3d-canvas-container");
@@ -396,7 +601,7 @@ function initThreeJSCoral() {
 
   // Create Branching Coral Geometry
   coralMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(0x3D7E50), // Healthy Symbiont Green-Brown
+    color: new THREE.Color(0x3D7E50),
     roughness: 0.6,
     metalness: 0.1
   });
@@ -488,7 +693,7 @@ function updateCoralBleachingShader(stressFraction) {
 }
 
 // =============================================================================
-// 6. MACHINE LEARNING & TREESHAP ENGINE
+// 7. MACHINE LEARNING & TREESHAP ENGINE
 // =============================================================================
 function initCharts() {
   const dict = I18N[currentLang];
@@ -565,7 +770,7 @@ function triggerAIInference() {
   const turb = parseFloat(document.getElementById("slider-turb").value);
 
   // Compute Multi-Stressor Vulnerability Score
-  const phFactor = Math.max(0.0, (8.15 - ph) / 0.35); // 0.0 to 1.5
+  const phFactor = Math.max(0.0, (8.15 - ph) / 0.35);
   const effectiveDHW = dhw * (1.0 + phFactor * 0.45);
   const turbShield = Math.max(0.0, (turb - 0.5) * 0.4);
   const totalScore = Math.max(0.0, effectiveDHW - turbShield);
@@ -619,7 +824,7 @@ function triggerAIInference() {
 }
 
 // =============================================================================
-// 7. RUNGE-KUTTA 4TH ORDER DECADAL ODE SIMULATION
+// 8. RUNGE-KUTTA 4TH ORDER DECADAL ODE SIMULATION
 // =============================================================================
 function triggerODESimulation() {
   const deltaWarming = parseFloat(document.getElementById("slider-ode-warming").value);
@@ -692,7 +897,7 @@ function triggerODESimulation() {
 }
 
 // =============================================================================
-// 8. SPATIAL RESTORATION PRIORITY TABLE & GEOJSON EXPORTER
+// 9. SPATIAL RESTORATION PRIORITY TABLE & GEOJSON EXPORTER
 // =============================================================================
 function populateTable(stations) {
   const tbody = document.getElementById("srpi-table-body");
@@ -790,7 +995,7 @@ function exportGeoJSON() {
 }
 
 // =============================================================================
-// 9. EVENT LISTENERS
+// 10. EVENT LISTENERS
 // =============================================================================
 function bindEvents() {
   // Sliders AI
