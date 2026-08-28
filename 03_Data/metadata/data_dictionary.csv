@@ -1,0 +1,23 @@
+Variable_Name,Standard_Name,Data_Type,Units,Valid_Range,Source_Sensor,Description,Data_Category
+Record_ID,record_identifier,Integer,dimensionless,1 to 20000,CoralTwin Core,Unique primary key index,Metadata
+Date,time,String (ISO-8601),YYYY-MM-DD,2015-01-01 to 2050-12-31,NOAA CRW / In-situ,Observation timestamp,Spatiotemporal
+Latitude,latitude,Float,decimal degrees,-90.0 to 90.0,GIS Grid,WGS84 Latitude coordinate,Spatiotemporal
+Longitude,longitude,Float,decimal degrees,-180.0 to 180.0,GIS Grid,WGS84 Longitude coordinate,Spatiotemporal
+Reef_Zone,benthic_geomorphic_zone,String,categorical,Fore Reef/Back Reef/Reef Crest/Lagoon,Allen Coral Atlas,Geomorphic structural classification,Benthic
+Depth_m,depth_below_sea_level,Float,meters,0.5 to 35.0,GEBCO / Sonar,Benthic bathymetric depth,Physical
+SST_degC,sea_surface_temperature,Float,degrees Celsius,22.0 to 33.5,NOAA CRW 5km,Daily mean sea surface temperature,Oceanographic
+SST_Anomaly_degC,sea_surface_temperature_anomaly,Float,degrees Celsius,-2.5 to 4.5,NOAA CRW 5km,SST anomaly relative to monthly climatology,Oceanographic
+DHW_degC_weeks,degree_heating_weeks,Float,degC-weeks,0.0 to 22.0,NOAA CRW 5km,12-week accumulated thermal heat stress,Oceanographic
+pH_total,sea_water_ph_reported_on_total_scale,Float,pH scale,7.60 to 8.25,Mooring SeaFET / CMIP6,Seawater pH on total hydrogen ion scale,Biogeochemical
+Aragonite_Saturation_Omega,aragonite_saturation_state,Float,dimensionless,1.5 to 4.5,Carbonate Chemistry Solver,Seawater aragonite saturation state,Biogeochemical
+Turbidity_NTU,sea_water_turbidity,Float,Nephelometric Turbidity Units,0.05 to 15.0,Sentinel-2 / In-situ,Optical water clarity and suspended sediment,Optical
+PAR_umol_m2_s,photosynthetically_active_radiation,Float,umol photons m-2 s-1,100 to 2200,MODIS / Mooring,Daily downwelling solar photon irradiance,Optical
+Live_Coral_Cover_Pct,live_scleractinian_coral_cover_fraction,Float,percentage,0.0 to 85.0,GCRMN / Benthic Transect,Percentage of substrate covered by live coral,Ecological
+Macroalgae_Cover_Pct,macroalgal_benthic_cover_fraction,Float,percentage,0.0 to 90.0,GCRMN / Benthic Transect,Percentage of substrate covered by fleshy macroalgae,Ecological
+Structural_Rugosity,benthic_structural_complexity_index,Float,dimensionless,1.0 to 3.5,Chain-and-tape / Structure-from-Motion,Topographic surface rugosity ratio,Benthic
+Shannon_Diversity_H,shannon_wiener_diversity_index,Float,dimensionless,0.2 to 3.8,Ecological Transects,Species diversity index across coral morphotypes,Ecological
+Bleaching_Severity_Pct,percentage_of_bleached_coral_colonies,Float,percentage,0.0 to 100.0,Benthic Survey / Model,Fraction of visible coral colonies showing pigment loss,Ecological
+Coral_Cover_Loss_Pct,coral_cover_loss_rate,Float,percentage,0.0 to 100.0,CoralTwin Model,Projected loss in live coral cover due to stress,Target Variable
+Bleaching_Risk,coral_bleaching_risk_category,String,categorical,Low/Medium/High,CoralTwin Multi-task Classifier,Predicted ecological risk level,Target Variable
+Data_Source_Type,data_origin_flag,String,categorical,Real_Observation/Digital_Twin_Simulated,CoralTwin Metadata,Identifies whether record is real or simulated,Metadata
+Scientific_Attribution,scientific_reproducibility_label,String,text,Standard Label,CoralTwin Metadata,Resultado obtenido mediante prototipo computacional del gemelo digital,Metadata

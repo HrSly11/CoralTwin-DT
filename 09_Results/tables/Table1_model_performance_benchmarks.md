@@ -1,0 +1,10 @@
+# Table 1: Cross-Validated Predictive Performance Across AI Architectures
+
+| Model_Architecture   |   Classification_Accuracy |   Macro_Precision |   Macro_Recall |   Macro_F1_Score |   Weighted_F1_Score |   Regression_RMSE |   Regression_MAE |   Regression_R2 |
+|:---------------------|--------------------------:|------------------:|---------------:|-----------------:|--------------------:|------------------:|-----------------:|----------------:|
+| XGBoost              |                    0.9778 |            0.8896 |         0.7173 |           0.7468 |              0.9709 |             7.163 |            5.979 |          0.8151 |
+| Random_Forest        |                    0.9796 |            0.9796 |         0.723  |           0.7589 |              0.9726 |             5.805 |            4.805 |          0.8786 |
+| Deep_MLP             |                    0.9785 |            0.943  |         0.711  |           0.7409 |              0.9709 |            17.778 |           13.422 |         -0.1385 |
+| Baseline             |                    0.9788 |            0.9393 |         0.7167 |           0.7504 |              0.9717 |             5.11  |            3.99  |          0.9059 |
+
+*Note: Metrics evaluated via 5-Fold Spatially Stratified Cross-Validation on N=12,500 harmonized reef observations. Baseline represents regularized logistic regression and ridge regression.*

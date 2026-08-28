@@ -1,0 +1,3 @@
+Factor,F_Statistic,p_Value,Significance
+Reef_Zone (Geomorphic),0.602,0.6139059398173807,ns
+Region (Biogeographic),6.673,0.00016944982044075435,***
