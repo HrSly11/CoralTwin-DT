@@ -3,13 +3,179 @@
  * ===================================================
  * Complete WebGL 3D, Leaflet Geospatial, Machine Learning, and
  * Dynamical Runge-Kutta ODE Simulation logic for CoralTwin-DT.
+ * Features full bilingual i18n support (English & Spanish).
  * 
  * Author: CoralTwin-DT Engineering Consortium
  * License: MIT
  */
 
 // =============================================================================
-// 1. 30 GLOBAL BENCHMARK REEF STATIONS DATABASE
+// 1. BILINGUAL TRANSLATION DICTIONARY (i18n)
+// =============================================================================
+const I18N = {
+  en: {
+    appSubtitle: "Cyber-Physical Marine Digital Twin Command Center",
+    statusOnline: "ONLINE",
+    statusSync: "SYNCHRONIZED",
+    btnExport: "Export GeoJSON",
+    kpi1Val: "30 Stations",
+    kpi1Label: "5 Global Ocean Basins",
+    kpi2Label: "XGBoost ML Accuracy",
+    kpi3Label: "Acidification Tipping Pt",
+    kpi4Label: "2050 Restored Live Cover",
+    mapTitle: "Global Oceanographic Telemetry Map",
+    mapSubtitle: "NOAA CRW 5km Satellite Thermal Grids & Sentinel-2 MSI Multi-Basin Ingestion",
+    riskLow: "Low Risk",
+    riskMed: "Med Risk",
+    riskHigh: "High Risk",
+    mapInstruction: "Click any reef station on the map or select below:",
+    coral3dTitle: "3D WebGL Digital Twin Colony",
+    coral3dSubtitle: "Real-Time Procedural Biophysical Bleaching Shader",
+    coral3dHelp: "Drag to Rotate | Scroll to Zoom",
+    coralHealthy: "HEALTHY SYMBIONTS",
+    coralStress: "HEAT SHOCK (FLUORESCING)",
+    coralBleached: "SEVERELY BLEACHED",
+    aiTitle: "Real-Time AI Prediction Engine",
+    aiSubtitle: "XGBoost Regularized Model with Sub-Millisecond Inference",
+    labelSST: "Sea Surface Temperature (SST):",
+    labelDHW: "Degree Heating Weeks (DHW):",
+    labelPH: "Seawater pH (Total Scale):",
+    labelTurb: "Optical Turbidity (Kd490 / NTU):",
+    riskHeader: "Predicted Bleaching Risk",
+    lossHeader: "Estimated Coral Cover Loss",
+    shapTitle: "TreeSHAP Marginal Feature Attribution",
+    shapLabels: ["DHW Thermal Stress", "Rugosity Cooling", "Acidification (pH)", "Turbidity Shield", "SST Anomaly"],
+    odeTitle: "Decadal Forward Sandbox (2025–2050)",
+    odeSubtitle: "Coupled Non-Linear Mumby Differential Equations (Runge-Kutta 4th Order)",
+    odeWarming: "Warming Rate:",
+    odeOutplant: "Outplanting Rate:",
+    odeHardening: "Hardening Bonus:",
+    odeHerbivory: "MPA Grazing (g):",
+    odeCoverResult: "2050 Projected Live Coral Cover:",
+    odeCoralLabel: "Live Coral Cover (%)",
+    odeMacroLabel: "Macroalgae Cover (%)",
+    odeTurfLabel: "Turf Algae (%)",
+    srpiTitle: "Spatial Restoration Priority Index (SRPI) Decision Matrix",
+    srpiSubtitle: "Multi-Criteria Hydrodynamic Refugia Ranking & Open RFC-7946 GeoJSON Layers",
+    filterAll: "All Stations",
+    filterTier1: "Tier 1: Outplanting",
+    filterTier2: "Tier 2: Marine Reserve",
+    filterTier3: "Tier 3: Thermal Risk",
+    thStation: "Station Name",
+    thRegion: "Region / Basin",
+    thCover: "Live Cover (%)",
+    thRisk: "Risk Status",
+    thTier: "Management Priority Tier",
+    thAction: "Action",
+    btnInspect: "Inspect",
+    footerAttribution: "Scientific Attribution: Resultado obtenido mediante prototipo computacional del gemelo digital."
+  },
+  es: {
+    appSubtitle: "Centro de Comando del Gemelo Digital Marino Ciber-Físico",
+    statusOnline: "EN LÍNEA",
+    statusSync: "SINCRONIZADO",
+    btnExport: "Exportar GeoJSON",
+    kpi1Val: "30 Estaciones",
+    kpi1Label: "5 Cuencas Oceánicas Globales",
+    kpi2Label: "Precisión IA (XGBoost)",
+    kpi3Label: "Punto de Quiebre por pH",
+    kpi4Label: "Cobertura Viva 2050 (Restaurada)",
+    mapTitle: "Mapa Global de Telemetría Oceanográfica",
+    mapSubtitle: "Grillas Térmicas Satelitales NOAA CRW 5km y Sentinel-2 MSI Multi-Cuenca",
+    riskLow: "Bajo Riesgo",
+    riskMed: "Riesgo Medio",
+    riskHigh: "Alto Riesgo",
+    mapInstruction: "Hacé clic en cualquier estación del mapa o seleccionala abajo:",
+    coral3dTitle: "Colonia 3D en Gemelo Digital (WebGL)",
+    coral3dSubtitle: "Shader Procedural de Blanqueamiento Biofísico en Tiempo Real",
+    coral3dHelp: "Arrastrá para Rotar | Scroll para Zoom",
+    coralHealthy: "SIMBIONTES SALUDABLES",
+    coralStress: "ESTRÉS TÉRMICO (FLUORESCENCIA)",
+    coralBleached: "SEVERAMENTE BLANQUEADO",
+    aiTitle: "Motor Predictivo de IA en Tiempo Real",
+    aiSubtitle: "Modelo Regularizado XGBoost con Inferencia en Sub-Milisegundos",
+    labelSST: "Temperatura Superficial Marina (SST):",
+    labelDHW: "Semanas de Calentamiento (DHW):",
+    labelPH: "pH del Agua Marina (Escala Total):",
+    labelTurb: "Turbidez Óptica (Kd490 / NTU):",
+    riskHeader: "Riesgo de Blanqueamiento Predicho",
+    lossHeader: "Pérdida Estimada de Cobertura",
+    shapTitle: "Atribución Marginal de Factores (TreeSHAP)",
+    shapLabels: ["Estrés Térmico (DHW)", "Enfriamiento por Rugosidad", "Acidificación (pH)", "Atenuación por Turbidez", "Anomalía de SST"],
+    odeTitle: "Simulador Decadal 2025–2050 (Ecuaciones ODEs)",
+    odeSubtitle: "Ecuaciones Diferenciales no Lineales de Mumby (Runge-Kutta 4to Orden)",
+    odeWarming: "Tasa de Calentamiento:",
+    odeOutplant: "Tasa de Siembra Activa:",
+    odeHardening: "Endurecimiento Térmico:",
+    odeHerbivory: "Pastoreo en Reserva (g):",
+    odeCoverResult: "Cobertura Coralina Viva Proyectada al 2050:",
+    odeCoralLabel: "Coral Vivo (%)",
+    odeMacroLabel: "Macroalgas (%)",
+    odeTurfLabel: "Césped Algal (%)",
+    srpiTitle: "Matriz de Decisión de Priorización Espacial (SRPI)",
+    srpiSubtitle: "Ranking de Refugios Hidrodinámicos y Capas Abiertas RFC-7946 GeoJSON",
+    filterAll: "Todas las Estaciones",
+    filterTier1: "Tier 1: Siembra Activa",
+    filterTier2: "Tier 2: Reserva Marina",
+    filterTier3: "Tier 3: Riesgo Térmico",
+    thStation: "Nombre de Estación",
+    thRegion: "Región / Cuenca",
+    thCover: "Cobertura Viva (%)",
+    thRisk: "Nivel de Riesgo",
+    thTier: "Nivel de Prioridad de Manejo",
+    thAction: "Acción",
+    btnInspect: "Inspeccionar",
+    footerAttribution: "Atribución Científica: Resultado obtenido mediante prototipo computacional del gemelo digital."
+  }
+};
+
+let currentLang = localStorage.getItem("coraltwin_lang") || "es";
+
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem("coraltwin_lang", lang);
+
+  // Update Toggle Buttons
+  const btnEn = document.getElementById("lang-btn-en");
+  const btnEs = document.getElementById("lang-btn-es");
+  if (lang === "es") {
+    btnEs.className = "px-2.5 py-1 rounded font-bold transition text-slate-950 bg-cyan-400";
+    btnEn.className = "px-2.5 py-1 rounded font-bold transition text-slate-400 hover:text-slate-200";
+  } else {
+    btnEn.className = "px-2.5 py-1 rounded font-bold transition text-slate-950 bg-cyan-400";
+    btnEs.className = "px-2.5 py-1 rounded font-bold transition text-slate-400 hover:text-slate-200";
+  }
+
+  // Update DOM Elements
+  const dict = I18N[lang];
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (dict[key]) {
+      el.innerText = dict[key];
+    }
+  });
+
+  // Update Chart.js labels
+  if (shapChartInstance) {
+    shapChartInstance.data.labels = dict.shapLabels;
+    shapChartInstance.update();
+  }
+
+  if (odeChartInstance) {
+    odeChartInstance.data.datasets[0].label = dict.odeCoralLabel;
+    odeChartInstance.data.datasets[1].label = dict.odeMacroLabel;
+    odeChartInstance.data.datasets[2].label = dict.odeTurfLabel;
+    odeChartInstance.update();
+  }
+
+  // Refresh dynamic inferences
+  triggerAIInference();
+  triggerODESimulation();
+  populateTable(STATIONS_DB);
+}
+
+// =============================================================================
+// 2. 30 GLOBAL BENCHMARK REEF STATIONS DATABASE
 // =============================================================================
 const STATIONS_DB = [
   { id: "Mesoamerican_Fore_01", name: "Mesoamerican Reef (Fore Reef)", region: "Caribbean", lat: 18.25, lon: -87.80, sst: 28.4, dhw: 2.1, ph: 8.08, turb: 0.8, cover: 42.5, macro: 14.2, rugosity: 2.8, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.782 },
@@ -50,21 +216,19 @@ let odeChartInstance = null;
 let threeScene, threeCamera, threeRenderer, coralMesh, coralMaterial;
 
 // =============================================================================
-// 2. INITIALIZATION ROUTINE
+// 3. INITIALIZATION ROUTINE
 // =============================================================================
 document.addEventListener("DOMContentLoaded", () => {
   initMap();
   initThreeJSCoral();
   initCharts();
   populateStationSelector();
-  populateTable(STATIONS_DB);
   bindEvents();
-  triggerAIInference();
-  triggerODESimulation();
+  setLanguage(currentLang);
 });
 
 // =============================================================================
-// 3. LEAFLET OCEAN BATHYMETRY MAP
+// 4. LEAFLET OCEAN BATHYMETRY MAP
 // =============================================================================
 let mapInstance;
 let mapMarkers = [];
@@ -111,7 +275,7 @@ function initMap() {
           <span>Live Cover:</span> <b style="color: #38BDF8;">${st.cover.toFixed(1)} %</b>
         </div>
         <div style="font-size: 11px; display: flex; justify-content: space-between; padding: 4px 0;">
-          <span>SRPI Tier:</span> <b style="color: #10B981;">${st.tier}</b>
+          <span>SRPI Score:</span> <b style="color: #10B981;">${st.srpi.toFixed(3)}</b>
         </div>
       </div>
     `);
@@ -164,7 +328,7 @@ function populateStationSelector() {
 }
 
 // =============================================================================
-// 4. THREE.JS 3D PROCEDURAL CORAL DIGITAL TWIN
+// 5. THREE.JS 3D PROCEDURAL CORAL DIGITAL TWIN
 // =============================================================================
 function initThreeJSCoral() {
   const container = document.getElementById("coral3d-canvas-container");
@@ -262,26 +426,26 @@ function initThreeJSCoral() {
 function updateCoralBleachingShader(stressFraction) {
   if (!coralMaterial) return;
 
-  // stressFraction: 0.0 (Healthy) -> 0.5 (Fluorescing Pink) -> 1.0 (Bleached White)
+  const dict = I18N[currentLang];
   let targetColor;
   const badge = document.getElementById("coral-health-badge");
 
   if (stressFraction < 0.35) {
     // Healthy (Symbiont Rich Gold-Green)
     targetColor = new THREE.Color().lerpColors(new THREE.Color(0x3D7E50), new THREE.Color(0x8B5A2B), stressFraction / 0.35);
-    badge.innerText = "HEALTHY SYMBIONTS";
+    badge.innerText = dict.coralHealthy;
     badge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
   } else if (stressFraction < 0.70) {
     // Heat Shock / Fluorescing Pigments (Pink / Purple)
     const t = (stressFraction - 0.35) / 0.35;
     targetColor = new THREE.Color().lerpColors(new THREE.Color(0x8B5A2B), new THREE.Color(0xD946EF), t);
-    badge.innerText = "HEAT SHOCK (FLUORESCING)";
+    badge.innerText = dict.coralStress;
     badge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40";
   } else {
     // Bleached Skeleton (Bone White)
     const t = (stressFraction - 0.70) / 0.30;
     targetColor = new THREE.Color().lerpColors(new THREE.Color(0xD946EF), new THREE.Color(0xF8FAFC), t);
-    badge.innerText = "SEVERELY BLEACHED";
+    badge.innerText = dict.coralBleached;
     badge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse";
   }
 
@@ -289,15 +453,17 @@ function updateCoralBleachingShader(stressFraction) {
 }
 
 // =============================================================================
-// 5. MACHINE LEARNING & TREESHAP ENGINE
+// 6. MACHINE LEARNING & TREESHAP ENGINE
 // =============================================================================
 function initCharts() {
+  const dict = I18N[currentLang];
+
   // 1. TreeSHAP Bar Chart
   const ctxShap = document.getElementById("shap-chart").getContext("2d");
   shapChartInstance = new Chart(ctxShap, {
     type: "bar",
     data: {
-      labels: ["DHW Thermal Stress", "Rugosity Cooling", "Acidification (pH)", "Turbidity Shield", "SST Anomaly"],
+      labels: dict.shapLabels,
       datasets: [{
         label: "Marginal Attribution (SHAP)",
         data: [14.2, -4.5, 8.1, -2.2, 3.4],
@@ -330,9 +496,9 @@ function initCharts() {
     data: {
       labels: Array.from({ length: 26 }, (_, i) => 2025 + i),
       datasets: [
-        { label: "Live Coral Cover (%)", data: [], borderColor: "#38BDF8", backgroundColor: "rgba(56, 189, 248, 0.1)", fill: true, tension: 0.3, borderWidth: 3 },
-        { label: "Macroalgae Cover (%)", data: [], borderColor: "#F59E0B", borderDash: [5, 5], tension: 0.3, borderWidth: 2 },
-        { label: "Turf Algae (%)", data: [], borderColor: "#64748B", tension: 0.3, borderWidth: 1.5 }
+        { label: dict.odeCoralLabel, data: [], borderColor: "#38BDF8", backgroundColor: "rgba(56, 189, 248, 0.1)", fill: true, tension: 0.3, borderWidth: 3 },
+        { label: dict.odeMacroLabel, data: [], borderColor: "#F59E0B", borderDash: [5, 5], tension: 0.3, borderWidth: 2 },
+        { label: dict.odeTurfLabel, data: [], borderColor: "#64748B", tension: 0.3, borderWidth: 1.5 }
       ]
     },
     options: {
@@ -364,7 +530,6 @@ function triggerAIInference() {
   const turb = parseFloat(document.getElementById("slider-turb").value);
 
   // Compute Multi-Stressor Vulnerability Score
-  // Tipping point: Under pH <= 7.85, DHW threshold drops to 5.8
   const phFactor = Math.max(0.0, (8.15 - ph) / 0.35); // 0.0 to 1.5
   const effectiveDHW = dhw * (1.0 + phFactor * 0.45);
   const turbShield = Math.max(0.0, (turb - 0.5) * 0.4);
@@ -373,21 +538,21 @@ function triggerAIInference() {
   let riskLabel, riskColor, riskBg, riskBorder, lossPct, stressFraction;
 
   if (totalScore < 4.0) {
-    riskLabel = "LOW RISK";
+    riskLabel = currentLang === "es" ? "BAJO RIESGO" : "LOW RISK";
     riskColor = "text-emerald-400";
     riskBg = "bg-emerald-500/10";
     riskBorder = "border-emerald-500/30";
     lossPct = (totalScore * 1.8).toFixed(1);
     stressFraction = totalScore / 12.0;
   } else if (totalScore < 8.0) {
-    riskLabel = "MEDIUM RISK";
+    riskLabel = currentLang === "es" ? "RIESGO MODERADO" : "MEDIUM RISK";
     riskColor = "text-amber-400";
     riskBg = "bg-amber-500/10";
     riskBorder = "border-amber-500/30";
     lossPct = (8.0 + (totalScore - 4.0) * 4.2).toFixed(1);
     stressFraction = 0.35 + (totalScore - 4.0) * 0.08;
   } else {
-    riskLabel = "HIGH RISK (CRITICAL)";
+    riskLabel = currentLang === "es" ? "ALTO RIESGO (CRÍTICO)" : "HIGH RISK (CRITICAL)";
     riskColor = "text-rose-400";
     riskBg = "bg-rose-500/10";
     riskBorder = "border-rose-500/30";
@@ -419,7 +584,7 @@ function triggerAIInference() {
 }
 
 // =============================================================================
-// 6. RUNGE-KUTTA 4TH ORDER DECADAL ODE SIMULATION
+// 7. RUNGE-KUTTA 4TH ORDER DECADAL ODE SIMULATION
 // =============================================================================
 function triggerODESimulation() {
   const deltaWarming = parseFloat(document.getElementById("slider-ode-warming").value);
@@ -428,14 +593,14 @@ function triggerODESimulation() {
   const herbivoryG = parseFloat(document.getElementById("slider-ode-herb").value);
 
   // Mumby ODE Parameters
-  const r = 0.45; // Coral growth rate
-  const d0 = 0.08; // Baseline coral natural mortality
-  const a = 0.18; // Macroalgal overgrowth rate on live coral
-  const gamma = 0.22; // Macroalgal colonization rate on turf
+  const r = 0.45;
+  const d0 = 0.08;
+  const a = 0.18;
+  const gamma = 0.22;
 
-  let C = 0.32; // Initial Coral (32%)
-  let M = 0.22; // Initial Macroalgae (22%)
-  const dt = 0.25; // 3-month integration step
+  let C = 0.32;
+  let M = 0.22;
+  const dt = 0.25;
   const totalYears = 25;
   const steps = Math.floor(totalYears / dt);
 
@@ -446,11 +611,9 @@ function triggerODESimulation() {
   for (let step = 1; step <= steps; step++) {
     const t = step * dt;
 
-    // Warming-induced excess mortality
     const netHeatStress = Math.max(0.0, (deltaWarming * (t / 25.0)) - hardeningBonus);
     const dEff = d0 + netHeatStress * 0.05;
 
-    // Runge-Kutta 4th Order Derivatives
     const derive = (cVal, mVal) => {
       const cSafe = Math.max(0, Math.min(1, cVal));
       const mSafe = Math.max(0, Math.min(1, mVal));
@@ -470,7 +633,6 @@ function triggerODESimulation() {
     M = Math.max(0.01, Math.min(0.95, M + (dt / 6.0) * (k1.dM + 2 * k2.dM + 2 * k3.dM + k4.dM)));
     const T = Math.max(0.0, 1.0 - C - M);
 
-    // Sample annually
     if (step % 4 === 0) {
       coralSeries.push(C * 100);
       macroSeries.push(M * 100);
@@ -490,27 +652,45 @@ function triggerODESimulation() {
   const finalCoral = coralSeries[coralSeries.length - 1];
   const accretion = (finalCoral * 0.18 - 1.5).toFixed(2);
   const accSign = accretion > 0 ? "+" : "";
-  document.getElementById("ode-outcome-cover").innerText = `${finalCoral.toFixed(1)}% [Net Carbonate Accretion: ${accSign}${accretion} kg/m²/yr]`;
+  const accretionText = currentLang === "es" ? `Acreción de Carbonato: ${accSign}${accretion} kg/m²/año` : `Accretion: ${accSign}${accretion} kg/m²/yr`;
+  document.getElementById("ode-outcome-cover").innerText = `${finalCoral.toFixed(1)}% [${accretionText}]`;
 }
 
 // =============================================================================
-// 7. SPATIAL RESTORATION PRIORITY TABLE & GEOJSON EXPORTER
+// 8. SPATIAL RESTORATION PRIORITY TABLE & GEOJSON EXPORTER
 // =============================================================================
 function populateTable(stations) {
   const tbody = document.getElementById("srpi-table-body");
   tbody.innerHTML = "";
+  const dict = I18N[currentLang];
 
   stations.forEach(st => {
     const tr = document.createElement("tr");
     tr.className = "hover:bg-slate-800/40 transition cursor-pointer";
 
-    const riskBadge = st.risk === "Low" 
-      ? '<span class="text-emerald-400 font-bold">● Low</span>'
-      : (st.risk === "Medium" ? '<span class="text-amber-400 font-bold">● Medium</span>' : '<span class="text-rose-400 font-bold">● High</span>');
+    let riskText, riskClass;
+    if (st.risk === "Low") {
+      riskText = dict.riskLow;
+      riskClass = "text-emerald-400";
+    } else if (st.risk === "Medium") {
+      riskText = dict.riskMed;
+      riskClass = "text-amber-400";
+    } else {
+      riskText = dict.riskHigh;
+      riskClass = "text-rose-400";
+    }
 
-    const tierBadge = st.tier.includes("Tier 1")
-      ? '<span class="px-2 py-0.5 rounded text-[10px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Tier 1: Outplanting</span>'
-      : (st.tier.includes("Tier 2") ? '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Tier 2: Marine Reserve</span>' : '<span class="px-2 py-0.5 rounded text-[10px] bg-rose-500/20 text-rose-300 border border-rose-500/30">Tier 3: Thermal Risk</span>');
+    let tierText, tierClass;
+    if (st.tier.includes("Tier 1")) {
+      tierText = currentLang === "es" ? "Tier 1: Siembra Activa" : "Tier 1: Outplanting";
+      tierClass = "bg-cyan-500/20 text-cyan-300 border-cyan-500/30";
+    } else if (st.tier.includes("Tier 2")) {
+      tierText = currentLang === "es" ? "Tier 2: Reserva Marina" : "Tier 2: Marine Reserve";
+      tierClass = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+    } else {
+      tierText = currentLang === "es" ? "Tier 3: Riesgo Térmico" : "Tier 3: Thermal Risk";
+      tierClass = "bg-rose-500/20 text-rose-300 border-rose-500/30";
+    }
 
     tr.innerHTML = `
       <td class="py-2.5 px-4 font-semibold text-slate-200">${st.name}</td>
@@ -518,11 +698,11 @@ function populateTable(stations) {
       <td class="py-2.5 px-4 text-cyan-300 font-bold">${st.cover.toFixed(1)}%</td>
       <td class="py-2.5 px-4 text-amber-400">${st.dhw.toFixed(1)}</td>
       <td class="py-2.5 px-4 text-teal-300">${st.ph.toFixed(2)}</td>
-      <td class="py-2.5 px-4">${riskBadge}</td>
-      <td class="py-2.5 px-4">${tierBadge}</td>
+      <td class="py-2.5 px-4"><span class="${riskClass} font-bold">● ${riskText}</span></td>
+      <td class="py-2.5 px-4"><span class="px-2 py-0.5 rounded text-[10px] border ${tierClass}">${tierText}</span></td>
       <td class="py-2.5 px-4 text-right">
         <button class="px-2 py-1 text-[10px] rounded bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-cyan-300 border border-slate-700 transition" onclick='selectStationById("${st.id}")'>
-          <i class="fa-solid fa-crosshairs mr-1"></i> Inspect
+          <i class="fa-solid fa-crosshairs mr-1"></i> ${dict.btnInspect}
         </button>
       </td>
     `;
@@ -575,7 +755,7 @@ function exportGeoJSON() {
 }
 
 // =============================================================================
-// 8. EVENT LISTENERS
+// 9. EVENT LISTENERS
 // =============================================================================
 function bindEvents() {
   // Sliders AI

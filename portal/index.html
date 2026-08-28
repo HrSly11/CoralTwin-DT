@@ -68,7 +68,7 @@
             </h1>
             <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">v1.0.0 (TRL 6/7)</span>
           </div>
-          <p class="text-xs text-slate-400">Cyber-Physical Marine Digital Twin Command Center</p>
+          <p class="text-xs text-slate-400" data-i18n="appSubtitle">Cyber-Physical Marine Digital Twin Command Center</p>
         </div>
       </div>
 
@@ -77,12 +77,12 @@
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           <span class="text-slate-300">NOAA CRW 5km:</span>
-          <span class="text-emerald-400 font-bold">ONLINE</span>
+          <span class="text-emerald-400 font-bold" data-i18n="statusOnline">ONLINE</span>
         </div>
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700">
           <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
           <span class="text-slate-300">Sentinel-2 (10m):</span>
-          <span class="text-cyan-400 font-bold">SYNCHRONIZED</span>
+          <span class="text-cyan-400 font-bold" data-i18n="statusSync">SYNCHRONIZED</span>
         </div>
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700">
           <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -91,10 +91,16 @@
         </div>
       </div>
 
-      <!-- Action Button -->
+      <!-- Controls: Language Switcher & Export -->
       <div class="flex items-center gap-3">
+        <!-- Language Switcher Toggle -->
+        <div class="flex items-center gap-1 bg-slate-800 border border-slate-700 rounded-lg p-0.5 font-mono text-xs shadow-inner">
+          <button id="lang-btn-en" class="px-2.5 py-1 rounded font-bold transition text-slate-950 bg-cyan-400" onclick="setLanguage('en')">EN</button>
+          <button id="lang-btn-es" class="px-2.5 py-1 rounded font-bold transition text-slate-400 hover:text-slate-200" onclick="setLanguage('es')">ES</button>
+        </div>
+
         <button id="btn-export-geojson" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition flex items-center gap-2 shadow-md shadow-cyan-500/20">
-          <i class="fa-solid fa-download"></i> Export GeoJSON
+          <i class="fa-solid fa-download"></i> <span data-i18n="btnExport">Export GeoJSON</span>
         </button>
       </div>
 
@@ -111,29 +117,29 @@
       <div class="glass-panel p-4 flex items-center gap-4">
         <div class="p-3 rounded-lg bg-cyan-500/10 text-cyan-400 text-2xl"><i class="fa-solid fa-map-location-dot"></i></div>
         <div>
-          <div class="text-2xl font-bold font-mono text-cyan-300">30 Stations</div>
-          <div class="text-xs text-slate-400 uppercase tracking-wider">5 Global Ocean Basins</div>
+          <div class="text-2xl font-bold font-mono text-cyan-300" data-i18n="kpi1Val">30 Stations</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider" data-i18n="kpi1Label">5 Global Ocean Basins</div>
         </div>
       </div>
       <div class="glass-panel p-4 flex items-center gap-4">
         <div class="p-3 rounded-lg bg-teal-500/10 text-teal-400 text-2xl"><i class="fa-solid fa-brain"></i></div>
         <div>
           <div class="text-2xl font-bold font-mono text-teal-300">98.85%</div>
-          <div class="text-xs text-slate-400 uppercase tracking-wider">XGBoost ML Accuracy</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider" data-i18n="kpi2Label">XGBoost ML Accuracy</div>
         </div>
       </div>
       <div class="glass-panel p-4 flex items-center gap-4">
         <div class="p-3 rounded-lg bg-amber-500/10 text-amber-400 text-2xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
         <div>
           <div class="text-2xl font-bold font-mono text-amber-300">5.8 DHW</div>
-          <div class="text-xs text-slate-400 uppercase tracking-wider">Acidification Tipping Pt</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider" data-i18n="kpi3Label">Acidification Tipping Pt</div>
         </div>
       </div>
       <div class="glass-panel p-4 flex items-center gap-4">
         <div class="p-3 rounded-lg bg-emerald-500/10 text-emerald-400 text-2xl"><i class="fa-solid fa-seedling"></i></div>
         <div>
           <div class="text-2xl font-bold font-mono text-emerald-300">46.2%</div>
-          <div class="text-xs text-slate-400 uppercase tracking-wider">2050 Restored Live Cover</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider" data-i18n="kpi4Label">2050 Restored Live Cover</div>
         </div>
       </div>
     </section>
@@ -146,21 +152,21 @@
         <div class="flex items-center justify-between mb-3">
           <div>
             <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
-              <i class="fa-solid fa-earth-americas text-cyan-400"></i> Global Oceanographic Telemetry Map
+              <i class="fa-solid fa-earth-americas text-cyan-400"></i> <span data-i18n="mapTitle">Global Oceanographic Telemetry Map</span>
             </h2>
-            <p class="text-xs text-slate-400">NOAA CRW 5km Satellite Thermal Grids & Sentinel-2 MSI Multi-Basin Ingestion</p>
+            <p class="text-xs text-slate-400" data-i18n="mapSubtitle">NOAA CRW 5km Satellite Thermal Grids & Sentinel-2 MSI Multi-Basin Ingestion</p>
           </div>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Low Risk</span>
-            <span class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Med Risk</span>
-            <span class="px-2 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">High Risk</span>
+          <div class="flex items-center gap-2 text-xs font-mono">
+            <span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" data-i18n="riskLow">Low Risk</span>
+            <span class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30" data-i18n="riskMed">Med Risk</span>
+            <span class="px-2 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30" data-i18n="riskHigh">High Risk</span>
           </div>
         </div>
 
         <div id="leaflet-map" class="w-full h-80 rounded-lg overflow-hidden border border-slate-700/60 z-10 shadow-inner"></div>
 
         <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
-          <span>Click any reef station on the map or select below:</span>
+          <span data-i18n="mapInstruction">Click any reef station on the map or select below:</span>
           <select id="station-selector" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-cyan-500 outline-none">
             <!-- Populated via JS -->
           </select>
@@ -172,9 +178,9 @@
         <div class="flex items-center justify-between mb-2">
           <div>
             <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
-              <i class="fa-solid fa-cube text-teal-400"></i> 3D WebGL Digital Twin Colony
+              <i class="fa-solid fa-cube text-teal-400"></i> <span data-i18n="coral3dTitle">3D WebGL Digital Twin Colony</span>
             </h2>
-            <p class="text-xs text-slate-400">Real-Time Procedural Biophysical Bleaching Shader</p>
+            <p class="text-xs text-slate-400" data-i18n="coral3dSubtitle">Real-Time Procedural Biophysical Bleaching Shader</p>
           </div>
           <span id="coral-health-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
             HEALTHY SYMBIONTS
@@ -184,7 +190,7 @@
         <!-- ThreeJS WebGL Canvas Container -->
         <div id="coral3d-canvas-container" class="relative">
           <div class="absolute bottom-2 left-2 text-[10px] text-slate-400 bg-slate-900/80 px-2 py-1 rounded pointer-events-none backdrop-blur-sm">
-            <i class="fa-solid fa-hand-pointer mr-1"></i> Drag to Rotate | Scroll to Zoom
+            <i class="fa-solid fa-hand-pointer mr-1"></i> <span data-i18n="coral3dHelp">Drag to Rotate | Scroll to Zoom</span>
           </div>
         </div>
 
@@ -216,9 +222,9 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
-              <i class="fa-solid fa-microchip text-cyan-400"></i> Real-Time AI Prediction Engine
+              <i class="fa-solid fa-microchip text-cyan-400"></i> <span data-i18n="aiTitle">Real-Time AI Prediction Engine</span>
             </h2>
-            <p class="text-xs text-slate-400">XGBoost Regularized Model with Sub-Millisecond Inference</p>
+            <p class="text-xs text-slate-400" data-i18n="aiSubtitle">XGBoost Regularized Model with Sub-Millisecond Inference</p>
           </div>
           <span class="text-xs font-mono text-cyan-300 bg-cyan-950/60 px-2 py-1 rounded border border-cyan-800">5-Fold Spatial CV</span>
         </div>
@@ -227,7 +233,7 @@
         <div class="space-y-3 text-xs mb-4">
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-slate-300 font-medium"><i class="fa-solid fa-temperature-high text-rose-400 mr-1"></i> Sea Surface Temperature (SST):</span>
+              <span class="text-slate-300 font-medium"><i class="fa-solid fa-temperature-high text-rose-400 mr-1"></i> <span data-i18n="labelSST">Sea Surface Temperature (SST):</span></span>
               <span id="val-sst" class="font-mono text-cyan-300 font-bold">29.5 °C</span>
             </div>
             <input id="slider-sst" type="range" min="24.0" max="34.0" step="0.1" value="29.5">
@@ -235,7 +241,7 @@
 
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-slate-300 font-medium"><i class="fa-solid fa-fire text-amber-400 mr-1"></i> Degree Heating Weeks (DHW):</span>
+              <span class="text-slate-300 font-medium"><i class="fa-solid fa-fire text-amber-400 mr-1"></i> <span data-i18n="labelDHW">Degree Heating Weeks (DHW):</span></span>
               <span id="val-dhw" class="font-mono text-amber-400 font-bold">6.5 °C-weeks</span>
             </div>
             <input id="slider-dhw" type="range" min="0.0" max="20.0" step="0.2" value="6.5">
@@ -243,7 +249,7 @@
 
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-slate-300 font-medium"><i class="fa-solid fa-vial text-teal-400 mr-1"></i> Seawater pH (Total Scale):</span>
+              <span class="text-slate-300 font-medium"><i class="fa-solid fa-vial text-teal-400 mr-1"></i> <span data-i18n="labelPH">Seawater pH (Total Scale):</span></span>
               <span id="val-ph" class="font-mono text-teal-300 font-bold">8.05</span>
             </div>
             <input id="slider-ph" type="range" min="7.60" max="8.30" step="0.02" value="8.05">
@@ -251,7 +257,7 @@
 
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-slate-300 font-medium"><i class="fa-solid fa-water text-cyan-400 mr-1"></i> Optical Turbidity (Kd490 / NTU):</span>
+              <span class="text-slate-300 font-medium"><i class="fa-solid fa-water text-cyan-400 mr-1"></i> <span data-i18n="labelTurb">Optical Turbidity (Kd490 / NTU):</span></span>
               <span id="val-turb" class="font-mono text-cyan-300 font-bold">1.20 NTU</span>
             </div>
             <input id="slider-turb" type="range" min="0.1" max="8.0" step="0.1" value="1.20">
@@ -261,11 +267,11 @@
         <!-- Real-Time AI Output Cards -->
         <div class="grid grid-cols-2 gap-3 mb-4">
           <div id="card-risk" class="p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 text-center transition">
-            <div class="text-[10px] text-slate-400 uppercase font-mono">Predicted Bleaching Risk</div>
+            <div class="text-[10px] text-slate-400 uppercase font-mono" data-i18n="riskHeader">Predicted Bleaching Risk</div>
             <div id="out-risk-label" class="text-lg font-bold text-amber-300 font-mono mt-0.5">MEDIUM RISK</div>
           </div>
           <div class="p-3 rounded-lg border border-rose-500/30 bg-rose-500/10 text-center">
-            <div class="text-[10px] text-slate-400 uppercase font-mono">Estimated Coral Cover Loss</div>
+            <div class="text-[10px] text-slate-400 uppercase font-mono" data-i18n="lossHeader">Estimated Coral Cover Loss</div>
             <div id="out-loss-pct" class="text-lg font-bold text-rose-400 font-mono mt-0.5">-12.4%</div>
           </div>
         </div>
@@ -273,7 +279,7 @@
         <!-- TreeSHAP Explainability Bar Chart -->
         <div>
           <div class="text-xs font-semibold text-slate-300 mb-2 flex items-center justify-between">
-            <span><i class="fa-solid fa-chart-bar text-cyan-400 mr-1"></i> TreeSHAP Marginal Feature Attribution</span>
+            <span><i class="fa-solid fa-chart-bar text-cyan-400 mr-1"></i> <span data-i18n="shapTitle">TreeSHAP Marginal Feature Attribution</span></span>
             <span class="text-[10px] text-slate-400 font-mono">Exact Polynomial Shapley</span>
           </div>
           <div class="h-32 w-full">
@@ -287,9 +293,9 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
-              <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i> Decadal Forward Sandbox (2025–2050)
+              <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i> <span data-i18n="odeTitle">Decadal Forward Sandbox (2025–2050)</span>
             </h2>
-            <p class="text-xs text-slate-400">Coupled Non-Linear Mumby Differential Equations (Runge-Kutta 4th Order)</p>
+            <p class="text-xs text-slate-400" data-i18n="odeSubtitle">Coupled Non-Linear Mumby Differential Equations (Runge-Kutta 4th Order)</p>
           </div>
           <span class="text-xs font-mono text-emerald-300 bg-emerald-950/60 px-2 py-1 rounded border border-emerald-800">ODE Solver (RK45)</span>
         </div>
@@ -298,28 +304,28 @@
         <div class="grid grid-cols-2 gap-3 text-xs mb-3">
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-slate-300">Warming Rate:</span>
+              <span class="text-slate-300" data-i18n="odeWarming">Warming Rate:</span>
               <span id="val-ode-warming" class="font-mono text-rose-400 font-bold">+1.8 °C</span>
             </div>
             <input id="slider-ode-warming" type="range" min="0.5" max="3.5" step="0.1" value="1.8">
           </div>
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-slate-300">Outplanting Rate:</span>
+              <span class="text-slate-300" data-i18n="odeOutplant">Outplanting Rate:</span>
               <span id="val-ode-outplant" class="font-mono text-cyan-300 font-bold">3.5 %/yr</span>
             </div>
             <input id="slider-ode-outplant" type="range" min="0.0" max="8.0" step="0.5" value="3.5">
           </div>
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-slate-300">Hardening Bonus:</span>
+              <span class="text-slate-300" data-i18n="odeHardening">Hardening Bonus:</span>
               <span id="val-ode-hard" class="font-mono text-teal-300 font-bold">+2.0 °C</span>
             </div>
             <input id="slider-ode-hard" type="range" min="0.0" max="2.5" step="0.5" value="2.0">
           </div>
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-slate-300">MPA Grazing (g):</span>
+              <span class="text-slate-300" data-i18n="odeHerbivory">MPA Grazing (g):</span>
               <span id="val-ode-herb" class="font-mono text-emerald-300 font-bold">0.65 /yr</span>
             </div>
             <input id="slider-ode-herb" type="range" min="0.10" max="0.85" step="0.05" value="0.65">
@@ -333,7 +339,7 @@
 
         <!-- Result Summary Ticker -->
         <div class="flex items-center justify-between text-xs font-mono bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
-          <span class="text-slate-400">2050 Projected Live Coral Cover:</span>
+          <span class="text-slate-400" data-i18n="odeCoverResult">2050 Projected Live Coral Cover:</span>
           <span id="ode-outcome-cover" class="text-cyan-300 font-bold text-sm">46.2% [Accretion: +6.8 kg/m²/yr]</span>
         </div>
 
@@ -346,17 +352,17 @@
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <div>
           <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
-            <i class="fa-solid fa-list-check text-cyan-400"></i> Spatial Restoration Priority Index (SRPI) Decision Matrix
+            <i class="fa-solid fa-list-check text-cyan-400"></i> <span data-i18n="srpiTitle">Spatial Restoration Priority Index (SRPI) Decision Matrix</span>
           </h2>
-          <p class="text-xs text-slate-400">Multi-Criteria Hydrodynamic Refugia Ranking & Open RFC-7946 GeoJSON Layers</p>
+          <p class="text-xs text-slate-400" data-i18n="srpiSubtitle">Multi-Criteria Hydrodynamic Refugia Ranking & Open RFC-7946 GeoJSON Layers</p>
         </div>
 
         <!-- Filters -->
-        <div class="flex items-center gap-2">
-          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-cyan-500 text-slate-950 font-bold active" data-tier="ALL">All Stations</button>
-          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 1">Tier 1: Outplanting</button>
-          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 2">Tier 2: Marine Reserve</button>
-          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 3">Tier 3: Thermal Risk</button>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-cyan-500 text-slate-950 font-bold active" data-tier="ALL" data-i18n="filterAll">All Stations</button>
+          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 1" data-i18n="filterTier1">Tier 1: Outplanting</button>
+          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 2" data-i18n="filterTier2">Tier 2: Marine Reserve</button>
+          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 3" data-i18n="filterTier3">Tier 3: Thermal Risk</button>
         </div>
       </div>
 
@@ -365,14 +371,14 @@
         <table class="w-full text-left text-xs text-slate-300">
           <thead class="bg-slate-900 text-slate-400 font-mono uppercase text-[10px] border-b border-slate-800">
             <tr>
-              <th class="py-2.5 px-4">Station Name</th>
-              <th class="py-2.5 px-4">Region / Basin</th>
-              <th class="py-2.5 px-4">Live Cover (%)</th>
+              <th class="py-2.5 px-4" data-i18n="thStation">Station Name</th>
+              <th class="py-2.5 px-4" data-i18n="thRegion">Region / Basin</th>
+              <th class="py-2.5 px-4" data-i18n="thCover">Live Cover (%)</th>
               <th class="py-2.5 px-4">Max DHW</th>
               <th class="py-2.5 px-4">Seawater pH</th>
-              <th class="py-2.5 px-4">Risk Status</th>
-              <th class="py-2.5 px-4">Management Priority Tier</th>
-              <th class="py-2.5 px-4 text-right">Action</th>
+              <th class="py-2.5 px-4" data-i18n="thRisk">Risk Status</th>
+              <th class="py-2.5 px-4" data-i18n="thTier">Management Priority Tier</th>
+              <th class="py-2.5 px-4 text-right" data-i18n="thAction">Action</th>
             </tr>
           </thead>
           <tbody id="srpi-table-body" class="divide-y divide-slate-800/60 font-mono">
@@ -396,7 +402,7 @@
         <span>•</span>
         <span>License: MIT</span>
       </div>
-      <div class="text-right italic text-slate-500">
+      <div class="text-right italic text-slate-500" data-i18n="footerAttribution">
         Scientific Attribution: Resultado obtenido mediante prototipo computacional del gemelo digital.
       </div>
     </div>
