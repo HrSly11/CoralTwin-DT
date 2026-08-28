@@ -588,87 +588,165 @@ function populateStationSelector() {
 }
 
 // =============================================================================
-// 6. THREE.JS 3D PROCEDURAL CORAL DIGITAL TWIN
+// 6. THREE.JS 3D HIGH-RESOLUTION ORGANIC CORAL DIGITAL TWIN
 // =============================================================================
+let planktonParticles;
+
 function initThreeJSCoral() {
   const container = document.getElementById("coral3d-canvas-container");
-  const width = container.clientWidth;
-  const height = container.clientHeight;
+  const width = container.clientWidth || 500;
+  const height = container.clientHeight || 280;
 
   threeScene = new THREE.Scene();
-  threeCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-  threeCamera.position.set(0, 4, 9);
+  threeCamera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+  threeCamera.position.set(0, 3.2, 7.8);
 
   threeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   threeRenderer.setSize(width, height);
   threeRenderer.setPixelRatio(window.devicePixelRatio);
+  threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  threeRenderer.toneMappingExposure = 1.1;
   container.appendChild(threeRenderer.domElement);
 
-  // Lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+  // Deep Underwater Lighting
+  const ambientLight = new THREE.AmbientLight(0xdcf8c6, 0.7);
   threeScene.add(ambientLight);
 
-  const dirLight1 = new THREE.DirectionalLight(0x38BDF8, 1.2);
-  dirLight1.position.set(5, 10, 7);
-  threeScene.add(dirLight1);
+  const sunLight = new THREE.DirectionalLight(0x38bdf8, 1.3);
+  sunLight.position.set(6, 12, 6);
+  threeScene.add(sunLight);
 
-  const dirLight2 = new THREE.DirectionalLight(0x10B981, 0.6);
-  dirLight2.position.set(-5, -2, -5);
-  threeScene.add(dirLight2);
+  const bounceLight = new THREE.DirectionalLight(0x10b981, 0.5);
+  bounceLight.position.set(-5, -4, -5);
+  threeScene.add(bounceLight);
 
-  // Procedural Coral Group
+  const innerLight = new THREE.PointLight(0x5eead4, 0.8, 6);
+  innerLight.position.set(0, 1.2, 0);
+  threeScene.add(innerLight);
+
   coralMesh = new THREE.Group();
 
-  // Create Branching Coral Geometry
+  // High-Quality Subsurface-Simulating Material
   coralMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(0x3D7E50),
-    roughness: 0.6,
-    metalness: 0.1
+    color: new THREE.Color(0x3D7E50), // Healthy Symbiodiniaceae Golden Green
+    roughness: 0.82,
+    metalness: 0.05,
+    flatShading: false
   });
 
-  // Base Dome
-  const baseGeom = new THREE.SphereGeometry(1.2, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-  const baseMesh = new THREE.Mesh(baseGeom, coralMaterial);
-  coralMesh.add(baseMesh);
+  // 1. Organic Base Carbonate Rock (Reef Substrate)
+  const rockGeom = new THREE.DodecahedronGeometry(1.4, 2);
+  const pos = rockGeom.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const vx = pos.getX(i);
+    const vy = pos.getY(i);
+    const vz = pos.getZ(i);
+    const noise = 1.0 + (Math.sin(vx * 3.0) + Math.cos(vz * 3.0)) * 0.08;
+    pos.setXYZ(i, vx * noise, Math.min(0.4, vy * 0.6), vz * noise);
+  }
+  rockGeom.computeVertexNormals();
+  const rockMesh = new THREE.Mesh(rockGeom, coralMaterial);
+  rockMesh.position.set(0, -0.2, 0);
+  coralMesh.add(rockMesh);
 
-  // Branches
-  const numBranches = 24;
-  for (let i = 0; i < numBranches; i++) {
-    const phi = Math.acos(-1 + (2 * i) / numBranches);
-    const theta = Math.sqrt(numBranches * Math.PI) * phi;
+  // 2. High-Resolution Branching Splines (Acropora Staghorn Morphology)
+  const numMainBranches = 14;
+  for (let i = 0; i < numMainBranches; i++) {
+    const angle = (i / numMainBranches) * Math.PI * 2 + ((i % 3) * 0.15);
+    const spread = 0.7 + (i % 3) * 0.25;
+    const height = 1.8 + (i % 4) * 0.35;
 
-    const branchHeight = 1.0 + Math.random() * 1.5;
-    const branchGeom = new THREE.CylinderGeometry(0.12, 0.22, branchHeight, 8);
-    const branch = new THREE.Mesh(branchGeom, coralMaterial);
+    const p0 = new THREE.Vector3(Math.cos(angle) * 0.2, 0.1, Math.sin(angle) * 0.2);
+    const p1 = new THREE.Vector3(Math.cos(angle) * spread * 0.45, height * 0.4, Math.sin(angle) * spread * 0.45);
+    const p2 = new THREE.Vector3(Math.cos(angle + 0.1) * spread * 0.85, height * 0.75, Math.sin(angle + 0.1) * spread * 0.85);
+    const p3 = new THREE.Vector3(Math.cos(angle) * (spread + 0.2), height, Math.sin(angle) * (spread + 0.2));
 
-    const x = Math.sin(phi) * Math.cos(theta) * 0.9;
-    const z = Math.sin(phi) * Math.sin(theta) * 0.9;
-    const y = Math.abs(Math.cos(phi)) * 0.6;
+    const curve = new THREE.CatmullRomCurve3([p0, p1, p2, p3]);
+    const branchGeom = new THREE.TubeGeometry(curve, 28, 0.14, 16, false);
+    const branchMesh = new THREE.Mesh(branchGeom, coralMaterial);
+    coralMesh.add(branchMesh);
 
-    branch.position.set(x, y + branchHeight / 2, z);
-    branch.lookAt(new THREE.Vector3(x * 2, y * 2 + branchHeight, z * 2));
-    coralMesh.add(branch);
+    // Apical Axial Polyp at Tip
+    const tipGeom = new THREE.SphereGeometry(0.13, 16, 16);
+    const tipMesh = new THREE.Mesh(tipGeom, coralMaterial);
+    tipMesh.position.copy(p3);
+    coralMesh.add(tipMesh);
 
-    // Polyp tip
-    const tipGeom = new THREE.SphereGeometry(0.2, 8, 8);
-    const tip = new THREE.Mesh(tipGeom, coralMaterial);
-    tip.position.set(x * 1.6, y + branchHeight, z * 1.6);
-    coralMesh.add(tip);
+    // Radial Corallites (Pólipos incrustados en la corteza)
+    for (let c = 1; c <= 5; c++) {
+      const u = c / 6.0;
+      const point = curve.getPoint(u);
+      const tangent = curve.getTangent(u);
+      
+      const normal = new THREE.Vector3(Math.cos(angle + c), 0.2, Math.sin(angle + c)).normalize();
+      const coralliteGeom = new THREE.ConeGeometry(0.05, 0.12, 10);
+      const corallite = new THREE.Mesh(coralliteGeom, coralMaterial);
+      corallite.position.copy(point).add(normal.clone().multiplyScalar(0.12));
+      corallite.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+      coralMesh.add(corallite);
+    }
+
+    // Secondary Bifurcation (Brote secundario)
+    if (i % 2 === 0) {
+      const subP0 = curve.getPoint(0.55);
+      const subAngle = angle + 0.55;
+      const subP1 = subP0.clone().add(new THREE.Vector3(Math.cos(subAngle) * 0.4, 0.45, Math.sin(subAngle) * 0.4));
+      const subCurve = new THREE.CatmullRomCurve3([subP0, subP1]);
+      const subGeom = new THREE.TubeGeometry(subCurve, 12, 0.09, 12, false);
+      const subMesh = new THREE.Mesh(subGeom, coralMaterial);
+      coralMesh.add(subMesh);
+
+      const subTip = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 12), coralMaterial);
+      subTip.position.copy(subP1);
+      coralMesh.add(subTip);
+    }
   }
 
   threeScene.add(coralMesh);
+
+  // 3. Floating Marine Plankton Particles in Water Column
+  const planktonCount = 45;
+  const planktonGeom = new THREE.BufferGeometry();
+  const planktonPos = new Float32Array(planktonCount * 3);
+  for (let p = 0; p < planktonCount * 3; p += 3) {
+    planktonPos[p] = (Math.random() - 0.5) * 6;
+    planktonPos[p + 1] = Math.random() * 4 - 0.5;
+    planktonPos[p + 2] = (Math.random() - 0.5) * 6;
+  }
+  planktonGeom.setAttribute("position", new THREE.BufferAttribute(planktonPos, 3));
+  const planktonMat = new THREE.PointsMaterial({
+    color: 0x6fffe9,
+    size: 0.04,
+    transparent: true,
+    opacity: 0.65
+  });
+  planktonParticles = new THREE.Points(planktonGeom, planktonMat);
+  threeScene.add(planktonParticles);
 
   // Orbit Controls
   const controls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
   controls.autoRotate = true;
-  controls.autoRotateSpeed = 1.2;
+  controls.autoRotateSpeed = 1.0;
+  controls.minDistance = 4.0;
+  controls.maxDistance = 14.0;
 
   // Animation Loop
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
+
+    // Drift plankton gently
+    if (planktonParticles) {
+      const pPositions = planktonParticles.geometry.attributes.position.array;
+      for (let i = 1; i < pPositions.length; i += 3) {
+        pPositions[i] += 0.003;
+        if (pPositions[i] > 3.5) pPositions[i] = -0.5;
+      }
+      planktonParticles.geometry.attributes.position.needsUpdate = true;
+    }
+
     threeRenderer.render(threeScene, threeCamera);
   }
   animate();
