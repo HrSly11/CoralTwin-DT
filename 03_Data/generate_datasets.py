@@ -214,8 +214,8 @@ def build_harmonized_dataset(n_samples=12500):
             lat_jitter = st["lat"] + np.random.uniform(-0.015, 0.015)
             lon_jitter = st["lon"] + np.random.uniform(-0.015, 0.015)
 
-            # Flag real vs simulated
-            data_type = "Real_Observation" if year <= 2021 and np.random.rand() > 0.3 else "Digital_Twin_Simulated"
+            # Every generated row remains simulated; calibration references do not make it observed.
+            data_type = "Digital_Twin_Simulated"
 
             rec_id = len(records) + 1
             records.append({

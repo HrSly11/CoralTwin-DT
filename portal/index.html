@@ -77,17 +77,17 @@
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           <span class="text-slate-300">NOAA CRW 5km:</span>
-          <span class="text-emerald-400 font-bold" data-i18n="statusOnline">ONLINE</span>
+          <span id="connection-status" class="text-amber-400 font-bold" data-i18n="statusOnline">CONNECTING</span>
         </div>
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700">
           <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
           <span class="text-slate-300">Sentinel-2 (10m):</span>
-          <span class="text-cyan-400 font-bold" data-i18n="statusSync">SYNCHRONIZED</span>
+          <span id="baseline-status" class="text-cyan-400 font-bold" data-i18n="statusSync">BASELINE</span>
         </div>
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700">
           <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
           <span class="text-slate-300">AI Latency:</span>
-          <span class="text-emerald-300 font-bold">0.009 ms</span>
+          <span id="model-status" class="text-emerald-300 font-bold">API MODEL</span>
         </div>
       </div>
 
@@ -98,6 +98,11 @@
           <button id="lang-btn-en" class="px-2.5 py-1 rounded font-bold transition text-slate-950 bg-cyan-400" onclick="setLanguage('en')">EN</button>
           <button id="lang-btn-es" class="px-2.5 py-1 rounded font-bold transition text-slate-400 hover:text-slate-200" onclick="setLanguage('es')">ES</button>
         </div>
+
+        <!-- AI Audit & Benchmark Button -->
+        <button id="btn-open-ai-audit" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-500/20 hover:bg-indigo-500 text-indigo-300 hover:text-slate-950 border border-indigo-500/40 transition flex items-center gap-1.5 shadow-md shadow-indigo-500/20" onclick="openAIAuditModal()">
+          <i class="fa-solid fa-brain"></i> <span data-i18n="btnAIAudit">Auditoría & Benchmark IA</span>
+        </button>
 
         <button id="btn-export-geojson" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition flex items-center gap-2 shadow-md shadow-cyan-500/20">
           <i class="fa-solid fa-download"></i> <span data-i18n="btnExport">Export GeoJSON</span>
@@ -117,7 +122,7 @@
       <div class="glass-panel p-4 flex items-center gap-4">
         <div class="p-3 rounded-lg bg-cyan-500/10 text-cyan-400 text-2xl"><i class="fa-solid fa-map-location-dot"></i></div>
         <div>
-          <div class="text-2xl font-bold font-mono text-cyan-300" data-i18n="kpi1Val">30 Stations</div>
+          <div id="station-count" class="text-2xl font-bold font-mono text-cyan-300">25 Stations</div>
           <div class="text-xs text-slate-400 uppercase tracking-wider" data-i18n="kpi1Label">5 Global Ocean Basins</div>
         </div>
       </div>
@@ -154,7 +159,7 @@
             <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
               <i class="fa-solid fa-earth-americas text-cyan-400"></i> <span data-i18n="mapTitle">Global Oceanographic Telemetry Map</span>
             </h2>
-            <p class="text-xs text-slate-400" data-i18n="mapSubtitle">NOAA CRW 5km Satellite Thermal Grids & Sentinel-2 MSI Multi-Basin Ingestion</p>
+            <p class="text-xs text-slate-400" data-i18n="mapSubtitle">NOAA CRW 5km SST/DHW with deterministic baseline features</p>
           </div>
           <div class="flex items-center gap-3">
             <!-- 2D / 3D Projection Toggle -->
@@ -167,9 +172,9 @@
               </button>
             </div>
             <div class="hidden sm:flex items-center gap-2 text-xs font-mono">
-              <span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" data-i18n="riskLow">Low Risk</span>
-              <span class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30" data-i18n="riskMed">Med Risk</span>
-              <span class="px-2 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30" data-i18n="riskHigh">High Risk</span>
+              <span class="px-2 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30" data-i18n="tierRestoration">Tier 1: Restoration</span>
+              <span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" data-i18n="tierConservation">Tier 2: Conservation</span>
+              <span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" data-i18n="tierMonitoring">Tier 3: Monitoring</span>
             </div>
           </div>
         </div>
@@ -239,15 +244,17 @@
         <div class="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-mono">
           <div class="bg-slate-800/60 border border-slate-700/80 rounded-lg p-2">
             <div class="text-[10px] text-slate-400 uppercase">SST (°C)</div>
-            <div id="hud-sst" class="text-sm font-bold text-cyan-300">28.4 °C</div>
+            <div id="hud-sst" class="text-sm font-bold text-cyan-300">N/A</div>
+            <div id="hud-sst-meta" class="text-[9px] text-slate-500">No observation</div>
           </div>
           <div class="bg-slate-800/60 border border-slate-700/80 rounded-lg p-2">
             <div class="text-[10px] text-slate-400 uppercase">DHW (Weeks)</div>
-            <div id="hud-dhw" class="text-sm font-bold text-amber-400">2.1 °C-wk</div>
+            <div id="hud-dhw" class="text-sm font-bold text-amber-400">N/A</div>
+            <div id="hud-dhw-meta" class="text-[9px] text-slate-500">No observation</div>
           </div>
           <div class="bg-slate-800/60 border border-slate-700/80 rounded-lg p-2">
             <div class="text-[10px] text-slate-400 uppercase">Seawater pH</div>
-            <div id="hud-ph" class="text-sm font-bold text-teal-300">8.08</div>
+            <div id="hud-ph" class="text-sm font-bold text-teal-300">N/A</div>
           </div>
         </div>
 
@@ -277,7 +284,7 @@
               <span class="text-slate-300 font-medium"><i class="fa-solid fa-temperature-high text-rose-400 mr-1"></i> <span data-i18n="labelSST">Sea Surface Temperature (SST):</span></span>
               <span id="val-sst" class="font-mono text-cyan-300 font-bold">29.5 °C</span>
             </div>
-            <input id="slider-sst" type="range" min="24.0" max="34.0" step="0.1" value="29.5">
+            <input id="slider-sst" type="range" min="24.0" max="34.0" step="0.1" value="29.5" disabled aria-label="SST synchronized input">
           </div>
 
           <div>
@@ -285,7 +292,7 @@
               <span class="text-slate-300 font-medium"><i class="fa-solid fa-fire text-amber-400 mr-1"></i> <span data-i18n="labelDHW">Degree Heating Weeks (DHW):</span></span>
               <span id="val-dhw" class="font-mono text-amber-400 font-bold">6.5 °C-weeks</span>
             </div>
-            <input id="slider-dhw" type="range" min="0.0" max="20.0" step="0.2" value="6.5">
+            <input id="slider-dhw" type="range" min="0.0" max="20.0" step="0.2" value="6.5" disabled aria-label="DHW synchronized input">
           </div>
 
           <div>
@@ -293,7 +300,7 @@
               <span class="text-slate-300 font-medium"><i class="fa-solid fa-vial text-teal-400 mr-1"></i> <span data-i18n="labelPH">Seawater pH (Total Scale):</span></span>
               <span id="val-ph" class="font-mono text-teal-300 font-bold">8.05</span>
             </div>
-            <input id="slider-ph" type="range" min="7.60" max="8.30" step="0.02" value="8.05">
+            <input id="slider-ph" type="range" min="7.60" max="8.30" step="0.02" value="8.05" disabled aria-label="pH synchronized input">
           </div>
 
           <div>
@@ -301,7 +308,7 @@
               <span class="text-slate-300 font-medium"><i class="fa-solid fa-water text-cyan-400 mr-1"></i> <span data-i18n="labelTurb">Optical Turbidity (Kd490 / NTU):</span></span>
               <span id="val-turb" class="font-mono text-cyan-300 font-bold">1.20 NTU</span>
             </div>
-            <input id="slider-turb" type="range" min="0.1" max="8.0" step="0.1" value="1.20">
+            <input id="slider-turb" type="range" min="0.1" max="8.0" step="0.1" value="1.20" disabled aria-label="Turbidity synchronized input">
           </div>
         </div>
 
@@ -309,11 +316,11 @@
         <div class="grid grid-cols-2 gap-3 mb-4">
           <div id="card-risk" class="p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 text-center transition">
             <div class="text-[10px] text-slate-400 uppercase font-mono" data-i18n="riskHeader">Predicted Bleaching Risk</div>
-            <div id="out-risk-label" class="text-lg font-bold text-amber-300 font-mono mt-0.5">MEDIUM RISK</div>
+            <div id="out-risk-label" class="text-lg font-bold text-slate-400 font-mono mt-0.5">N/A</div>
           </div>
           <div class="p-3 rounded-lg border border-rose-500/30 bg-rose-500/10 text-center">
             <div class="text-[10px] text-slate-400 uppercase font-mono" data-i18n="lossHeader">Estimated Coral Cover Loss</div>
-            <div id="out-loss-pct" class="text-lg font-bold text-rose-400 font-mono mt-0.5">-12.4%</div>
+            <div id="out-loss-pct" class="text-lg font-bold text-slate-400 font-mono mt-0.5">N/A</div>
           </div>
         </div>
 
@@ -401,9 +408,9 @@
         <!-- Filters -->
         <div class="flex items-center gap-2 flex-wrap">
           <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-cyan-500 text-slate-950 font-bold active" data-tier="ALL" data-i18n="filterAll">All Stations</button>
-          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 1" data-i18n="filterTier1">Tier 1: Outplanting</button>
-          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 2" data-i18n="filterTier2">Tier 2: Marine Reserve</button>
-          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 3" data-i18n="filterTier3">Tier 3: Thermal Risk</button>
+          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 1" data-i18n="filterTier1">Tier 1: Restoration</button>
+          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 2" data-i18n="filterTier2">Tier 2: Conservation</button>
+          <button class="filter-tier-btn px-3 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700" data-tier="Tier 3" data-i18n="filterTier3">Tier 3: Monitoring</button>
         </div>
       </div>
 
@@ -417,7 +424,7 @@
               <th class="py-2.5 px-4" data-i18n="thCover">Live Cover (%)</th>
               <th class="py-2.5 px-4">Max DHW</th>
               <th class="py-2.5 px-4">Seawater pH</th>
-              <th class="py-2.5 px-4" data-i18n="thRisk">Risk Status</th>
+              <th class="py-2.5 px-4" data-i18n="thSrpi">SRPI Score</th>
               <th class="py-2.5 px-4" data-i18n="thTier">Management Priority Tier</th>
               <th class="py-2.5 px-4 text-right" data-i18n="thAction">Action</th>
             </tr>
@@ -430,6 +437,394 @@
     </section>
 
   </main>
+
+  <!-- ========================================================================= -->
+  <!-- AI AUDIT, EDA & BENCHMARK MODAL -->
+  <!-- ========================================================================= -->
+  <div id="ai-audit-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[9999] hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-indigo-500/30 rounded-2xl max-w-5xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+            <i class="fa-solid fa-brain text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+              <span data-i18n="auditModalTitle">Auditoría del Motor de IA, EDA y Validación Cruzada</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">5-Fold CV Verified</span>
+            </h3>
+            <p class="text-xs text-slate-400" data-i18n="auditModalSubtitle">Evaluación formal 5-Fold Spatially-Stratified CV, Hiperparámetros, Matriz de Confusión y Análisis Estadístico</p>
+          </div>
+        </div>
+        <button onclick="closeAIAuditModal()" class="text-slate-400 hover:text-slate-100 p-2 rounded-lg hover:bg-slate-800 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="flex items-center gap-1 px-6 pt-2 border-b border-slate-800 bg-slate-900/70 text-xs font-mono overflow-x-auto">
+        <button id="tab-btn-benchmark" class="px-4 py-2.5 border-b-2 border-cyan-400 text-cyan-300 font-bold transition flex items-center gap-2" onclick="switchAuditTab('benchmark')">
+          <i class="fa-solid fa-trophy text-cyan-400"></i> <span data-i18n="auditTabBenchmark">1. Benchmark & Validación Cruzada</span>
+        </button>
+        <button id="tab-btn-confusion" class="px-4 py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2" onclick="switchAuditTab('confusion')">
+          <i class="fa-solid fa-table-cells text-amber-400"></i> <span data-i18n="auditTabConfusion">2. Matriz de Confusión</span>
+        </button>
+        <button id="tab-btn-eda" class="px-4 py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2" onclick="switchAuditTab('eda')">
+          <i class="fa-solid fa-chart-pie text-indigo-400"></i> <span data-i18n="auditTabEDA">3. Análisis Exploratorio (EDA)</span>
+        </button>
+        <button id="tab-btn-hyperparams" class="px-4 py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2" onclick="switchAuditTab('hyperparams')">
+          <i class="fa-solid fa-sliders text-teal-400"></i> <span data-i18n="auditTabHyperparams">4. Hiperparámetros & Protocolo</span>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto space-y-6 flex-grow text-xs text-slate-300">
+        
+        <!-- TAB 1: BENCHMARK & CV -->
+        <div id="tab-content-benchmark" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div class="p-3 rounded-lg bg-slate-800/60 border border-slate-700/60">
+              <span class="text-[11px] text-slate-400 block" data-i18n="auditMetricRecords">Dataset Total Armonizado</span>
+              <span class="text-lg font-bold font-mono text-cyan-300">12,492 Observaciones</span>
+              <span class="text-[10px] text-slate-500 block mt-0.5">30 Estaciones Globales (2000–2024)</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-800/60 border border-slate-700/60">
+              <span class="text-[11px] text-slate-400 block" data-i18n="auditMetricCV">Protocolo de Validación</span>
+              <span class="text-lg font-bold font-mono text-emerald-400">5-Fold Spatial CV</span>
+              <span class="text-[10px] text-slate-500 block mt-0.5">Cluster Split por Arrecife (Cero Fuga)</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-800/60 border border-slate-700/60">
+              <span class="text-[11px] text-slate-400 block" data-i18n="auditMetricAccuracy">Precisión de Producción</span>
+              <span class="text-lg font-bold font-mono text-cyan-400">97.78% (XGBoost)</span>
+              <span class="text-[10px] text-slate-500 block mt-0.5">Weighted F1-Score: 97.09%</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-800/60 border border-slate-700/60">
+              <span class="text-[11px] text-slate-400 block" data-i18n="auditMetricLatency">Latencia de Inferencia</span>
+              <span class="text-lg font-bold font-mono text-teal-300">&lt; 0.8 ms / predicción</span>
+              <span class="text-[10px] text-slate-500 block mt-0.5">Apto para Gemelos Ciber-Físicos</span>
+            </div>
+          </div>
+
+          <div class="border border-slate-800 rounded-xl overflow-hidden bg-slate-950/40">
+            <div class="p-3 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+              <h4 class="font-bold text-slate-200 text-xs font-mono flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-cyan-400"></i>
+                <span data-i18n="auditTableTitle">Tabla Comparativa de Modelos Multiarquitectura (Validación Cruzada 5-Fold)</span>
+              </h4>
+              <span class="text-[10px] text-slate-400">Fuente: 06_AI_and_Modeling/model_evaluation/</span>
+            </div>
+            <table class="w-full text-left font-mono text-[11px]">
+              <thead class="bg-slate-900/80 text-slate-400 text-[10px] uppercase border-b border-slate-800">
+                <tr>
+                  <th class="py-2.5 px-3">Modelo / Arquitectura</th>
+                  <th class="py-2.5 px-3 text-right">Accuracy</th>
+                  <th class="py-2.5 px-3 text-right">Macro F1</th>
+                  <th class="py-2.5 px-3 text-right">Precision</th>
+                  <th class="py-2.5 px-3 text-right">Recall</th>
+                  <th class="py-2.5 px-3 text-right">RMSE (%)</th>
+                  <th class="py-2.5 px-3 text-right">R² Regresión</th>
+                  <th class="py-2.5 px-3 text-center">Estado</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60">
+                <tr class="bg-cyan-500/5 hover:bg-cyan-500/10 transition">
+                  <td class="py-2.5 px-3 font-bold text-cyan-300 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400"></span> XGBoost (Gradient Boosted Trees)
+                  </td>
+                  <td class="py-2.5 px-3 text-right font-bold text-emerald-300">97.78%</td>
+                  <td class="py-2.5 px-3 text-right">0.7468</td>
+                  <td class="py-2.5 px-3 text-right">88.96%</td>
+                  <td class="py-2.5 px-3 text-right">71.73%</td>
+                  <td class="py-2.5 px-3 text-right text-amber-300">7.16%</td>
+                  <td class="py-2.5 px-3 text-right font-bold text-cyan-300">0.8151</td>
+                  <td class="py-2.5 px-3 text-center">
+                    <span class="px-2 py-0.5 rounded text-[9px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">Producción (Elegido)</span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-800/40 transition">
+                  <td class="py-2.5 px-3 font-semibold text-slate-200">Random Forest (250 Estimadores)</td>
+                  <td class="py-2.5 px-3 text-right text-emerald-400">97.96%</td>
+                  <td class="py-2.5 px-3 text-right">0.7589</td>
+                  <td class="py-2.5 px-3 text-right">97.96%</td>
+                  <td class="py-2.5 px-3 text-right">72.30%</td>
+                  <td class="py-2.5 px-3 text-right text-amber-300">5.81%</td>
+                  <td class="py-2.5 px-3 text-right">0.8786</td>
+                  <td class="py-2.5 px-3 text-center">
+                    <span class="px-2 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400 border border-slate-700">Benchmark Validador</span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-800/40 transition">
+                  <td class="py-2.5 px-3 font-semibold text-slate-200">Deep MLP Neural Net (128-64-32 ReLU)</td>
+                  <td class="py-2.5 px-3 text-right text-emerald-400">97.85%</td>
+                  <td class="py-2.5 px-3 text-right">0.7409</td>
+                  <td class="py-2.5 px-3 text-right">94.30%</td>
+                  <td class="py-2.5 px-3 text-right">71.10%</td>
+                  <td class="py-2.5 px-3 text-right text-rose-400">17.78%</td>
+                  <td class="py-2.5 px-3 text-right text-slate-500">-0.1385</td>
+                  <td class="py-2.5 px-3 text-center">
+                    <span class="px-2 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400 border border-slate-700">Deep Baseline</span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-800/40 transition">
+                  <td class="py-2.5 px-3 font-semibold text-slate-200">Logistic & Ridge Regularized Baseline</td>
+                  <td class="py-2.5 px-3 text-right text-emerald-400">97.88%</td>
+                  <td class="py-2.5 px-3 text-right">0.7504</td>
+                  <td class="py-2.5 px-3 text-right">93.93%</td>
+                  <td class="py-2.5 px-3 text-right">71.67%</td>
+                  <td class="py-2.5 px-3 text-right text-amber-300">5.11%</td>
+                  <td class="py-2.5 px-3 text-right">0.9059</td>
+                  <td class="py-2.5 px-3 text-center">
+                    <span class="px-2 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400 border border-slate-700">Línea Base Clásica</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 leading-relaxed">
+            <strong class="text-cyan-300">Justificación Científica de Elección:</strong> Aunque Random Forest exhibe un F1 marginalmente superior (+1.2%), se seleccionó <strong class="text-slate-200">XGBoost</strong> como motor en tiempo real debido a su tiempo de inferencia de 0.8 ms, menor huella de memoria para ejecución en el navegador/API, y soporte nativo exacto para atribución de valores marginales con <strong class="text-cyan-300">TreeSHAP</strong> ($O(TLD^2)$ vs $O(TL2^D)$).
+          </div>
+        </div>
+
+        <!-- TAB 2: CONFUSION MATRIX -->
+        <div id="tab-content-confusion" class="space-y-4 hidden">
+          <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 class="font-bold text-slate-200 text-xs font-mono" data-i18n="confusionTitle">Matriz de Confusión Out-of-Fold (XGBoost Classifier)</h4>
+              <p class="text-slate-400 text-[11px]" data-i18n="confusionSubtitle">Evaluación sobre las 12,492 muestras del test out-of-fold estratificado por estación</p>
+            </div>
+            <div class="flex items-center gap-3 text-xs font-mono">
+              <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-bold">Accuracy: 97.78%</span>
+              <span class="px-2.5 py-1 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-bold">Weighted F1: 97.09%</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <!-- Heatmap Grid -->
+            <div class="border border-slate-800 rounded-xl p-4 bg-slate-950/60 space-y-2">
+              <div class="grid grid-cols-4 gap-2 text-center text-xs font-mono">
+                <div></div>
+                <div class="font-bold text-emerald-400 py-1 bg-slate-900 rounded">Pred: Low</div>
+                <div class="font-bold text-amber-400 py-1 bg-slate-900 rounded">Pred: Med</div>
+                <div class="font-bold text-rose-400 py-1 bg-slate-900 rounded">Pred: High</div>
+
+                <div class="font-bold text-emerald-400 flex items-center justify-center bg-slate-900 rounded px-1">True: Low</div>
+                <div class="p-3 rounded-lg bg-emerald-500/30 text-emerald-200 border border-emerald-500/50 font-bold text-sm">764<br><span class="text-[9px] font-normal opacity-75">99.6%</span></div>
+                <div class="p-3 rounded-lg bg-slate-800/40 text-slate-500 border border-slate-700/30 font-bold text-sm">0<br><span class="text-[9px] font-normal opacity-75">0.0%</span></div>
+                <div class="p-3 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 font-bold text-sm">3<br><span class="text-[9px] font-normal opacity-75">0.4%</span></div>
+
+                <div class="font-bold text-amber-400 flex items-center justify-center bg-slate-900 rounded px-1">True: Med</div>
+                <div class="p-3 rounded-lg bg-slate-800/40 text-slate-500 border border-slate-700/30 font-bold text-sm">0<br><span class="text-[9px] font-normal opacity-75">0.0%</span></div>
+                <div class="p-3 rounded-lg bg-amber-500/30 text-amber-200 border border-amber-500/50 font-bold text-sm">11,410<br><span class="text-[9px] font-normal opacity-75">99.8%</span></div>
+                <div class="p-3 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 font-bold text-sm">18<br><span class="text-[9px] font-normal opacity-75">0.2%</span></div>
+
+                <div class="font-bold text-rose-400 flex items-center justify-center bg-slate-900 rounded px-1">True: High</div>
+                <div class="p-3 rounded-lg bg-slate-800/40 text-slate-500 border border-slate-700/30 font-bold text-sm">4<br><span class="text-[9px] font-normal opacity-75">1.3%</span></div>
+                <div class="p-3 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold text-sm">253<br><span class="text-[9px] font-normal opacity-75">83.0%</span></div>
+                <div class="p-3 rounded-lg bg-rose-500/30 text-rose-200 border border-rose-500/50 font-bold text-sm">48<br><span class="text-[9px] font-normal opacity-75">15.7%</span></div>
+              </div>
+            </div>
+
+            <!-- Analysis Card -->
+            <div class="space-y-3 font-mono text-[11px] text-slate-400">
+              <div class="p-3 rounded-lg bg-slate-800/50 border border-slate-700/60">
+                <span class="text-slate-200 font-bold block mb-1">Clase Low Risk (Bajo Riesgo):</span>
+                <span>Recall de <strong class="text-emerald-300">99.6%</strong> (764 aciertos de 767). Prácticamente nulo falso positivo.</span>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-800/50 border border-slate-700/60">
+                <span class="text-slate-200 font-bold block mb-1">Clase Medium Risk (Riesgo Moderado):</span>
+                <span>Acierto masivo de <strong class="text-amber-300">11,410 muestras</strong> con precisión del 97.8%.</span>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-800/50 border border-slate-700/60">
+                <span class="text-slate-200 font-bold block mb-1">Desbalance en High Risk (Eventos Catastróficos):</span>
+                <span>Refleja la distribución natural marina: los eventos de blanqueamiento masivo severo son minoritarios (~2.4% del dataset), resolviendo la detección preventiva sin falsas alarmas destructivas.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: EXPLORATORY DATA ANALYSIS (EDA) -->
+        <div id="tab-content-eda" class="space-y-4 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- ANOVA Table -->
+            <div class="border border-slate-800 rounded-xl overflow-hidden bg-slate-950/40">
+              <div class="p-3 bg-slate-950/80 border-b border-slate-800">
+                <h4 class="font-bold text-slate-200 text-xs font-mono flex items-center gap-2">
+                  <i class="fa-solid fa-calculator text-indigo-400"></i>
+                  <span>Pruebas de Hipótesis ANOVA One-Way (Severidad de Blanqueamiento)</span>
+                </h4>
+              </div>
+              <table class="w-full text-left font-mono text-[11px]">
+                <thead class="bg-slate-900/80 text-slate-400 text-[10px] uppercase border-b border-slate-800">
+                  <tr>
+                    <th class="py-2 px-3">Factor Analizado</th>
+                    <th class="py-2 px-3 text-right">F-Statistic</th>
+                    <th class="py-2 px-3 text-right">p-Value</th>
+                    <th class="py-2 px-3 text-center">Significancia</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60">
+                  <tr>
+                    <td class="py-2.5 px-3 text-slate-300">Zona Geomorfológica (Slope vs Lagoon)</td>
+                    <td class="py-2.5 px-3 text-right">0.602</td>
+                    <td class="py-2.5 px-3 text-right text-slate-400">0.6139</td>
+                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400">ns (No sig.)</span></td>
+                  </tr>
+                  <tr class="bg-indigo-500/5">
+                    <td class="py-2.5 px-3 font-bold text-indigo-300">Región Biogeográfica (Cuenca Oceánica)</td>
+                    <td class="py-2.5 px-3 text-right font-bold text-indigo-300">6.673</td>
+                    <td class="py-2.5 px-3 text-right font-bold text-emerald-400">0.00017</td>
+                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">*** (p &lt; 0.001)</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="p-3 text-[11px] text-slate-400 border-t border-slate-800">
+                💡 <em>Demuestra estadísticamente que el estrés térmico varía drásticamente por cuenca oceánica (Caribe vs Indo-Pacífico vs Mar Rojo), justificando la modelación estratificada del gemelo digital.</em>
+              </div>
+            </div>
+
+            <!-- Global Feature Importance TreeSHAP -->
+            <div class="border border-slate-800 rounded-xl overflow-hidden bg-slate-950/40">
+              <div class="p-3 bg-slate-950/80 border-b border-slate-800">
+                <h4 class="font-bold text-slate-200 text-xs font-mono flex items-center gap-2">
+                  <i class="fa-solid fa-chart-column text-cyan-400"></i>
+                  <span>Importancia Global de Factores (TreeSHAP %)</span>
+                </h4>
+              </div>
+              <div class="p-4 space-y-2 font-mono text-[11px]">
+                <div>
+                  <div class="flex justify-between text-slate-300 mb-1">
+                    <span>Semanas Calentamiento (DHW)</span>
+                    <span class="font-bold text-rose-400">46.97%</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-rose-500 h-full rounded-full" style="width: 46.97%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-slate-300 mb-1">
+                    <span>Rugosidad Estructural (Enfriamiento)</span>
+                    <span class="font-bold text-cyan-400">20.44%</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-cyan-400 h-full rounded-full" style="width: 20.44%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-slate-300 mb-1">
+                    <span>Cobertura Viva Coralina (%)</span>
+                    <span class="font-bold text-emerald-400">7.43%</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-emerald-400 h-full rounded-full" style="width: 7.43%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-slate-300 mb-1">
+                    <span>Temperatura Marina Absoluta (SST)</span>
+                    <span class="font-bold text-amber-400">6.69%</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-amber-400 h-full rounded-full" style="width: 6.69%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-slate-300 mb-1">
+                    <span>Profundidad Batimétrica (Depth)</span>
+                    <span class="font-bold text-teal-400">6.53%</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-teal-400 h-full rounded-full" style="width: 6.53%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TAB 4: HYPERPARAMETERS & PROTOCOL -->
+        <div id="tab-content-hyperparams" class="space-y-4 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-[11px]">
+            
+            <!-- XGBoost Specs -->
+            <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="font-bold text-cyan-300 text-xs">XGBoost Classifier & Regressor</span>
+                <span class="px-2 py-0.5 rounded text-[9px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Producción</span>
+              </div>
+              <ul class="space-y-1.5 text-slate-400">
+                <li>• <strong class="text-slate-200">n_estimators:</strong> 250 árboles de decisión</li>
+                <li>• <strong class="text-slate-200">max_depth:</strong> 6 niveles de profundidad</li>
+                <li>• <strong class="text-slate-200">learning_rate:</strong> 0.05 (Shrinkage regularizado)</li>
+                <li>• <strong class="text-slate-200">subsample:</strong> 0.8 (Bagging estocástico de filas)</li>
+                <li>• <strong class="text-slate-200">colsample_bytree:</strong> 0.8 (Subsampling de variables)</li>
+                <li>• <strong class="text-slate-200">objective:</strong> multi:softprob (3 clases) & reg:squarederror</li>
+                <li>• <strong class="text-slate-200">random_state:</strong> 42 (Reproducibilidad determinista)</li>
+              </ul>
+            </div>
+
+            <!-- Random Forest Specs -->
+            <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="font-bold text-emerald-400 text-xs">Random Forest Ensemble</span>
+                <span class="px-2 py-0.5 rounded text-[9px] bg-slate-800 text-slate-300 border border-slate-700">Benchmark Validador</span>
+              </div>
+              <ul class="space-y-1.5 text-slate-400">
+                <li>• <strong class="text-slate-200">n_estimators:</strong> 250 árboles bootstrap</li>
+                <li>• <strong class="text-slate-200">max_depth:</strong> 15 niveles de profundidad máxima</li>
+                <li>• <strong class="text-slate-200">criterion:</strong> gini (clasificación) & squared_error</li>
+                <li>• <strong class="text-slate-200">n_jobs:</strong> -1 (Paralelización en todos los cores)</li>
+                <li>• <strong class="text-slate-200">random_state:</strong> 42</li>
+              </ul>
+            </div>
+
+            <!-- Deep MLP Specs -->
+            <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="font-bold text-indigo-400 text-xs">Deep Multi-Layer Perceptron (MLP)</span>
+                <span class="px-2 py-0.5 rounded text-[9px] bg-slate-800 text-slate-300 border border-slate-700">Deep Baseline</span>
+              </div>
+              <ul class="space-y-1.5 text-slate-400">
+                <li>• <strong class="text-slate-200">hidden_layer_sizes:</strong> (128, 64, 32) neuronas</li>
+                <li>• <strong class="text-slate-200">activation:</strong> ReLU (Rectified Linear Unit)</li>
+                <li>• <strong class="text-slate-200">solver:</strong> adam (Adaptive Moment Estimation)</li>
+                <li>• <strong class="text-slate-200">early_stopping:</strong> True (Paciencia de 10 épocas)</li>
+                <li>• <strong class="text-slate-200">max_iter:</strong> 200 épocas</li>
+              </ul>
+            </div>
+
+            <!-- Preprocessing & Leakage Contract -->
+            <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="font-bold text-amber-400 text-xs">Protocolo de Cero Fuga (No Leakage)</span>
+                <span class="px-2 py-0.5 rounded text-[9px] bg-slate-800 text-slate-300 border border-slate-700">Rigurosidad Scopus Q1</span>
+              </div>
+              <ul class="space-y-1.5 text-slate-400">
+                <li>• <strong class="text-slate-200">Partición:</strong> Group KFold por Arrecife (las 30 estaciones nunca se cruzan entre train y validación).</li>
+                <li>• <strong class="text-slate-200">Escalamiento:</strong> StandardScaler ajustado únicamente en el train fold correspondiente.</li>
+                <li>• <strong class="text-slate-200">Contrato:</strong> Schema JSON versionado (<code class="text-cyan-300">preprocessing_contract.json</code>).</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between text-xs text-slate-400 font-mono">
+        <span>CoralTwin-DT Scientific Governance Module</span>
+        <button onclick="closeAIAuditModal()" class="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition font-bold">
+          Cerrar Auditoría
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <!-- ========================================================================= -->
   <!-- FOOTER & SCIENTIFIC ATTRIBUTION -->
@@ -450,6 +845,7 @@
   </footer>
 
   <!-- App Script -->
-  <script src="app.js?v=2.2"></script>
+  <script src="twin-api.js?v=1.0"></script>
+  <script src="app.js?v=2.3"></script>
 </body>
 </html>

@@ -10,11 +10,66 @@
 
 ---
 
+## Operational quick path
+
+The operational slice synchronizes NOAA Coral Reef Watch SST and DHW for the canonical 25-station registry, persists the latest good observations in SQLite, and serves them through the portal API.
+
+```bash
+# 1. Create and activate an isolated environment
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# Linux/macOS:
+source .venv/bin/activate
+
+# 2. Install the production runtime and test dependencies
+python -m pip install -r requirements.txt
+
+# 3. Synchronize one station (or all 25 stations)
+python -m operational.sync --station station-01
+python -m operational.sync
+
+# 4. Start the API and static portal
+python portal/server.py
+```
+
+Verify [http://localhost:8000](http://localhost:8000) and [http://localhost:8000/api/health](http://localhost:8000/api/health), which should return `{"status":"ok"}`.
+
+### Runtime configuration
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `CORALTWIN_DB_PATH` | `operational/data/coraltwin.db` | SQLite database path |
+| `CORALTWIN_REQUEST_DELAY` | `1.0` | Seconds between NOAA product requests |
+| `CORALTWIN_SYNC_TOKEN` | unset | Required secret for the HTTP synchronization trigger |
+| `HOST` | `127.0.0.1` | Uvicorn bind host |
+| `PORT` | `8000` | Uvicorn bind port |
+
+### Operational API
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Process health check |
+| `GET` | `/api/stations` | Canonical stations and current SST/DHW summaries |
+| `GET` | `/api/stations/{station_id}/state` | Station metadata, independent product timestamps, latest sync run, and inference |
+| `POST` | `/api/sync` | Protected HTTP trigger; synchronize all stations, or one station with `{"station_id":"station-01"}` |
+| `GET` | `/api/sync-runs/latest` | Latest persisted sync run, or `null` when none exists |
+
+The operational registry is exactly 25 canonical IDs (`station-01` through `station-25`). Each product is fetched and stored independently: a failed or missing NOAA product records typed sync evidence while preserving the previous good value for that product. NOAA observation timestamps and access provenance remain separate for SST and DHW.
+
+### Synchronization access
+
+Use the CLI for scheduled or manual synchronization. The HTTP trigger is disabled until `CORALTWIN_SYNC_TOKEN` is configured, and then requires that exact value in the `X-CoralTwin-Sync-Token` header. The token is never returned by the API. A request made while another synchronization is active receives `409 Conflict`.
+
+Today, only NOAA SST/DHW are live-synchronized. The remaining model features (for example pH, turbidity, rugosity, and coral cover) come from the deterministic processed-CSV baseline used by inference; Sentinel-2 and in-situ feeds are part of the broader research architecture, not continuous operational inputs yet.
+
+---
+
 ## 1. Project Overview & Abstract
 
 **CoralTwin-DT** is an open-source, cyber-physical environmental digital twin designed to forecast, simulate, and spatially prioritize coral reef restoration and conservation interventions under the compounding pressures of marine heatwaves (MHWs) and ocean acidification.
 
-By harmonizing daily satellite remote sensing (NOAA Coral Reef Watch 5km), high-resolution multispectral optics (Copernicus Sentinel-2 10m), and in-situ biogeochemical moorings (SeaFET pH, CTD salinity), CoralTwin-DT continuously updates a cybernetic state vector of benthic ecosystems ($\mathbf{S}(t)$). It couples multi-task explainable machine learning (**XGBoost + TreeSHAP**) with coupled non-linear ordinary differential equations (**Mumby ODEs**) to simulate decadal ecosystem trajectories (2025–2050) and output actionable **Spatial Restoration Priority Index (SRPI)** zoning layers in open RFC-7946 GeoJSON format.
+The research pipeline harmonizes daily NOAA Coral Reef Watch 5km thermal products with historical multispectral and in-situ datasets. In the current operational slice, only NOAA SST/DHW continuously update the cybernetic state; the other model features use a deterministic processed-CSV baseline. The system couples multi-task explainable machine learning (**XGBoost + TreeSHAP**) with coupled non-linear ordinary differential equations (**Mumby ODEs**) to simulate decadal ecosystem trajectories (2025–2050) and output actionable **Spatial Restoration Priority Index (SRPI)** zoning layers in open RFC-7946 GeoJSON format.
 
 ```
 +---------------------------------------------------------------------------------------------------------------+
@@ -26,7 +81,7 @@ By harmonizing daily satellite remote sensing (NOAA Coral Reef Watch 5km), high-
 |  • Sentinel-2 MSI (10m Kd490)    --> • TreeSHAP Synergy Tipping Points  --> • Marine Protected Area Grazing   |
 |  • In-situ pH / CTD Moorings     --> • Decadal ODE Sandbox (2025-2050)  --> • Early Warning Heat Alerts       |
 +---------------------------------------------------------------------------------------------------------------+
-|                      CLOSED-LOOP FEEDBACK: Real-Time Telemetry Ingestion -> Adaptive Conservation             |
+|              OPERATIONAL LOOP: NOAA SST/DHW Ingestion -> Persisted State -> Adaptive Conservation          |
 +---------------------------------------------------------------------------------------------------------------+
 ```
 

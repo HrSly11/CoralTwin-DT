@@ -1,54 +1,31 @@
-"""
-CoralTwin-DT: Cyber-Physical Command Center Local Web Server
-============================================================
-Serves the modern high-end frontend portal on http://localhost:8000.
+"""Uvicorn entrypoint for the operational API and static portal."""
 
-Author: CoralTwin-DT Engineering Consortium
-License: MIT
-"""
+from __future__ import annotations
 
 import os
 import sys
-import webbrowser
-import http.server
-import socketserver
+from pathlib import Path
 
-PORT = 8000
-DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+import uvicorn
 
+if __package__ in (None, ""):
+    project_root = str(Path(__file__).resolve().parents[1])
+    if project_root not in sys.path:
+        sys.path.insert(0, project_root)
 
-class CustomHTTPHandler(http.server.SimpleHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=DIRECTORY, **kwargs)
-
-    def log_message(self, format, *args):
-        # Clean custom logging
-        sys.stderr.write(f"[CoralTwin-DT Portal] {self.address_string()} - {format%args}\n")
+from operational.runtime import create_production_app
 
 
-def run_server():
-    os.chdir(DIRECTORY)
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", PORT), CustomHTTPHandler) as httpd:
-        url = f"http://localhost:{PORT}"
-        print("=" * 75)
-        print("  🪸  CORALTWIN-DT: CYBER-PHYSICAL DIGITAL TWIN COMMAND CENTER")
-        print("=" * 75)
-        print(f"  [>] Server running at: {url}")
-        print(f"  [>] Serving directory: {DIRECTORY}")
-        print("  [>] Press Ctrl+C to stop server.")
-        print("=" * 75)
-        
-        # Open default browser automatically
-        try:
-            webbrowser.open(url)
-        except Exception:
-            pass
+def create_app():
+    """Uvicorn factory target; construction is deferred until server startup."""
 
-        try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("\n[!] Shutting down CoralTwin-DT Command Center Server.")
+    return create_production_app()
+
+
+def run_server() -> None:
+    host = os.environ.get("HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", "8000"))
+    uvicorn.run("portal.server:create_app", host=host, port=port, factory=True)
 
 
 if __name__ == "__main__":

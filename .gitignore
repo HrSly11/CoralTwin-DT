@@ -43,3 +43,12 @@ venv.bak/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Operational runtime state and local configuration
+.coraltwin/
+operational/data/*.db
+operational/data/*.db-wal
+operational/data/*.db-shm
+.env
+.env.*
+!.env.example

@@ -10,6 +10,7 @@ License: MIT
 Scientific Attribution: Resultado obtenido mediante prototipo computacional del gemelo digital.
 """
 
+import json
 import os
 import joblib
 import numpy as np
@@ -130,6 +131,19 @@ def train_and_cross_validate():
     joblib.dump(best_rf_reg, os.path.join(MODELS_DIR, "random_forest_regressor.joblib"))
     joblib.dump(scaler_full, os.path.join(MODELS_DIR, "feature_scaler.joblib"))
     joblib.dump(le, os.path.join(MODELS_DIR, "label_encoder.joblib"))
+    with open(os.path.join(MODELS_DIR, "preprocessing_contract.json"), "w", encoding="utf-8") as contract_file:
+        json.dump(
+            {
+                "schema_version": 1,
+                "feature_order": features,
+                "models": {
+                    "classifier": {"input_space": "raw"},
+                    "regressor": {"input_space": "raw"},
+                },
+            },
+            contract_file,
+            indent=2,
+        )
 
     # Save out-of-fold predictions
     oof_df = pd.DataFrame({

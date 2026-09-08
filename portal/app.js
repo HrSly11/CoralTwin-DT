@@ -15,19 +15,19 @@
 const I18N = {
   en: {
     appSubtitle: "Cyber-Physical Marine Digital Twin Command Center",
-    statusOnline: "ONLINE",
-    statusSync: "SYNCHRONIZED",
+    statusOnline: "CONNECTING",
+    statusSync: "BASELINE",
     btnExport: "Export GeoJSON",
-    kpi1Val: "30 Stations",
+    kpi1Val: "25 Stations",
     kpi1Label: "5 Global Ocean Basins",
     kpi2Label: "XGBoost ML Accuracy",
     kpi3Label: "Acidification Tipping Pt",
     kpi4Label: "2050 Restored Live Cover",
     mapTitle: "Global Oceanographic Telemetry Map",
-    mapSubtitle: "NOAA CRW 5km Satellite Thermal Grids & Sentinel-2 MSI Multi-Basin Ingestion",
-    riskLow: "Low Risk",
-    riskMed: "Med Risk",
-    riskHigh: "High Risk",
+    mapSubtitle: "NOAA CRW 5km SST/DHW with deterministic baseline features",
+    tierRestoration: "Tier 1: Restoration",
+    tierConservation: "Tier 2: Conservation",
+    tierMonitoring: "Tier 3: Monitoring",
     proj2D: "2D Flat Map",
     proj3D: "3D Earth Globe",
     globeHelp: "Drag to Rotate Globe | Scroll to Zoom | Click any Reef Beacon",
@@ -40,7 +40,7 @@ const I18N = {
     coralStress: "HEAT SHOCK (FLUORESCING)",
     coralBleached: "SEVERELY BLEACHED",
     aiTitle: "Real-Time AI Prediction Engine",
-    aiSubtitle: "XGBoost Regularized Model with Sub-Millisecond Inference",
+    aiSubtitle: "Server inference from synchronized station state",
     labelSST: "Sea Surface Temperature (SST):",
     labelDHW: "Degree Heating Weeks (DHW):",
     labelPH: "Seawater pH (Total Scale):",
@@ -62,33 +62,47 @@ const I18N = {
     srpiTitle: "Spatial Restoration Priority Index (SRPI) Decision Matrix",
     srpiSubtitle: "Multi-Criteria Hydrodynamic Refugia Ranking & Open RFC-7946 GeoJSON Layers",
     filterAll: "All Stations",
-    filterTier1: "Tier 1: Outplanting",
-    filterTier2: "Tier 2: Marine Reserve",
-    filterTier3: "Tier 3: Thermal Risk",
+    filterTier1: "Tier 1: Restoration",
+    filterTier2: "Tier 2: Conservation",
+    filterTier3: "Tier 3: Monitoring",
     thStation: "Station Name",
     thRegion: "Region / Basin",
     thCover: "Live Cover (%)",
-    thRisk: "Risk Status",
+    thSrpi: "SRPI Score",
     thTier: "Management Priority Tier",
     thAction: "Action",
     btnInspect: "Inspect",
+    btnAIAudit: "AI Audit & Benchmark",
+    auditModalTitle: "AI Engine Audit, EDA & Spatial Cross-Validation",
+    auditModalSubtitle: "Rigorous 5-Fold Spatially-Stratified CV, Hyperparameters, Confusion Matrix & Statistical Analysis",
+    auditTabBenchmark: "1. Model Benchmark & CV",
+    auditTabConfusion: "2. Confusion Matrix",
+    auditTabEDA: "3. Exploratory Analysis (EDA)",
+    auditTabHyperparams: "4. Hyperparameters & Protocol",
+    auditMetricRecords: "Harmonized Total Dataset",
+    auditMetricCV: "Validation Protocol",
+    auditMetricAccuracy: "Production Accuracy",
+    auditMetricLatency: "Inference Latency",
+    auditTableTitle: "Multi-Architecture Benchmark Comparison (5-Fold Cross-Validation)",
+    confusionTitle: "Out-of-Fold Confusion Matrix (XGBoost Classifier)",
+    confusionSubtitle: "Evaluated across 12,492 harmonized out-of-fold station-stratified samples",
     footerAttribution: "Scientific Attribution: Resultado obtenido mediante prototipo computacional del gemelo digital."
   },
   es: {
     appSubtitle: "Centro de Comando del Gemelo Digital Marino Ciber-Físico",
-    statusOnline: "EN LÍNEA",
-    statusSync: "SINCRONIZADO",
+    statusOnline: "CONECTANDO",
+    statusSync: "LÍNEA BASE",
     btnExport: "Exportar GeoJSON",
-    kpi1Val: "30 Estaciones",
+    kpi1Val: "25 Estaciones",
     kpi1Label: "5 Cuencas Oceánicas Globales",
     kpi2Label: "Precisión IA (XGBoost)",
     kpi3Label: "Punto de Quiebre por pH",
     kpi4Label: "Cobertura Viva 2050 (Restaurada)",
     mapTitle: "Mapa Global de Telemetría Oceanográfica",
-    mapSubtitle: "Grillas Térmicas Satelitales NOAA CRW 5km y Sentinel-2 MSI Multi-Cuenca",
-    riskLow: "Bajo Riesgo",
-    riskMed: "Riesgo Medio",
-    riskHigh: "Alto Riesgo",
+    mapSubtitle: "NOAA CRW 5km SST/DHW con variables de línea base deterministas",
+    tierRestoration: "Tier 1: Restauración",
+    tierConservation: "Tier 2: Conservación",
+    tierMonitoring: "Tier 3: Monitoreo",
     proj2D: "2D Plano",
     proj3D: "3D Globo",
     globeHelp: "Arrastrá para Girar el Globo | Scroll para Zoom | Clic en un arrecife",
@@ -101,7 +115,7 @@ const I18N = {
     coralStress: "ESTRÉS TÉRMICO (FLUORESCENCIA)",
     coralBleached: "SEVERAMENTE BLANQUEADO",
     aiTitle: "Motor Predictivo de IA en Tiempo Real",
-    aiSubtitle: "Modelo Regularizado XGBoost con Inferencia en Sub-Milisegundos",
+    aiSubtitle: "Inferencia del servidor desde el estado sincronizado",
     labelSST: "Temperatura Superficial Marina (SST):",
     labelDHW: "Semanas de Calentamiento (DHW):",
     labelPH: "pH del Agua Marina (Escala Total):",
@@ -123,17 +137,31 @@ const I18N = {
     srpiTitle: "Matriz de Decisión de Priorización Espacial (SRPI)",
     srpiSubtitle: "Ranking de Refugios Hidrodinámicos y Capas Abiertas RFC-7946 GeoJSON",
     filterAll: "Todas las Estaciones",
-    filterTier1: "Tier 1: Siembra Activa",
-    filterTier2: "Tier 2: Reserva Marina",
-    filterTier3: "Tier 3: Riesgo Térmico",
+    filterTier1: "Tier 1: Restauración",
+    filterTier2: "Tier 2: Conservación",
+    filterTier3: "Tier 3: Monitoreo",
     thStation: "Nombre de Estación",
     thRegion: "Región / Cuenca",
     thCover: "Cobertura Viva (%)",
-    thRisk: "Nivel de Riesgo",
+    thSrpi: "Puntaje SRPI",
     thTier: "Nivel de Prioridad de Manejo",
     thAction: "Acción",
     btnInspect: "Inspeccionar",
-    footerAttribution: "Atribución Científica: Resultado obtenido mediante prototipo computacional del gemelo digital."
+    btnAIAudit: "Auditoría & Benchmark IA",
+    auditModalTitle: "Auditoría del Motor de IA, EDA y Validación Cruzada",
+    auditModalSubtitle: "Evaluación formal 5-Fold Spatially-Stratified CV, Hiperparámetros, Matriz de Confusión y Análisis Estadístico",
+    auditTabBenchmark: "1. Benchmark & Validación Cruzada",
+    auditTabConfusion: "2. Matriz de Confusión",
+    auditTabEDA: "3. Análisis Exploratorio (EDA)",
+    auditTabHyperparams: "4. Hiperparámetros & Protocolo",
+    auditMetricRecords: "Dataset Total Armonizado",
+    auditMetricCV: "Protocolo de Validación",
+    auditMetricAccuracy: "Precisión de Producción",
+    auditMetricLatency: "Latencia de Inferencia",
+    auditTableTitle: "Tabla Comparativa de Modelos Multiarquitectura (Validación Cruzada 5-Fold)",
+    confusionTitle: "Matriz de Confusión Out-of-Fold (XGBoost Classifier)",
+    confusionSubtitle: "Evaluación sobre las 12,492 muestras del test out-of-fold estratificado por estación",
+    footerAttribution: "Scientific Attribution: Resultado obtenido mediante prototipo computacional del gemelo digital."
   }
 };
 
@@ -181,45 +209,17 @@ function setLanguage(lang) {
   triggerAIInference();
   triggerODESimulation();
   populateTable(STATIONS_DB);
+  updateStationCount();
 }
 
 // =============================================================================
-// 2. 30 GLOBAL BENCHMARK REEF STATIONS DATABASE
+// 2. OPERATIONAL STATIONS (loaded from the canonical API registry)
 // =============================================================================
-const STATIONS_DB = [
-  { id: "Mesoamerican_Fore_01", name: "Mesoamerican Reef (Fore Reef)", region: "Caribbean", lat: 18.25, lon: -87.80, sst: 28.4, dhw: 2.1, ph: 8.08, turb: 0.8, cover: 42.5, macro: 14.2, rugosity: 2.8, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.782 },
-  { id: "Mesoamerican_Lagoon_02", name: "Mesoamerican Reef (Lagoon)", region: "Caribbean", lat: 18.15, lon: -87.90, sst: 29.8, dhw: 7.2, ph: 7.92, turb: 2.4, cover: 22.0, macro: 34.0, rugosity: 1.6, risk: "High", tier: "Tier 3: Thermal Risk", srpi: 0.340 },
-  { id: "FloridaKeys_KeyLargo_03", name: "Florida Keys (Key Largo)", region: "Caribbean", lat: 25.08, lon: -80.44, sst: 29.1, dhw: 5.4, ph: 8.01, turb: 1.5, cover: 18.5, macro: 28.5, rugosity: 1.9, risk: "Medium", tier: "Tier 2: Marine Reserve", srpi: 0.510 },
-  { id: "FloridaKeys_DryTortugas_04", name: "Dry Tortugas (National Park)", region: "Caribbean", lat: 24.62, lon: -82.87, sst: 28.2, dhw: 1.8, ph: 8.10, turb: 0.6, cover: 38.0, macro: 16.0, rugosity: 2.6, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.745 },
-  { id: "Belize_Barrier_05", name: "Belize Barrier Reef", region: "Caribbean", lat: 17.15, lon: -87.95, sst: 28.5, dhw: 3.2, ph: 8.05, turb: 0.9, cover: 34.7, macro: 21.0, rugosity: 2.4, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.690 },
-  { id: "Belize_Atoll_06", name: "Glover's Reef Atoll", region: "Caribbean", lat: 16.82, lon: -87.80, sst: 28.7, dhw: 2.9, ph: 8.06, turb: 0.5, cover: 36.2, macro: 18.5, rugosity: 2.7, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.720 },
-  { id: "Curacao_Oostpunt_07", name: "Curaçao (Oostpunt)", region: "Caribbean", lat: 12.04, lon: -68.78, sst: 27.9, dhw: 1.2, ph: 8.12, turb: 0.4, cover: 48.0, macro: 11.0, rugosity: 3.1, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.815 },
-  { id: "Bonaire_NationalPark_08", name: "Bonaire Marine Park", region: "Caribbean", lat: 12.18, lon: -68.28, sst: 28.1, dhw: 1.5, ph: 8.11, turb: 0.5, cover: 45.0, macro: 12.5, rugosity: 2.9, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.790 },
-  { id: "GBR_Northern_09", name: "Northern Great Barrier Reef", region: "Pacific", lat: -12.45, lon: 143.85, sst: 29.6, dhw: 8.4, ph: 7.95, turb: 1.1, cover: 24.5, macro: 31.0, rugosity: 2.1, risk: "High", tier: "Tier 3: Thermal Risk", srpi: 0.410 },
-  { id: "GBR_Central_10", name: "Central Great Barrier Reef", region: "Pacific", lat: -18.25, lon: 147.20, sst: 28.8, dhw: 4.8, ph: 8.02, turb: 1.3, cover: 29.0, macro: 24.0, rugosity: 2.3, risk: "Medium", tier: "Tier 2: Marine Reserve", srpi: 0.580 },
-  { id: "GBR_Southern_11", name: "Southern GBR (Heron Island)", region: "Pacific", lat: -23.44, lon: 151.91, sst: 26.5, dhw: 0.8, ph: 8.14, turb: 0.7, cover: 52.0, macro: 8.5, rugosity: 3.2, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.840 },
-  { id: "CoralTriangle_RajaAmpat_12", name: "Raja Ampat (Misool)", region: "Coral Triangle", lat: -2.15, lon: 130.50, sst: 29.0, dhw: 1.9, ph: 8.09, turb: 0.6, cover: 56.5, macro: 6.5, rugosity: 3.4, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.885 },
-  { id: "CoralTriangle_Komodo_13", name: "Komodo National Park", region: "Coral Triangle", lat: -8.55, lon: 119.50, sst: 27.8, dhw: 1.1, ph: 8.11, turb: 0.5, cover: 50.2, macro: 9.0, rugosity: 3.0, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.830 },
-  { id: "CoralTriangle_Sulawesi_14", name: "Bunaken (North Sulawesi)", region: "Coral Triangle", lat: 1.62, lon: 124.75, sst: 29.2, dhw: 3.4, ph: 8.04, turb: 0.8, cover: 41.0, macro: 15.0, rugosity: 2.8, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.730 },
-  { id: "CoralTriangle_Bali_15", name: "Bali (Menjangan Island)", region: "Coral Triangle", lat: -8.12, lon: 114.52, sst: 28.9, dhw: 4.2, ph: 8.03, turb: 1.4, cover: 32.0, macro: 22.0, rugosity: 2.2, risk: "Medium", tier: "Tier 2: Marine Reserve", srpi: 0.610 },
-  { id: "RedSea_Aqaba_16", name: "Gulf of Aqaba (Refugium)", region: "Red Sea", lat: 29.45, lon: 34.98, sst: 26.2, dhw: 0.4, ph: 8.18, turb: 0.3, cover: 46.0, macro: 7.0, rugosity: 2.9, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.865 },
-  { id: "RedSea_Jeddah_17", name: "Central Red Sea (Jeddah)", region: "Red Sea", lat: 21.50, lon: 39.10, sst: 30.5, dhw: 6.8, ph: 8.01, turb: 0.9, cover: 27.0, macro: 26.0, rugosity: 2.2, risk: "Medium", tier: "Tier 2: Marine Reserve", srpi: 0.540 },
-  { id: "RedSea_Farasan_18", name: "Farasan Banks", region: "Red Sea", lat: 16.70, lon: 42.15, sst: 31.2, dhw: 9.1, ph: 7.94, turb: 1.6, cover: 19.5, macro: 33.0, rugosity: 1.8, risk: "High", tier: "Tier 3: Thermal Risk", srpi: 0.380 },
-  { id: "IndianOcean_Maldives_19", name: "Maldives (Ari Atoll)", region: "Indian Ocean", lat: 3.85, lon: 72.85, sst: 29.7, dhw: 7.8, ph: 7.96, turb: 0.7, cover: 23.0, macro: 29.5, rugosity: 2.0, risk: "High", tier: "Tier 3: Thermal Risk", srpi: 0.430 },
-  { id: "IndianOcean_Seychelles_20", name: "Seychelles (Curieuse)", region: "Indian Ocean", lat: -4.28, lon: 55.72, sst: 29.3, dhw: 6.1, ph: 7.99, turb: 0.8, cover: 26.5, macro: 27.0, rugosity: 2.1, risk: "Medium", tier: "Tier 2: Marine Reserve", srpi: 0.520 },
-  { id: "IndianOcean_Chagos_21", name: "Chagos Archipelago", region: "Indian Ocean", lat: -6.00, lon: 71.50, sst: 28.5, dhw: 2.5, ph: 8.08, turb: 0.4, cover: 47.5, macro: 10.5, rugosity: 3.1, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.810 },
-  { id: "Pacific_Hawaii_Kaneohe_22", name: "Hawaii (Kaneohe Bay)", region: "Pacific", lat: 21.45, lon: -157.80, sst: 26.8, dhw: 3.8, ph: 7.98, turb: 2.1, cover: 33.0, macro: 24.0, rugosity: 2.3, risk: "Medium", tier: "Tier 2: Marine Reserve", srpi: 0.590 },
-  { id: "Pacific_Palau_23", name: "Palau (Rock Islands)", region: "Pacific", lat: 7.30, lon: 134.45, sst: 29.4, dhw: 1.6, ph: 7.88, turb: 1.1, cover: 49.0, macro: 13.0, rugosity: 3.0, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.795 },
-  { id: "Pacific_Fiji_24", name: "Fiji (Great Sea Reef)", region: "Pacific", lat: -16.50, lon: 179.00, sst: 28.1, dhw: 2.0, ph: 8.07, turb: 0.7, cover: 39.5, macro: 17.0, rugosity: 2.6, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.735 },
-  { id: "Pacific_Moorea_25", name: "Moorea (French Polynesia)", region: "Pacific", lat: -17.52, lon: -149.83, sst: 27.5, dhw: 1.4, ph: 8.10, turb: 0.5, cover: 44.0, macro: 14.0, rugosity: 2.8, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.770 },
-  { id: "Caribbean_Barbados_26", name: "Barbados (Folkestone)", region: "Caribbean", lat: 13.18, lon: -59.64, sst: 28.9, dhw: 4.5, ph: 8.02, turb: 1.2, cover: 21.5, macro: 32.0, rugosity: 1.8, risk: "Medium", tier: "Tier 2: Marine Reserve", srpi: 0.490 },
-  { id: "Pacific_Okinawa_27", name: "Japan (Okinawa Kerama)", region: "Pacific", lat: 26.20, lon: 127.35, sst: 27.0, dhw: 2.8, ph: 8.11, turb: 0.6, cover: 37.0, macro: 19.0, rugosity: 2.5, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.710 },
-  { id: "Pacific_Galapagos_28", name: "Galapagos (Darwin Island)", region: "Pacific", lat: 1.67, lon: -92.00, sst: 25.5, dhw: 1.0, ph: 8.05, turb: 1.8, cover: 31.0, macro: 22.0, rugosity: 2.4, risk: "Low", tier: "Tier 2: Marine Reserve", srpi: 0.640 },
-  { id: "Caribbean_Cayman_29", name: "Grand Cayman (North Wall)", region: "Caribbean", lat: 19.35, lon: -81.25, sst: 28.6, dhw: 3.1, ph: 8.06, turb: 0.4, cover: 40.0, macro: 16.5, rugosity: 2.9, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.760 },
-  { id: "CoralTriangle_Philippines_30", name: "Tubbataha Reefs (Sulu Sea)", region: "Coral Triangle", lat: 8.85, lon: 119.90, sst: 29.1, dhw: 2.2, ph: 8.08, turb: 0.5, cover: 54.0, macro: 8.0, rugosity: 3.3, risk: "Low", tier: "Tier 1: Outplanting", srpi: 0.860 }
-];
-
-let selectedStation = STATIONS_DB[0];
+let STATIONS_DB = [];
+let selectedStation = null;
+const twinApiClient = new CoralTwinAPI.TwinAPIClient();
+let operationalConnectionState = "connecting";
+let stationStates = Object.create(null);
 let shapChartInstance = null;
 let odeChartInstance = null;
 let threeScene, threeCamera, threeRenderer, coralMesh, coralMaterial;
@@ -228,13 +228,106 @@ let threeScene, threeCamera, threeRenderer, coralMesh, coralMaterial;
 // 3. INITIALIZATION ROUTINE
 // =============================================================================
 document.addEventListener("DOMContentLoaded", () => {
-  initMap();
   initThreeJSCoral();
   initCharts();
   populateStationSelector();
   bindEvents();
   setLanguage(currentLang);
+  loadOperationalStations();
 });
+
+function numberOrNull(value) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function formatValue(value, digits, suffix) {
+  const numeric = numberOrNull(value);
+  return numeric === null ? "N/A" : `${numeric.toFixed(digits)}${suffix || ""}`;
+}
+
+function sourceTimestamp(observation) {
+  if (!observation || !observation.observed_at) return "No observation";
+  const source = observation.source || observation.dataset_id || "source unavailable";
+  return `${source} · ${observation.observed_at}`;
+}
+
+function mapApiStation(station) {
+  const baseline = station.baseline || { status: "missing", source: "static_baseline", source_date: null, features: {} };
+  const fields = station.baseline_fields || CoralTwinAPI.mapBaselineFeatures(baseline);
+  const decision = CoralTwinAPI.normalizeDecision(station.decision);
+  const decisionFields = CoralTwinAPI.mapDecisionFeatures(decision);
+  const sst = station.sst || null;
+  const dhw = station.dhw || null;
+  return {
+    id: station.id,
+    name: station.name,
+    region: decisionFields.region || station.region || "N/A",
+    reef_zone: decisionFields.reef_zone,
+    lat: station.lat,
+    lon: station.lon,
+    sst: sst ? sst.value : fields.baseline_sst,
+    dhw: dhw ? dhw.value : fields.baseline_dhw,
+    ph: fields.ph,
+    turb: fields.turb,
+    cover: fields.cover,
+    rugosity: fields.rugosity,
+    depth: fields.depth,
+    macro: decisionFields.macro,
+    tier: decisionFields.tier,
+    srpi: decisionFields.srpi,
+    decision: decision,
+    baseline: baseline,
+    baseline_fields: fields,
+    sst_observation: sst,
+    dhw_observation: dhw,
+    inference: null,
+    latest_sync_run: null,
+    retrieved_at: station.retrieved_at || null,
+  };
+}
+
+function setConnectionState(state) {
+  operationalConnectionState = state;
+  const status = document.getElementById("connection-status");
+  if (status) {
+    status.innerText = state.toUpperCase();
+    status.className = `font-bold ${state === "live" ? "text-emerald-400" : state === "partial" || state === "stale" ? "text-amber-400" : state === "offline" ? "text-rose-400" : "text-slate-400"}`;
+  }
+}
+
+function updateStationCount() {
+  const count = document.getElementById("station-count");
+  if (count) count.innerText = `${STATIONS_DB.length} ${currentLang === "es" ? "Estaciones" : "Stations"}`;
+}
+
+async function loadOperationalStations() {
+  setConnectionState("connecting");
+  try {
+    const payload = await twinApiClient.listStations();
+    STATIONS_DB = payload.stations.map(mapApiStation);
+    STATIONS_DB.forEach(station => { station.retrieved_at = payload.retrieved_at; });
+    selectedStation = STATIONS_DB[0] || null;
+    stationStates = Object.create(null);
+    STATIONS_DB.forEach(station => { stationStates[station.id] = station; });
+    const hasNoaaObservation = STATIONS_DB.some(station => station.sst_observation || station.dhw_observation);
+    setConnectionState(STATIONS_DB.length === 0 || !hasNoaaObservation ? "no-data" : "live");
+    updateStationCount();
+    initMap();
+    if (isGlobeInitialized) refreshGlobeMarkers();
+    populateStationSelector();
+    populateTable(STATIONS_DB);
+    if (selectedStation) {
+      renderStationState(selectedStation);
+      await refreshStationState(selectedStation.id);
+    }
+  } catch (error) {
+    setConnectionState("offline");
+    updateStationCount();
+    if (!mapInstance) initMap();
+    populateStationSelector();
+    populateTable(STATIONS_DB);
+  }
+}
 
 // =============================================================================
 // 4. LEAFLET 2D OCEAN BATHYMETRY MAP
@@ -275,10 +368,11 @@ function initMap() {
 
   // Add Stations
   STATIONS_DB.forEach(st => {
-    const color = st.risk === "Low" ? "#10B981" : (st.risk === "Medium" ? "#F59E0B" : "#F43F5E");
+    const priority = CoralTwinAPI.priorityPresentation(st.decision);
+    const color = priority.color;
     
     const marker = L.circleMarker([st.lat, st.lon], {
-      radius: Math.max(6, Math.min(14, st.dhw * 1.5 + 4)),
+      radius: Math.max(6, Math.min(14, (numberOrNull(st.dhw) || 0) * 1.5 + 4)),
       fillColor: color,
       color: "#FFFFFF",
       weight: 1.5,
@@ -291,16 +385,19 @@ function initMap() {
         <div style="font-weight: bold; font-size: 13px; color: #38BDF8; margin-bottom: 4px;">${st.name}</div>
         <div style="font-size: 11px; color: #94A3B8; margin-bottom: 6px;">Region: ${st.region}</div>
         <div style="font-size: 11px; display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding: 2px 0;">
-          <span>SST:</span> <b style="color: #F8FAFC;">${st.sst.toFixed(1)} °C</b>
+          <span>SST:</span> <b style="color: #F8FAFC;">${formatValue(st.sst, 1, " °C")}</b>
         </div>
         <div style="font-size: 11px; display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding: 2px 0;">
-          <span>DHW:</span> <b style="color: #F59E0B;">${st.dhw.toFixed(1)} °C-wk</b>
+          <span>DHW:</span> <b style="color: #F59E0B;">${formatValue(st.dhw, 1, " °C-wk")}</b>
         </div>
         <div style="font-size: 11px; display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding: 2px 0;">
-          <span>Live Cover:</span> <b style="color: #38BDF8;">${st.cover.toFixed(1)} %</b>
+          <span>Live Cover:</span> <b style="color: #38BDF8;">${formatValue(st.cover, 1, " %")}</b>
         </div>
         <div style="font-size: 11px; display: flex; justify-content: space-between; padding: 4px 0;">
-          <span>SRPI Score:</span> <b style="color: #10B981;">${st.srpi.toFixed(3)}</b>
+          <span>Priority:</span> <b style="color: ${color};">${priority.label}</b>
+        </div>
+        <div style="font-size: 11px; display: flex; justify-content: space-between; padding: 4px 0;">
+          <span>SRPI Score:</span> <b style="color: #10B981;">${formatValue(st.srpi, 3)}</b>
         </div>
       </div>
     `);
@@ -318,6 +415,7 @@ function initMap() {
 // =============================================================================
 let globeScene, globeCamera, globeRenderer, globeGroup, globeControls, cloudMesh;
 let isGlobeInitialized = false;
+let globeMarkerIds = [];
 let globeRaycaster = new THREE.Raycaster();
 let globeMouse = new THREE.Vector2();
 let globeMarkerMeshes = [];
@@ -409,36 +507,8 @@ function initThreeJSGlobe() {
   const atmosphereMesh = new THREE.Mesh(atmosphereGeom, atmosphereMat);
   globeGroup.add(atmosphereMesh);
 
-  // Plot 30 Reef Stations on the 3D Globe
-  STATIONS_DB.forEach(st => {
-    const phi = (90 - st.lat) * (Math.PI / 180);
-    const theta = (st.lon + 180) * (Math.PI / 180);
-
-    const x = -(sphereRadius * Math.sin(phi) * Math.cos(theta));
-    const z = (sphereRadius * Math.sin(phi) * Math.sin(theta));
-    const y = (sphereRadius * Math.cos(phi));
-
-    const colorHex = st.risk === "Low" ? 0x10B981 : (st.risk === "Medium" ? 0xF59E0B : 0xF43F5E);
-    
-    // Beacon Pin
-    const pinGeom = new THREE.CylinderGeometry(0.02, 0.02, 0.25, 6);
-    const pinMat = new THREE.MeshBasicMaterial({ color: colorHex });
-    const pin = new THREE.Mesh(pinGeom, pinMat);
-
-    // Glowing Station Sphere
-    const beaconGeom = new THREE.SphereGeometry(0.08, 12, 12);
-    const beaconMat = new THREE.MeshBasicMaterial({ color: colorHex });
-    const beacon = new THREE.Mesh(beaconGeom, beaconMat);
-    beacon.position.set(0, 0.15, 0);
-    pin.add(beacon);
-
-    pin.position.set(x, y, z);
-    pin.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(x, y, z).normalize());
-    pin.userData = { station: st };
-
-    globeGroup.add(pin);
-    globeMarkerMeshes.push(beacon);
-  });
+  // Plot canonical reef stations on the 3D Globe
+  refreshGlobeMarkers();
 
   globeScene.add(globeGroup);
 
@@ -478,6 +548,47 @@ function initThreeJSGlobe() {
   animateGlobe();
 
   isGlobeInitialized = true;
+}
+
+function refreshGlobeMarkers() {
+  if (!globeGroup) return;
+  const nextIds = STATIONS_DB.map(st => st.id);
+  if (!CoralTwinAPI.needsMarkerRefresh(globeMarkerIds, STATIONS_DB)) return;
+  globeMarkerMeshes.forEach(beacon => {
+    if (beacon.parent && beacon.parent.parent === globeGroup) globeGroup.remove(beacon.parent);
+  });
+  globeMarkerMeshes = [];
+  const sphereRadius = 2.4;
+  STATIONS_DB.forEach(st => {
+    const phi = (90 - st.lat) * (Math.PI / 180);
+    const theta = (st.lon + 180) * (Math.PI / 180);
+
+    const x = -(sphereRadius * Math.sin(phi) * Math.cos(theta));
+    const z = (sphereRadius * Math.sin(phi) * Math.sin(theta));
+    const y = (sphereRadius * Math.cos(phi));
+
+    const colorHex = parseInt(CoralTwinAPI.priorityPresentation(st.decision).color.slice(1), 16);
+
+    // Beacon Pin
+    const pinGeom = new THREE.CylinderGeometry(0.02, 0.02, 0.25, 6);
+    const pinMat = new THREE.MeshBasicMaterial({ color: colorHex });
+    const pin = new THREE.Mesh(pinGeom, pinMat);
+
+    // Glowing Station Sphere
+    const beaconGeom = new THREE.SphereGeometry(0.08, 12, 12);
+    const beaconMat = new THREE.MeshBasicMaterial({ color: colorHex });
+    const beacon = new THREE.Mesh(beaconGeom, beaconMat);
+    beacon.position.set(0, 0.15, 0);
+    pin.add(beacon);
+
+    pin.position.set(x, y, z);
+    pin.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(x, y, z).normalize());
+    pin.userData = { station: st };
+
+    globeGroup.add(pin);
+    globeMarkerMeshes.push(beacon);
+  });
+  globeMarkerIds = nextIds;
 }
 
 function setMapProjection(mode) {
@@ -547,28 +658,85 @@ function focusBasin(basin) {
 }
 
 function selectStation(st) {
+  if (!st) return;
   selectedStation = st;
   document.getElementById("station-selector").value = st.id;
-  
-  // Update HUD
-  document.getElementById("hud-sst").innerText = `${st.sst.toFixed(1)} °C`;
-  document.getElementById("hud-dhw").innerText = `${st.dhw.toFixed(1)} °C-wk`;
-  document.getElementById("hud-ph").innerText = `${st.ph.toFixed(2)}`;
-
-  // Update Sliders to match station
-  document.getElementById("slider-sst").value = st.sst;
-  document.getElementById("val-sst").innerText = `${st.sst.toFixed(1)} °C`;
-  document.getElementById("slider-dhw").value = st.dhw;
-  document.getElementById("val-dhw").innerText = `${st.dhw.toFixed(1)} °C-weeks`;
-  document.getElementById("slider-ph").value = st.ph;
-  document.getElementById("val-ph").innerText = `${st.ph.toFixed(2)}`;
-  document.getElementById("slider-turb").value = st.turb;
-  document.getElementById("val-turb").innerText = `${st.turb.toFixed(2)} NTU`;
-
-  // Trigger AI and 3D update
-  triggerAIInference();
+  renderStationState(st);
   if (currentProjection === "2d" && mapInstance) {
     mapInstance.panTo([st.lat, st.lon]);
+  }
+  refreshStationState(st.id);
+}
+
+function renderStationState(st) {
+  const sstInput = document.getElementById("slider-sst");
+  const dhwInput = document.getElementById("slider-dhw");
+  const phInput = document.getElementById("slider-ph");
+  const turbInput = document.getElementById("slider-turb");
+  const sst = numberOrNull(st.sst);
+  const dhw = numberOrNull(st.dhw);
+  const ph = numberOrNull(st.ph);
+  const turb = numberOrNull(st.turb);
+  document.getElementById("hud-sst").innerText = formatValue(sst, 1, " °C");
+  document.getElementById("hud-dhw").innerText = formatValue(dhw, 1, " °C-wk");
+  document.getElementById("hud-ph").innerText = formatValue(ph, 2);
+  document.getElementById("hud-sst-meta").innerText = sourceTimestamp(st.sst_observation);
+  document.getElementById("hud-dhw-meta").innerText = sourceTimestamp(st.dhw_observation);
+  if (sst !== null) { sstInput.value = sst; document.getElementById("val-sst").innerText = formatValue(sst, 1, " °C"); }
+  else document.getElementById("val-sst").innerText = "N/A";
+  if (dhw !== null) { dhwInput.value = dhw; document.getElementById("val-dhw").innerText = formatValue(dhw, 1, " °C-weeks"); }
+  else document.getElementById("val-dhw").innerText = "N/A";
+  if (ph !== null) { phInput.value = ph; document.getElementById("val-ph").innerText = formatValue(ph, 2); }
+  else document.getElementById("val-ph").innerText = "N/A";
+  if (turb !== null) { turbInput.value = turb; document.getElementById("val-turb").innerText = formatValue(turb, 2, " NTU"); }
+  else document.getElementById("val-turb").innerText = "N/A";
+  triggerAIInference();
+}
+
+function mergeStationState(st, state) {
+  const merged = Object.assign({}, st);
+  if (state.station) {
+    merged.name = state.station.name || merged.name;
+    merged.lat = state.station.latitude;
+    merged.lon = state.station.longitude;
+  }
+  if (state.sst) { merged.sst = state.sst.value; merged.sst_observation = state.sst; }
+  if (state.dhw) { merged.dhw = state.dhw.value; merged.dhw_observation = state.dhw; }
+  if (state.baseline) {
+    merged.baseline = state.baseline;
+    merged.baseline_fields = state.baseline_fields || CoralTwinAPI.mapBaselineFeatures(state.baseline);
+    Object.assign(merged, merged.baseline_fields);
+  }
+  if (state.decision !== undefined) {
+    merged.decision = CoralTwinAPI.normalizeDecision(state.decision);
+    Object.assign(merged, CoralTwinAPI.mapDecisionFeatures(merged.decision));
+  }
+  merged.inference = state.inference || null;
+  merged.latest_sync_run = state.latest_sync_run || null;
+  merged.retrieved_at = state.retrieved_at || merged.retrieved_at;
+  return merged;
+}
+
+async function refreshStationState(stationId) {
+  const previous = stationStates[stationId];
+  if (!previous) return;
+  try {
+    const state = await twinApiClient.getStationState(stationId);
+    const merged = mergeStationState(previous, state);
+    stationStates[stationId] = merged;
+    const index = STATIONS_DB.findIndex(st => st.id === stationId);
+    if (index >= 0) STATIONS_DB[index] = merged;
+    if (selectedStation && selectedStation.id === stationId) {
+      selectedStation = merged;
+      renderStationState(merged);
+    }
+    const freshness = Object.values(state.freshness || {});
+    const nextStatus = freshness.some(item => item.status === "stale")
+      ? "stale"
+      : freshness.length > 0 && freshness.every(item => item.status === "missing") ? "no-data" : "live";
+    setConnectionState(nextStatus);
+  } catch (error) {
+    setConnectionState(error.code === "offline" ? "offline" : "partial");
   }
 }
 
@@ -581,10 +749,10 @@ function populateStationSelector() {
     opt.innerText = `${st.name} (${st.region})`;
     sel.appendChild(opt);
   });
-  sel.addEventListener("change", (e) => {
+  sel.onchange = (e) => {
     const found = STATIONS_DB.find(s => s.id === e.target.value);
     if (found) selectStation(found);
-  });
+  };
 }
 
 // =============================================================================
@@ -765,8 +933,14 @@ function updateCoralBleachingShader(stressFraction) {
   if (!coralMaterial) return;
 
   const dict = I18N[currentLang];
-  let targetColor;
   const badge = document.getElementById("coral-health-badge");
+  if (!Number.isFinite(stressFraction)) {
+    coralMaterial.color = new THREE.Color(0x64748B);
+    badge.innerText = "INFERENCE UNAVAILABLE";
+    badge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/20 text-slate-300 border border-slate-500/40";
+    return;
+  }
+  let targetColor;
 
   if (stressFraction < 0.35) {
     // Healthy (Symbiont Rich Gold-Green)
@@ -862,63 +1036,25 @@ function initCharts() {
 }
 
 function triggerAIInference() {
-  const sst = parseFloat(document.getElementById("slider-sst").value);
-  const dhw = parseFloat(document.getElementById("slider-dhw").value);
-  const ph = parseFloat(document.getElementById("slider-ph").value);
-  const turb = parseFloat(document.getElementById("slider-turb").value);
-
-  // Compute Multi-Stressor Vulnerability Score
-  const phFactor = Math.max(0.0, (8.15 - ph) / 0.35);
-  const effectiveDHW = dhw * (1.0 + phFactor * 0.45);
-  const turbShield = Math.max(0.0, (turb - 0.5) * 0.4);
-  const totalScore = Math.max(0.0, effectiveDHW - turbShield);
-
-  let riskLabel, riskColor, riskBg, riskBorder, lossPct, stressFraction;
-
-  if (totalScore < 4.0) {
-    riskLabel = currentLang === "es" ? "BAJO RIESGO" : "LOW RISK";
-    riskColor = "text-emerald-400";
-    riskBg = "bg-emerald-500/10";
-    riskBorder = "border-emerald-500/30";
-    lossPct = (totalScore * 1.8).toFixed(1);
-    stressFraction = totalScore / 12.0;
-  } else if (totalScore < 8.0) {
-    riskLabel = currentLang === "es" ? "RIESGO MODERADO" : "MEDIUM RISK";
-    riskColor = "text-amber-400";
-    riskBg = "bg-amber-500/10";
-    riskBorder = "border-amber-500/30";
-    lossPct = (8.0 + (totalScore - 4.0) * 4.2).toFixed(1);
-    stressFraction = 0.35 + (totalScore - 4.0) * 0.08;
-  } else {
-    riskLabel = currentLang === "es" ? "ALTO RIESGO (CRÍTICO)" : "HIGH RISK (CRITICAL)";
-    riskColor = "text-rose-400";
-    riskBg = "bg-rose-500/10";
-    riskBorder = "border-rose-500/30";
-    lossPct = Math.min(95.0, 25.0 + (totalScore - 8.0) * 7.5).toFixed(1);
-    stressFraction = Math.min(1.0, 0.70 + (totalScore - 8.0) * 0.05);
-  }
-
-  // Update DOM Output Cards
+  const inference = selectedStation && selectedStation.inference;
+  const available = inference && inference.status === "ok";
+  const label = available ? inference.classification : "N/A";
+  const loss = available ? numberOrNull(inference.coral_cover_loss_pct) : null;
+  const riskLabel = label === "N/A" ? "N/A" : `${label.toUpperCase()} RISK`;
+  const riskColor = label === "High" ? "text-rose-400" : label === "Medium" ? "text-amber-400" : label === "Low" ? "text-emerald-400" : "text-slate-400";
+  const riskBg = label === "High" ? "bg-rose-500/10" : label === "Medium" ? "bg-amber-500/10" : "bg-slate-500/10";
+  const riskBorder = label === "High" ? "border-rose-500/30" : label === "Medium" ? "border-amber-500/30" : "border-slate-500/30";
   const riskCard = document.getElementById("card-risk");
   riskCard.className = `p-3 rounded-lg border ${riskBorder} ${riskBg} text-center transition`;
   document.getElementById("out-risk-label").className = `text-lg font-bold ${riskColor} font-mono mt-0.5`;
   document.getElementById("out-risk-label").innerText = riskLabel;
-  document.getElementById("out-loss-pct").innerText = `-${lossPct}%`;
-
-  // Update TreeSHAP Chart
-  const shapDHW = dhw * 3.2;
-  const shapPH = (8.15 - ph) * 14.5;
-  const shapTurb = -turb * 1.2;
-  const shapSST = Math.max(0, sst - 28.5) * 2.8;
-  const shapRug = -2.5;
-
+  document.getElementById("out-loss-pct").innerText = loss === null ? "N/A" : `-${loss.toFixed(1)}%`;
   if (shapChartInstance) {
-    shapChartInstance.data.datasets[0].data = [shapDHW, shapRug, shapPH, shapTurb, shapSST];
+    shapChartInstance.data.datasets[0].data = available && Array.isArray(inference.shap_values)
+      ? inference.shap_values : [null, null, null, null, null];
     shapChartInstance.update();
   }
-
-  // Update 3D Coral Shaders
-  updateCoralBleachingShader(stressFraction);
+  updateCoralBleachingShader(available ? (label === "High" ? 0.85 : label === "Medium" ? 0.5 : 0.1) : null);
 }
 
 // =============================================================================
@@ -1005,39 +1141,21 @@ function populateTable(stations) {
   stations.forEach(st => {
     const tr = document.createElement("tr");
     tr.className = "hover:bg-slate-800/40 transition cursor-pointer";
-
-    let riskText, riskClass;
-    if (st.risk === "Low") {
-      riskText = dict.riskLow;
-      riskClass = "text-emerald-400";
-    } else if (st.risk === "Medium") {
-      riskText = dict.riskMed;
-      riskClass = "text-amber-400";
-    } else {
-      riskText = dict.riskHigh;
-      riskClass = "text-rose-400";
-    }
-
-    let tierText, tierClass;
-    if (st.tier.includes("Tier 1")) {
-      tierText = currentLang === "es" ? "Tier 1: Siembra Activa" : "Tier 1: Outplanting";
-      tierClass = "bg-cyan-500/20 text-cyan-300 border-cyan-500/30";
-    } else if (st.tier.includes("Tier 2")) {
-      tierText = currentLang === "es" ? "Tier 2: Reserva Marina" : "Tier 2: Marine Reserve";
-      tierClass = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
-    } else {
-      tierText = currentLang === "es" ? "Tier 3: Riesgo Térmico" : "Tier 3: Thermal Risk";
-      tierClass = "bg-rose-500/20 text-rose-300 border-rose-500/30";
-    }
+    const priority = CoralTwinAPI.priorityPresentation(st.decision);
+    const tierText = priority.available ? priority.label : "N/A";
+    const tierClass = priority.available
+      ? "border-current"
+      : "bg-slate-500/20 text-slate-400 border-slate-500/30";
+    const tierStyle = priority.available ? `color: ${priority.color};` : "";
 
     tr.innerHTML = `
       <td class="py-2.5 px-4 font-semibold text-slate-200">${st.name}</td>
       <td class="py-2.5 px-4 text-slate-400">${st.region}</td>
-      <td class="py-2.5 px-4 text-cyan-300 font-bold">${st.cover.toFixed(1)}%</td>
-      <td class="py-2.5 px-4 text-amber-400">${st.dhw.toFixed(1)}</td>
-      <td class="py-2.5 px-4 text-teal-300">${st.ph.toFixed(2)}</td>
-      <td class="py-2.5 px-4"><span class="${riskClass} font-bold">● ${riskText}</span></td>
-      <td class="py-2.5 px-4"><span class="px-2 py-0.5 rounded text-[10px] border ${tierClass}">${tierText}</span></td>
+      <td class="py-2.5 px-4 text-cyan-300 font-bold">${formatValue(st.cover, 1, "%")}</td>
+      <td class="py-2.5 px-4 text-amber-400">${formatValue(st.dhw, 1)}</td>
+      <td class="py-2.5 px-4 text-teal-300">${formatValue(st.ph, 2)}</td>
+      <td class="py-2.5 px-4 font-mono" style="${tierStyle}">${formatValue(st.srpi, 3)}</td>
+      <td class="py-2.5 px-4"><span class="px-2 py-0.5 rounded text-[10px] border ${tierClass}" style="${tierStyle}">● ${tierText}</span></td>
       <td class="py-2.5 px-4 text-right">
         <button class="px-2 py-1 text-[10px] rounded bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-cyan-300 border border-slate-700 transition" onclick='selectStationById("${st.id}")'>
           <i class="fa-solid fa-crosshairs mr-1"></i> ${dict.btnInspect}
@@ -1073,12 +1191,11 @@ function exportGeoJSON() {
         station_name: st.name,
         ocean_region: st.region,
         live_coral_cover_pct: st.cover,
-        sea_surface_temp_degC: st.sst,
-        degree_heating_weeks: st.dhw,
+        ...CoralTwinAPI.telemetryExportFeatures(st),
         seawater_pH: st.ph,
-        bleaching_risk: st.risk,
-        management_tier: st.tier,
-        srpi_priority_score: st.srpi
+        reef_zone: st.reef_zone,
+        macroalgae_cover_pct: st.macro,
+        ...CoralTwinAPI.decisionExportFeatures(st.decision)
       }
     }))
   };
@@ -1096,18 +1213,7 @@ function exportGeoJSON() {
 // 10. EVENT LISTENERS
 // =============================================================================
 function bindEvents() {
-  // Sliders AI
-  ["slider-sst", "slider-dhw", "slider-ph", "slider-turb"].forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener("input", (e) => {
-      const val = parseFloat(e.target.value);
-      if (id === "slider-sst") document.getElementById("val-sst").innerText = `${val.toFixed(1)} °C`;
-      if (id === "slider-dhw") document.getElementById("val-dhw").innerText = `${val.toFixed(1)} °C-weeks`;
-      if (id === "slider-ph") document.getElementById("val-ph").innerText = `${val.toFixed(2)}`;
-      if (id === "slider-turb") document.getElementById("val-turb").innerText = `${val.toFixed(2)} NTU`;
-      triggerAIInference();
-    });
-  });
+  // Synchronized telemetry inputs are display-only; inference is refreshed by station selection.
 
   // Sliders ODE
   ["slider-ode-warming", "slider-ode-outplant", "slider-ode-hard", "slider-ode-herb"].forEach(id => {
@@ -1134,7 +1240,7 @@ function bindEvents() {
       if (tier === "ALL") {
         populateTable(STATIONS_DB);
       } else {
-        const filtered = STATIONS_DB.filter(s => s.tier.includes(tier));
+        const filtered = STATIONS_DB.filter(s => CoralTwinAPI.priorityPresentation(s.decision).tier === tier);
         populateTable(filtered);
       }
     });
@@ -1142,4 +1248,47 @@ function bindEvents() {
 
   // Export GeoJSON Button
   document.getElementById("btn-export-geojson").addEventListener("click", exportGeoJSON);
+
+  // Close modal on ESC key
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeAIAuditModal();
+  });
+}
+
+// =============================================================================
+// 11. AI AUDIT, EDA & BENCHMARK MODAL CONTROLS
+// =============================================================================
+function openAIAuditModal() {
+  const modal = document.getElementById("ai-audit-modal");
+  if (modal) {
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+}
+
+function closeAIAuditModal() {
+  const modal = document.getElementById("ai-audit-modal");
+  if (modal) {
+    modal.classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+}
+
+function switchAuditTab(tab) {
+  const tabs = ["benchmark", "confusion", "eda", "hyperparams"];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`tab-btn-${t}`);
+    const content = document.getElementById(`tab-content-${t}`);
+    if (t === tab) {
+      if (btn) {
+        btn.className = "px-4 py-2.5 border-b-2 border-cyan-400 text-cyan-300 font-bold transition flex items-center gap-2";
+      }
+      if (content) content.classList.remove("hidden");
+    } else {
+      if (btn) {
+        btn.className = "px-4 py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2";
+      }
+      if (content) content.classList.add("hidden");
+    }
+  });
 }
