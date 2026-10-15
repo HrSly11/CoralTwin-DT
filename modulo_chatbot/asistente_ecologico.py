@@ -18,11 +18,27 @@ try:
 except ImportError:
     pass
 
-LANGFLOW_HOST = os.getenv("LANGFLOW_HOST", "127.0.0.1")
-LANGFLOW_PORT = os.getenv("LANGFLOW_PORT", "7860")
-LANGFLOW_URL = os.getenv("LANGFLOW_URL") or f"http://{LANGFLOW_HOST}:{LANGFLOW_PORT}/api/v1/run"
+def _get_config_val(key: str, default=None):
+    try:
+        import streamlit as st
+        if hasattr(st, "secrets") and key in st.secrets:
+            return st.secrets[key]
+    except Exception:
+        pass
+    return os.getenv(key, default)
 
-GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+
+def _get_langflow_url():
+    url = _get_config_val("LANGFLOW_URL")
+    if url:
+        return url.rstrip("/")
+    host = _get_config_val("LANGFLOW_HOST", "127.0.0.1")
+    port = _get_config_val("LANGFLOW_PORT", "7860")
+    return f"http://{host}:{port}/api/v1/run"
+
+
+def _get_gemini_api_key():
+    return _get_config_val("GOOGLE_API_KEY") or _get_config_val("GEMINI_API_KEY")
 
 PROMPT_SISTEMA_CORAL_ES = """
 Eres CoralAI, el asistente científico y técnico integrado en el Gemelo Digital de Arrecifes de Coral (CoralTwin-DT).
@@ -157,13 +173,14 @@ BASE_CONOCIMIENTO_EN = [
 
 def _consultar_langflow(pregunta: str) -> str:
     """Intenta consultar el endpoint REST de Langflow si el servicio está corriendo"""
+    base_url = _get_langflow_url()
     try:
         payload = {
             "input_value": pregunta,
             "output_type": "chat",
             "input_type": "chat"
         }
-        resp = requests.post(f"{LANGFLOW_URL}/CoralTwin-Chat", json=payload, timeout=3)
+        resp = requests.post(f"{base_url}/CoralTwin-Chat", json=payload, timeout=25)
         if resp.status_code == 200:
             data = resp.json()
             outputs = data.get("outputs", [{}])[0].get("outputs", [{}])[0]
@@ -177,15 +194,16 @@ def _consultar_langflow(pregunta: str) -> str:
 
 def _consultar_gemini(pregunta: str, idioma: str = "es") -> str:
     """Consulta directa al SDK oficial de Gemini con selector de idioma"""
-    if not GEMINI_API_KEY:
+    api_key = _get_gemini_api_key()
+    if not api_key:
         return None
     try:
         from google import genai
-        client = genai.Client(api_key=GEMINI_API_KEY)
+        client = genai.Client(api_key=api_key)
         sys_prompt = PROMPT_SISTEMA_CORAL_EN if idioma == "en" else PROMPT_SISTEMA_CORAL_ES
         prompt_completo = f"{sys_prompt}\n\nUser Question: {pregunta}"
         res = client.models.generate_content(
-            model="gemini-3.6-flash",
+            model="gemini-flash-latest",
             contents=prompt_completo
         )
         if res and res.text:
