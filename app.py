@@ -1,6 +1,6 @@
 # ==========================================================
 # CORALTWIN-DT: GEMELO DIGITAL DE ARRECIFES DE CORAL
-# Aplicación Principal Integrada con Arquitectura Modular
+# Aplicación Principal Integrada con Arquitectura Modular (Bilingüe i18n & Theming)
 # ==========================================================
 import os
 import sys
@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 
 # Configuración de página Streamlit
 st.set_page_config(
-    page_title="CoralTwin-DT — Gemelo Digital de Arrecifes de Coral",
+    page_title="CoralTwin-DT — Digital Twin of Coral Reefs",
     page_icon="🪸",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -45,6 +45,8 @@ from modulo_visualizacion_3d.arrecife_3d import generar_gemelo_arrecife_3d
 from modulo_reportes.generador import renderizar_interfaz_reportes
 from modulo_chatbot.interfaz_chat import renderizar_interfaz_chatbot
 from utilidades.validadores import categorizar_alerta_noaa
+from utilidades.tema import aplicar_tema
+from modulo_idioma import obtener_texto
 
 # ==========================================================
 # GESTIÓN DE ESTADO DE SESIÓN
@@ -58,6 +60,8 @@ def inicializar_estado():
         "permisos": {},
         "institucion": None,
         "idioma": config.IDIOMA_POR_DEFECTO,
+        "tema": config.TEMA_POR_DEFECTO,
+        "seccion_id": "dashboard",
         "estacion_activa": "GreatBarrier_Central_14",
         "historial_chat_coral": []
     }
@@ -67,86 +71,139 @@ def inicializar_estado():
 
 inicializar_estado()
 
+# Aplicar Tema Activo (Claro u Oscuro)
+aplicar_tema(st.session_state.tema)
+
 # Control de Autenticación
 if not st.session_state.autenticado:
     formulario_acceso()
     st.stop()
 
+# Idioma Activo
+idioma_act = st.session_state.get("idioma", "es")
+
 # ==========================================================
 # BARRA LATERAL: PERFIL, SELECTOR DE ESTACIÓN Y NAVEGACIÓN
 # ==========================================================
-st.sidebar.markdown(f"### 🪸 **CoralTwin-DT**")
+st.sidebar.markdown(f"### 🪸 **{obtener_texto('app_titulo', idioma_act).split('—')[0].strip()}**")
 st.sidebar.markdown(f"👤 **{st.session_state.nombre_completo}**")
-st.sidebar.markdown(f"🔐 Rol: `{st.session_state.rol}`")
+st.sidebar.markdown(f"🔐 {obtener_texto('rol', idioma_act)}: `{st.session_state.rol}`")
 st.sidebar.markdown(f"🏛️ *{st.session_state.institucion}*")
+st.sidebar.markdown("---")
+
+# Selectores de Idioma y Tema (Claro / Oscuro)
+col_cfg1, col_cfg2 = st.sidebar.columns(2)
+with col_cfg1:
+    idx_idioma = 0 if idioma_act == "es" else 1
+    sel_idioma = st.selectbox(
+        obtener_texto("idioma_lbl", idioma_act),
+        ["🇪🇸 Español", "🇬🇧 English"],
+        index=idx_idioma,
+        key="sb_idioma"
+    )
+    nuevo_idioma = "es" if "Español" in sel_idioma else "en"
+    if nuevo_idioma != st.session_state.idioma:
+        st.session_state.idioma = nuevo_idioma
+        st.rerun()
+
+with col_cfg2:
+    idx_tema = 0 if st.session_state.tema == "claro" else 1
+    opc_claro = obtener_texto("tema_claro", idioma_act)
+    opc_oscuro = obtener_texto("tema_oscuro", idioma_act)
+    sel_tema = st.selectbox(
+        obtener_texto("tema_lbl", idioma_act),
+        [opc_claro, opc_oscuro],
+        index=idx_tema,
+        key="sb_tema"
+    )
+    nuevo_tema = "claro" if sel_tema == opc_claro else "oscuro"
+    if nuevo_tema != st.session_state.tema:
+        st.session_state.tema = nuevo_tema
+        st.rerun()
+
 st.sidebar.markdown("---")
 
 # Cargar estaciones para el selector
 df_estaciones = cargar_resumen_estaciones()
 lista_estaciones = df_estaciones["Station_Name"].tolist() if not df_estaciones.empty else ["GreatBarrier_Central_14"]
 
-st.sidebar.markdown("#### 📍 Estación Arrecifal Activa")
+st.sidebar.markdown(f"#### {obtener_texto('estacion_activa_lbl', idioma_act)}")
 idx_default = 0
 if st.session_state.estacion_activa in lista_estaciones:
     idx_default = lista_estaciones.index(st.session_state.estacion_activa)
 
 estacion_sel = st.sidebar.selectbox(
-    "Seleccione estación de monitoreo:",
+    obtener_texto("seleccione_estacion", idioma_act),
     lista_estaciones,
     index=idx_default,
     key="sb_estacion"
 )
 st.session_state.estacion_activa = estacion_sel
 
-# Menú dinámico según permisos de usuario
-menu_opciones = [
-    "📈 Panel Ecosistémico",
-    "🌐 Gemelo Espacial & 3D",
-    "🤖 Simulación Biofísica & Escenarios",
-    "🧠 Motor de IA Predictivo",
-    "🎯 Priorización Espacial (SRPI)",
-    "🔬 Evaluación de Hipótesis",
-    "📄 Centro de Reportes",
-    "💬 Asistente CoralAI"
+# Definición estructurada de módulos del sistema
+OPCIONES_MENU_DEF = [
+    ("dashboard", "menu_dashboard"),
+    ("mapa_3d", "menu_mapa_3d"),
+    ("simulacion", "menu_simulacion"),
+    ("ia", "menu_ia"),
+    ("srpi", "menu_srpi"),
+    ("hipotesis", "menu_hipotesis"),
+    ("reportes", "menu_reportes"),
+    ("chat", "menu_chat"),
 ]
 
 if verificar_permiso("gestionar_usuarios"):
-    menu_opciones.append("⚙️ Administración del Sistema")
+    OPCIONES_MENU_DEF.append(("admin", "menu_admin"))
+
+etiquetas_menu = [obtener_texto(clave, idioma_act) for _, clave in OPCIONES_MENU_DEF]
+mapa_etiqueta_a_id = {obtener_texto(clave, idioma_act): mod_id for mod_id, clave in OPCIONES_MENU_DEF}
+ids_disponibles = [mod_id for mod_id, _ in OPCIONES_MENU_DEF]
+
+if "seccion_id" not in st.session_state or st.session_state.seccion_id not in ids_disponibles:
+    st.session_state.seccion_id = "dashboard"
+
+idx_seccion = ids_disponibles.index(st.session_state.seccion_id)
 
 st.sidebar.markdown("---")
-seccion = st.sidebar.radio("📋 Módulos del Sistema", menu_opciones)
+seccion_seleccionada = st.sidebar.radio(
+    obtener_texto("modulos_sistema", idioma_act),
+    etiquetas_menu,
+    index=idx_seccion
+)
+st.session_state.seccion_id = mapa_etiqueta_a_id[seccion_seleccionada]
+seccion_id = st.session_state.seccion_id
 
 st.sidebar.markdown("---")
-if st.sidebar.button("🚪 Cerrar Sesión"):
+if st.sidebar.button(obtener_texto("cerrar_sesion", idioma_act)):
     cerrar_sesion()
     st.rerun()
 
 # ==========================================================
 # MÓDULO 1: PANEL ECOSISTÉMICO (DASHBOARD)
 # ==========================================================
-if seccion == "📈 Panel Ecosistémico":
-    st.header("📈 Panel de Control Ecosistémico — Monitoreo Global de Arrecifes")
-    st.markdown("**Asimilación continua de temperatura superficial (NOAA CRW), biofísica y calcificación aragonítica.**")
+if seccion_id == "dashboard":
+    st.header(obtener_texto("header_dashboard", idioma_act))
+    st.markdown(f"**{obtener_texto('sub_dashboard', idioma_act)}**")
     st.markdown("---")
     
     # KPIs Globales
     kpis = obtener_kpis_ecosistema()
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
-        st.metric("🏝️ Estaciones Activas", kpis["total_estaciones"])
+        st.metric(obtener_texto("estaciones_activas", idioma_act), kpis["total_estaciones"])
     with col2:
-        st.metric("🪸 Cobertura Coralina Media", f"{kpis['cobertura_promedio']} %")
+        st.metric(obtener_texto("cobertura_media", idioma_act), f"{kpis['cobertura_promedio']} %")
     with col3:
-        st.metric("🔥 DHW Medio", f"{kpis['dhw_promedio']} °C-sem")
+        st.metric(obtener_texto("dhw_promedio", idioma_act), f"{kpis['dhw_promedio']} °C-sem")
     with col4:
-        st.metric("🧪 pH Superficial Medio", kpis["ph_promedio"])
+        st.metric(obtener_texto("ph_promedio", idioma_act), kpis["ph_promedio"])
     with col5:
-        st.metric("🚨 En Alerta Térmica", f"{kpis['estaciones_alerta']} / {kpis['total_estaciones']}")
+        st.metric(obtener_texto("estaciones_alerta", idioma_act), f"{kpis['estaciones_alerta']} / {kpis['total_estaciones']}")
         
     st.markdown("---")
     
     # Estado detallado de la estación seleccionada
-    st.subheader(f"📍 Estado Actual: {estacion_sel}")
+    st.subheader(f"{obtener_texto('estado_actual', idioma_act)}: {estacion_sel}")
     
     row_est = df_estaciones[df_estaciones["Station_Name"] == estacion_sel]
     if not row_est.empty:
@@ -155,34 +212,38 @@ if seccion == "📈 Panel Ecosistémico":
         
         c1, c2, c3, c4 = st.columns(4)
         with c1:
-            st.markdown(f"**Región Oceánica:** {r['Region']}")
-            st.markdown(f"**Zona del Arrecife:** {r['Reef_Zone']}")
-            st.markdown(f"**Profundidad:** {r['Depth_m']:.1f} m")
+            st.markdown(f"**{obtener_texto('region_oceanica', idioma_act)}:** {r['Region']}")
+            st.markdown(f"**{obtener_texto('zona_arrecife', idioma_act)}:** {r['Reef_Zone']}")
+            st.markdown(f"**{obtener_texto('profundidad', idioma_act)}:** {r['Depth_m']:.1f} m")
         with c2:
-            st.markdown(f"**Estrés Térmico (DHW):** {r['DHW_degC_weeks']:.2f} °C-sem")
-            st.markdown(f"**Nivel de Alerta NOAA:** <span style='color:{color_alerta}; font-weight:bold;'>{alerta_noaa}</span>", unsafe_allow_html=True)
-            st.markdown(f"**pH Total:** {r['pH_total']:.3f}")
+            st.markdown(f"**{obtener_texto('estres_termico', idioma_act)}:** {r['DHW_degC_weeks']:.2f} °C-sem")
+            st.markdown(f"**{obtener_texto('nivel_alerta', idioma_act)}:** <span style='color:{color_alerta}; font-weight:bold;'>{alerta_noaa}</span>", unsafe_allow_html=True)
+            st.markdown(f"**{obtener_texto('ph_total', idioma_act)}:** {r['pH_total']:.3f}")
         with c3:
-            st.markdown(f"**Cobertura Coral Vivo:** {r['Live_Coral_Cover_Pct']:.1f} %")
-            st.markdown(f"**Macroalgas Competidoras:** {r['Macroalgae_Cover_Pct']:.1f} %")
-            st.markdown(f"**Rugosidad Estructural:** {r['Structural_Rugosity']:.2f}")
+            st.markdown(f"**{obtener_texto('cobertura_coral_vivo', idioma_act)}:** {r['Live_Coral_Cover_Pct']:.1f} %")
+            st.markdown(f"**{obtener_texto('macroalgas_comp', idioma_act)}:** {r['Macroalgae_Cover_Pct']:.1f} %")
+            st.markdown(f"**{obtener_texto('rugosidad_estructural', idioma_act)}:** {r['Structural_Rugosity']:.2f}")
         with c4:
-            st.markdown(f"**Índice SRPI:** {r['Spatial_Restoration_Priority_Index_SRPI']:.3f}")
+            st.markdown(f"**{obtener_texto('indice_srpi', idioma_act)}:** {r['Spatial_Restoration_Priority_Index_SRPI']:.3f}")
             tier_nombre = str(r['Priority_Tier']).replace("Tier_", "Tier ")
-            st.markdown(f"**Zonificación:** `{tier_nombre}`")
+            st.markdown(f"**{obtener_texto('zonificacion', idioma_act)}:** `{tier_nombre}`")
             st.progress(float(r['Spatial_Restoration_Priority_Index_SRPI']))
             
     # Serie temporal histórica de la estación
     df_serie = cargar_serie_temporal_estacion(estacion_sel)
     if not df_serie.empty:
-        st.markdown("#### 📅 Dinámica Histórica y Asimilación de Sensores")
+        st.markdown(f"#### {obtener_texto('dinamica_historica', idioma_act)}")
         
         fig_temp = px.line(
             df_serie,
             x="Date",
             y=["SST_degC", "DHW_degC_weeks"],
-            title=f"Temperatura Superficial (SST) y Grados de Calentamiento (DHW) — {estacion_sel}",
-            labels={"value": "Magnitud", "Date": "Fecha", "variable": "Sensor"},
+            title=obtener_texto("graf_sst_dhw_title", idioma_act).format(estacion=estacion_sel),
+            labels={
+                "value": obtener_texto("graf_sst_dhw_val", idioma_act),
+                "Date": obtener_texto("graf_sst_dhw_date", idioma_act),
+                "variable": obtener_texto("graf_sst_dhw_var", idioma_act)
+            },
             color_discrete_map={"SST_degC": "#ff7f0e", "DHW_degC_weeks": "#d62728"},
             template="plotly_dark"
         )
@@ -193,8 +254,12 @@ if seccion == "📈 Panel Ecosistémico":
             df_serie,
             x="Date",
             y=["Live_Coral_Cover_Pct", "Macroalgae_Cover_Pct"],
-            title=f"Evolución Bentónica: Cobertura Coralina Viva vs Macroalgas — {estacion_sel}",
-            labels={"value": "Cobertura (%)", "Date": "Fecha", "variable": "Componente"},
+            title=obtener_texto("graf_bio_title", idioma_act).format(estacion=estacion_sel),
+            labels={
+                "value": obtener_texto("graf_bio_val", idioma_act),
+                "Date": obtener_texto("graf_bio_date", idioma_act),
+                "variable": obtener_texto("graf_bio_var", idioma_act)
+            },
             color_discrete_map={"Live_Coral_Cover_Pct": "#00CC96", "Macroalgae_Cover_Pct": "#AB63FA"},
             template="plotly_dark"
         )
@@ -204,38 +269,39 @@ if seccion == "📈 Panel Ecosistémico":
 # ==========================================================
 # MÓDULO 2: GEMELO ESPACIAL & 3D
 # ==========================================================
-elif seccion == "🌐 Gemelo Espacial & 3D":
-    st.header("🌐 Gemelo Espacial Georreferenciado & Representación Tridimensional")
-    st.markdown("**Visualización sinóptica de las 25 estaciones y simulación tridimensional del marco arrecifal.**")
+elif seccion_id == "mapa_3d":
+    st.header(obtener_texto("header_mapa_3d", idioma_act))
+    st.markdown(f"**{obtener_texto('sub_mapa_3d', idioma_act)}**")
+    st.markdown(f"*{obtener_texto('sub_desc_mapa_3d', idioma_act)}*")
     st.markdown("---")
     
-    tab_mapa, tab_3d = st.tabs(["🗺️ Red Global de Estaciones (GIS)", "🪸 Estructura Arrecifal Tridimensional (3D)"])
+    tab_mapa, tab_3d = st.tabs([obtener_texto("tab_mapa", idioma_act), obtener_texto("tab_3d", idioma_act)])
     
     with tab_mapa:
-        st.markdown("#### 🗺️ Cartografía Marina y Zonificación de Restauración")
+        st.markdown(f"#### {obtener_texto('cartografia_marina', idioma_act)}")
         criterio = st.selectbox(
-            "Criterio de visualización en el mapa:",
+            obtener_texto("criterio_vis_mapa", idioma_act),
             ["Priority_Tier", "DHW_degC_weeks", "Live_Coral_Cover_Pct"],
             format_func=lambda x: {
-                "Priority_Tier": "Zonificación de Prioridad SRPI (Tier 1, 2, 3)",
-                "DHW_degC_weeks": "Semanas de Estrés Térmico NOAA (DHW)",
-                "Live_Coral_Cover_Pct": "Cobertura Coralina Viva Actual (%)"
+                "Priority_Tier": obtener_texto("crit_tier", idioma_act),
+                "DHW_degC_weeks": obtener_texto("crit_dhw", idioma_act),
+                "Live_Coral_Cover_Pct": obtener_texto("crit_cover", idioma_act)
             }[x]
         )
         fig_mapa = generar_mapa_global_estaciones(criterio)
         st.plotly_chart(fig_mapa, use_container_width=True)
         
     with tab_3d:
-        st.markdown("#### 🪸 Gemelo Digital 3D: Sustrato, Colonias Vivas, Blanqueadas y Macroalgas")
-        st.info("Ajuste los controles en tiempo real para observar cómo el estrés térmico blanquea las colonias y propicia la invasión macroalgal.")
+        st.markdown(f"#### {obtener_texto('gemelo_3d_title', idioma_act)}")
+        st.info(obtener_texto("gemelo_3d_info", idioma_act))
         
         c1, c2, c3 = st.columns(3)
         with c1:
-            cov_c = st.slider("Cobertura Coralina Viva (%)", 5.0, 85.0, 35.0, 1.0)
+            cov_c = st.slider(obtener_texto("slider_cov_coral", idioma_act), 5.0, 85.0, 35.0, 1.0)
         with c2:
-            blanq = st.slider("Severidad de Blanqueamiento Tisular (%)", 0.0, 100.0, 20.0, 1.0)
+            blanq = st.slider(obtener_texto("slider_blanq_tisular", idioma_act), 0.0, 100.0, 20.0, 1.0)
         with c3:
-            macro = st.slider("Cobertura de Macroalgas Invasoras (%)", 5.0, 75.0, 25.0, 1.0)
+            macro = st.slider(obtener_texto("slider_macroalgas", idioma_act), 5.0, 75.0, 25.0, 1.0)
             
         fig_3d = generar_gemelo_arrecife_3d(cov_c, blanq, macro)
         st.plotly_chart(fig_3d, use_container_width=True)
@@ -243,34 +309,35 @@ elif seccion == "🌐 Gemelo Espacial & 3D":
 # ==========================================================
 # MÓDULO 3: SIMULACIÓN BIOFÍSICA & ESCENARIOS IPCC
 # ==========================================================
-elif seccion == "🤖 Simulación Biofísica & Escenarios":
-    st.header("🤖 Simulación Biofísica Acoplada & Proyecciones Decenales (2025–2050)")
-    st.markdown("**Integración numérica de Ecuaciones Diferenciales Ordinarias (Mumby ODEs) acopladas a forzamientos climáticos.**")
+elif seccion_id == "simulacion":
+    st.header(obtener_texto("header_simulacion", idioma_act))
+    st.markdown(f"**{obtener_texto('sub_simulacion', idioma_act)}**")
+    st.markdown(f"*{obtener_texto('sub_desc_sim', idioma_act)}*")
     st.markdown("---")
     
     tab_sim, tab_ipcc, tab_resto = st.tabs([
-        "⚙️ Sandbox Biofísico Interactivo",
-        "🌍 Trayectorias Climáticas IPCC (SSP)",
-        "🛠️ Cartera de Intervenciones y Costos"
+        obtener_texto("tab_sim", idioma_act),
+        obtener_texto("tab_ipcc", idioma_act),
+        obtener_texto("tab_resto", idioma_act)
     ])
     
     with tab_sim:
-        st.markdown("#### 🔬 Parámetros del Ecosistema Arrecifal")
+        st.markdown(f"#### {obtener_texto('param_ecosistema', idioma_act)}")
         col_p1, col_p2, col_p3 = st.columns(3)
         with col_p1:
-            c0_input = st.slider("Cobertura Inicial de Coral C₀ (%)", 5.0, 60.0, 35.0) / 100.0
-            m0_input = st.slider("Cobertura Inicial de Macroalgas M₀ (%)", 5.0, 50.0, 25.0) / 100.0
-            horizonte_anos = st.slider("Horizonte de Simulación (Años)", 5, 35, 25)
+            c0_input = st.slider(obtener_texto("slider_c0", idioma_act), 5.0, 60.0, 35.0) / 100.0
+            m0_input = st.slider(obtener_texto("slider_m0", idioma_act), 5.0, 50.0, 25.0) / 100.0
+            horizonte_anos = st.slider(obtener_texto("slider_horizonte", idioma_act), 5, 35, 25)
         with col_p2:
-            dhw_input = st.slider("Estrés Térmico DHW (°C-semanas)", 0.0, 14.0, 3.2, 0.2)
-            ph_input = st.slider("pH Oceánico Superficial", 7.70, 8.20, 8.05, 0.01)
-            pastoreo_input = st.slider("Tasa de Pastoreo de Herbívoros (g)", 0.15, 0.65, 0.35, 0.02)
+            dhw_input = st.slider(obtener_texto("slider_dhw", idioma_act), 0.0, 14.0, 3.2, 0.2)
+            ph_input = st.slider(obtener_texto("slider_ph", idioma_act), 7.70, 8.20, 8.05, 0.01)
+            pastoreo_input = st.slider(obtener_texto("slider_pastoreo", idioma_act), 0.15, 0.65, 0.35, 0.02)
         with col_p3:
-            tasa_resto_input = st.slider("Tasa de Restauración Tisular (γ)", 0.0, 0.05, 0.015, 0.005)
-            endurecimiento_input = st.slider("Endurecimiento Térmico (Super-Corales)", 0.0, 2.5, 1.2, 0.1)
-            turb_input = st.slider("Reducción de Turbidez/Sedimentación", 0.0, 0.5, 0.15, 0.05)
+            tasa_resto_input = st.slider(obtener_texto("slider_tasa_resto", idioma_act), 0.0, 0.05, 0.015, 0.005)
+            endurecimiento_input = st.slider(obtener_texto("slider_endurecimiento", idioma_act), 0.0, 2.5, 1.2, 0.1)
+            turb_input = st.slider(obtener_texto("slider_turbidez", idioma_act), 0.0, 0.5, 0.15, 0.05)
             
-        if st.button("▶️ Ejecutar Simulación Numérica de Mumby"):
+        if st.button(obtener_texto("btn_ejecutar_mumby", idioma_act)):
             res_sim = resolver_mumby_extendido(
                 c0=c0_input,
                 m0=m0_input,
@@ -283,118 +350,138 @@ elif seccion == "🤖 Simulación Biofísica & Escenarios":
                 reduccion_turbidez=turb_input
             )
             
+            lbl_ano = "Año" if idioma_act == "es" else "Year"
+            lbl_coral = "Coral Vivo (%)" if idioma_act == "es" else "Live Coral (%)"
+            lbl_macro = "Macroalgas (%)" if idioma_act == "es" else "Macroalgae (%)"
+            lbl_turf = "Césped Algal Turf (%)" if idioma_act == "es" else "Turf Algae (%)"
+            
             df_sim_traj = pd.DataFrame({
-                "Año": 2025 + res_sim["tiempo_años"],
-                "Coral Vivo (%)": res_sim["cobertura_coral"],
-                "Macroalgas (%)": res_sim["cobertura_macroalgas"],
-                "Césped Algal Turf (%)": res_sim["cesped_turf"]
+                lbl_ano: 2025 + res_sim["tiempo_años"],
+                lbl_coral: res_sim["cobertura_coral"],
+                lbl_macro: res_sim["cobertura_macroalgas"],
+                lbl_turf: res_sim["cesped_turf"]
             })
             
             fig_traj = px.line(
                 df_sim_traj,
-                x="Año",
-                y=["Coral Vivo (%)", "Macroalgas (%)", "Césped Algal Turf (%)"],
-                title="Trayectoria Dinámica de Cobertura Bentónica (Mumby ODEs)",
+                x=lbl_ano,
+                y=[lbl_coral, lbl_macro, lbl_turf],
+                title=obtener_texto("traj_dinamica_title", idioma_act),
                 color_discrete_map={
-                    "Coral Vivo (%)": "#00CC96",
-                    "Macroalgas (%)": "#EF553B",
-                    "Césped Algal Turf (%)": "#FECB52"
+                    lbl_coral: "#00CC96",
+                    lbl_macro: "#EF553B",
+                    lbl_turf: "#FECB52"
                 },
                 template="plotly_dark"
             )
-            fig_traj.add_hline(y=30.0, line_dash="dash", line_color="cyan", annotation_text="Umbral Crítico Resiliencia 30%")
+            fig_traj.add_hline(y=30.0, line_dash="dash", line_color="cyan", annotation_text=obtener_texto("umbral_resiliencia", idioma_act))
             st.plotly_chart(fig_traj, use_container_width=True)
             
             c_res1, c_res2, c_res3 = st.columns(3)
             with c_res1:
-                st.metric("🪸 Cobertura Coralina Final (2050)", f"{res_sim['cobertura_final']:.1f} %")
+                st.metric(obtener_texto("met_coral_final", idioma_act), f"{res_sim['cobertura_final']:.1f} %")
             with c_res2:
-                st.metric("🌿 Macroalgas Finales", f"{res_sim['macroalgas_final']:.1f} %")
+                st.metric(obtener_texto("met_macro_final", idioma_act), f"{res_sim['macroalgas_final']:.1f} %")
             with c_res3:
-                st.metric("⚖️ Estado Ecológico Resultante", res_sim["resiliencia_estado"])
+                st.metric(obtener_texto("met_estado_eco", idioma_act), res_sim["resiliencia_estado"])
                 
     with tab_ipcc:
-        st.markdown("#### 🌍 Comparación de Trayectorias bajo Escenarios IPCC AR6 (2025–2050)")
-        activar_resto_ipcc = st.checkbox("Incluir Restauración Activa y Protección AMP en la comparación", value=True)
+        st.markdown(f"#### {obtener_texto('comp_ipcc_title', idioma_act)}")
+        activar_resto_ipcc = st.checkbox(obtener_texto("chk_resto_ipcc", idioma_act), value=True)
         
         tiempo_arr, res_ipcc = simular_comparativa_escenarios(con_restauracion=activar_resto_ipcc)
         
-        df_ipcc_plot = pd.DataFrame({"Año": tiempo_arr})
+        lbl_ano = "Año" if idioma_act == "es" else "Year"
+        df_ipcc_plot = pd.DataFrame({lbl_ano: tiempo_arr})
         for k, v in res_ipcc.items():
             df_ipcc_plot[f"Coral {k}"] = v["coral"]
             
         fig_ipcc = px.line(
             df_ipcc_plot,
-            x="Año",
+            x=lbl_ano,
             y=[f"Coral {k}" for k in res_ipcc.keys()],
-            title="Cobertura Coralina Proyectada a 2050: SSP1-2.6 vs SSP2-4.5 vs SSP5-8.5",
-            labels={"value": "Cobertura Coralina (%)", "variable": "Escenario Climático"},
+            title=obtener_texto("graf_ipcc_title", idioma_act),
+            labels={
+                "value": obtener_texto("graf_ipcc_y", idioma_act),
+                "variable": obtener_texto("graf_ipcc_var", idioma_act)
+            },
             template="plotly_dark"
         )
-        fig_ipcc.add_hline(y=30.0, line_dash="dash", line_color="cyan", annotation_text="Meta 30% Cobertura")
+        fig_ipcc.add_hline(y=30.0, line_dash="dash", line_color="cyan", annotation_text=obtener_texto("meta_cobertura_30", idioma_act))
         st.plotly_chart(fig_ipcc, use_container_width=True)
         
-        st.markdown("##### 📋 Resumen Cuantitativo por Escenario al 2050:")
+        st.markdown(f"##### {obtener_texto('resumen_escenario_2050', idioma_act)}")
         col_sc1, col_sc2, col_sc3 = st.columns(3)
         for i, (k, datos) in enumerate(res_ipcc.items()):
             col_target = [col_sc1, col_sc2, col_sc3][i]
             with col_target:
-                st.info(f"**{k}**\n\n- Cobertura Coral 2050: **{datos['cobertura_final']:.1f}%**\n- Estado: `{datos['estado']}`")
+                lbl_cob = obtener_texto('cobertura_coral_2050', idioma_act)
+                lbl_est = obtener_texto('estado_label', idioma_act)
+                st.info(f"**{k}**\n\n- {lbl_cob}: **{datos['cobertura_final']:.1f}%**\n- {lbl_est}: `{datos['estado']}`")
                 
     with tab_resto:
-        st.markdown("#### 🛠️ Diseño de Cartera de Intervención Ecológica")
-        st.markdown("Seleccione las estrategias de restauración para evaluar su beneficio sinérgico acumulado y costo de implementación:")
+        st.markdown(f"#### {obtener_texto('diseno_cartera_title', idioma_act)}")
+        st.markdown(obtener_texto("diseno_cartera_desc", idioma_act))
+        
+        nombres_en = {
+            "super_corals": "Thermally Resilient Super-Corals Propagation",
+            "micro_fragmentacion": "Micro-Fragmentation & Intensive Outplanting",
+            "creacion_amp_herbivoros": "Marine Protected Area (Strict Herbivore Ban)",
+            "reduccion_escorrentia": "Local Pressure Mitigation (Turbidity & Nutrients Control)",
+            "sombreado_marino": "Marine Cloud Brightening & Dynamic Shading"
+        }
         
         estrategias_sel = st.multiselect(
-            "Seleccionar intervenciones activas:",
+            obtener_texto("sel_intervenciones", idioma_act),
             list(CATALOGO_INTERVENCIONES.keys()),
             default=["super_corals", "micro_fragmentacion", "creacion_amp_herbivoros"],
-            format_func=lambda x: CATALOGO_INTERVENCIONES[x]["nombre"]
+            format_func=lambda x: nombres_en.get(x, CATALOGO_INTERVENCIONES[x]["nombre"]) if idioma_act == "en" else CATALOGO_INTERVENCIONES[x]["nombre"]
         )
         
         impacto = calcular_impacto_cartera(estrategias_sel)
         
         c_i1, c_i2, c_i3, c_i4 = st.columns(4)
         with c_i1:
-            st.metric("🔥 Margen Térmico Ganado", f"+{impacto['endurecimiento_termico']:.1f} °C")
+            st.metric(obtener_texto("met_margen_termico", idioma_act), f"+{impacto['endurecimiento_termico']:.1f} °C")
         with c_i2:
-            st.metric("🌱 Tasa de Siembra Coralina (γ)", f"{impacto['tasa_restauracion']:.3f} /año")
+            st.metric(obtener_texto("met_tasa_siembra", idioma_act), f"{impacto['tasa_restauracion']:.3f} /año")
         with c_i3:
-            st.metric("🐟 Incremento Pastoreo (Δg)", f"+{impacto['incremento_pastoreo']:.2f}")
+            st.metric(obtener_texto("met_inc_pastoreo", idioma_act), f"+{impacto['incremento_pastoreo']:.2f}")
         with c_i4:
-            st.metric("💰 Costo Estimado / Hectárea", f"${impacto['costo_estimado_ha_usd']:,} USD")
+            st.metric(obtener_texto("met_costo_ha", idioma_act), f"${impacto['costo_estimado_ha_usd']:,} USD")
 
 # ==========================================================
 # MÓDULO 4: MOTOR DE IA PREDICTIVO
 # ==========================================================
-elif seccion == "🧠 Motor de IA Predictivo":
-    st.header("🧠 Motor de Inteligencia Artificial Predictiva & Explicabilidad SHAP")
-    st.markdown("**Inferencia multitarea con modelos XGBoost y Random Forest entrenados sobre 15,000 registros oceanográficos.**")
+elif seccion_id == "ia":
+    st.header(obtener_texto("header_ia", idioma_act))
+    st.markdown(f"**{obtener_texto('sub_ia', idioma_act)}**")
+    st.markdown(f"*{obtener_texto('sub_desc_ia', idioma_act)}*")
     st.markdown("---")
     
     tab_pred, tab_bench, tab_shap, tab_eda = st.tabs([
-        "🎯 Inferencia de Blanqueamiento & Pérdida",
-        "🏆 Benchmarking & Comparativa de Modelos",
-        "🔍 Explicabilidad e Importancia TreeSHAP",
-        "📊 Análisis Exploratorio & Correlaciones"
+        obtener_texto("tab_pred", idioma_act),
+        obtener_texto("tab_bench", idioma_act),
+        obtener_texto("tab_shap", idioma_act),
+        obtener_texto("tab_eda", idioma_act)
     ])
     
     with tab_pred:
-        st.markdown("#### 🎛️ Simulador de Inferencia en Tiempo Real")
+        st.markdown(f"#### {obtener_texto('sim_inferencia_title', idioma_act)}")
         c1, c2, c3 = st.columns(3)
         with c1:
-            in_dhw = st.slider("Estrés Térmico DHW (°C-sem)", 0.0, 16.0, 4.8, 0.2)
-            in_sst = st.slider("Temperatura Superficial SST (°C)", 24.0, 33.0, 29.8, 0.1)
-            in_anom = st.slider("Anomalía Térmica SST (°C)", -0.5, 3.5, 1.4, 0.1)
+            in_dhw = st.slider(obtener_texto("slider_dhw", idioma_act), 0.0, 16.0, 4.8, 0.2)
+            in_sst = st.slider(obtener_texto("slider_sst", idioma_act), 24.0, 33.0, 29.8, 0.1)
+            in_anom = st.slider(obtener_texto("slider_anom", idioma_act), -0.5, 3.5, 1.4, 0.1)
         with c2:
-            in_ph = st.slider("pH Total del Agua Marina", 7.60, 8.25, 8.02, 0.01)
-            in_omega = st.slider("Saturación Aragonita (Ω)", 2.0, 4.5, 3.4, 0.1)
-            in_turb = st.slider("Turbidez (NTU)", 0.2, 5.0, 0.9, 0.1)
+            in_ph = st.slider(obtener_texto("slider_ph", idioma_act), 7.60, 8.25, 8.02, 0.01)
+            in_omega = st.slider(obtener_texto("slider_omega", idioma_act), 2.0, 4.5, 3.4, 0.1)
+            in_turb = st.slider(obtener_texto("slider_turb", idioma_act), 0.2, 5.0, 0.9, 0.1)
         with c3:
-            in_cov = st.slider("Cobertura Coralina Viva Actual (%)", 5.0, 80.0, 36.0, 1.0)
-            in_rug = st.slider("Rugosidad Estructural", 1.0, 3.8, 2.3, 0.1)
-            in_depth = st.slider("Profundidad (m)", 2.0, 30.0, 12.0, 0.5)
-            alg_sel = st.selectbox("Algoritmo de Inferencia:", ["XGBoost", "Random Forest"])
+            in_cov = st.slider(obtener_texto("slider_cov", idioma_act), 5.0, 80.0, 36.0, 1.0)
+            in_rug = st.slider(obtener_texto("slider_rug", idioma_act), 1.0, 3.8, 2.3, 0.1)
+            in_depth = st.slider(obtener_texto("slider_depth", idioma_act), 2.0, 30.0, 12.0, 0.5)
+            alg_sel = st.selectbox(obtener_texto("algoritmo_inferencia", idioma_act), ["XGBoost", "Random Forest"])
             
         prediccion = predecir_estado_arrecifal(
             depth_m=in_depth,
@@ -409,68 +496,103 @@ elif seccion == "🧠 Motor de IA Predictivo":
             algoritmo=alg_sel
         )
         
-        st.markdown("##### 📊 Resultados de la Inferencia:")
+        st.markdown(f"##### {obtener_texto('res_inferencia_title', idioma_act)}")
         res_col1, res_col2, res_col3, res_col4 = st.columns(4)
         
         color_riesgo = {"Low": "#00CC96", "Medium": "#FFA15A", "High": "#EF553B"}.get(prediccion["riesgo_blanqueamiento"], "cyan")
         
         with res_col1:
-            st.markdown(f"**Riesgo de Blanqueamiento:**")
+            st.markdown(f"**{obtener_texto('riesgo_blanq_lbl', idioma_act)}**")
             st.markdown(f"<h3 style='color:{color_riesgo};'>{prediccion['riesgo_blanqueamiento']}</h3>", unsafe_allow_html=True)
         with res_col2:
-            st.metric("🔥 Severidad Estimada de Blanqueamiento", f"{prediccion['severidad_blanqueamiento_pct']}%")
+            st.metric(obtener_texto("met_sev_blanq", idioma_act), f"{prediccion['severidad_blanqueamiento_pct']}%")
         with res_col3:
-            st.metric("📉 Pérdida Proyectada de Cobertura", f"{prediccion['perdida_cobertura_pct']}%")
+            st.metric(obtener_texto("met_perd_cob", idioma_act), f"{prediccion['perdida_cobertura_pct']}%")
         with res_col4:
-            st.metric("🛡️ Cobertura Coralina Remanente", f"{prediccion['cobertura_remanente_pct']}%")
+            st.metric(obtener_texto("met_cob_remanente", idioma_act), f"{prediccion['cobertura_remanente_pct']}%")
             
-        df_probs = pd.DataFrame(list(prediccion["probabilidades"].items()), columns=["Nivel de Riesgo", "Probabilidad"])
-        fig_prob = px.bar(df_probs, x="Nivel de Riesgo", y="Probabilidad", color="Nivel de Riesgo",
-                          color_discrete_map={"Low": "#00CC96", "Medium": "#FFA15A", "High": "#EF553B"},
-                          template="plotly_dark", title="Distribución de Probabilidades de la Red Multiclase")
+        col_r_lbl = obtener_texto("col_riesgo", idioma_act)
+        col_p_lbl = obtener_texto("col_prob", idioma_act)
+        df_probs = pd.DataFrame(list(prediccion["probabilidades"].items()), columns=[col_r_lbl, col_p_lbl])
+        fig_prob = px.bar(
+            df_probs,
+            x=col_r_lbl,
+            y=col_p_lbl,
+            color=col_r_lbl,
+            color_discrete_map={"Low": "#00CC96", "Medium": "#FFA15A", "High": "#EF553B"},
+            template="plotly_dark",
+            title=obtener_texto("graf_prob_title", idioma_act)
+        )
         fig_prob.update_layout(height=280)
         st.plotly_chart(fig_prob, use_container_width=True)
 
     with tab_bench:
-        st.markdown("#### 🏆 Benchmarking Riguroso de Modelos de Machine Learning")
-        st.markdown("Evaluación comparativa multiobjetivo entrenada sobre **15.000 observaciones oceanográficas** con validación cruzada estratificada espacialmente (5-Fold CV).")
-        
-        st.info("🎯 **Modelo Seleccionado para Producción: XGBoost (Gradient Boosted Trees)** — Ofrece el balance óptimo con 98.85% de exactitud, R² = 0.9995 y la menor latencia de inferencia (0.0094 ms) para asimilación en tiempo real.")
+        st.markdown(f"#### {obtener_texto('bench_title', idioma_act)}")
+        st.markdown(obtener_texto("bench_desc", idioma_act))
+        st.info(obtener_texto("bench_info_xgboost", idioma_act))
         
         df_bench = obtener_matriz_benchmarking()
-        st.dataframe(df_bench, use_container_width=True, hide_index=True)
         
-        st.markdown("##### 📊 Comparativa Visual de Rendimiento y Latencia")
+        # Adaptar tabla de benchmarking para inglés si está activo
+        if idioma_act == "en":
+            df_bench_disp = df_bench.rename(columns={
+                "Modelo": "Model",
+                "Arquitectura": "Architecture",
+                "Latencia Inferencia": "Inference Latency",
+                "Tamaño": "Size",
+                "Explicabilidad (XAI)": "Explainability (XAI)",
+                "Estado": "Status"
+            }).copy()
+            df_bench_disp["Model"] = df_bench_disp["Model"].replace({
+                "XGBoost (Ganador Operacional)": "XGBoost (Operational Winner)",
+                "LSTM (Recurrente)": "LSTM (Recurrent)"
+            })
+            df_bench_disp["Status"] = df_bench_disp["Status"].replace({
+                "Producción / Operacional": "Production / Operational",
+                "Ensamble / Alternativa": "Ensemble / Alternative",
+                "Descartado (Alta Latencia)": "Discarded (High Latency)"
+            })
+        else:
+            df_bench_disp = df_bench
+            
+        st.dataframe(df_bench_disp, use_container_width=True, hide_index=True)
+        
+        st.markdown(f"##### {obtener_texto('comp_rend_lat_title', idioma_act)}")
         
         c_b1, c_b2 = st.columns(2)
         with c_b1:
+            opc_f1 = obtener_texto("opt_f1", idioma_act)
+            opc_err = obtener_texto("opt_tasa_error", idioma_act)
+            opc_rmse = obtener_texto("opt_rmse", idioma_act)
+            opc_acc = obtener_texto("opt_acc", idioma_act)
+            
             opcion_metrica = st.selectbox(
-                "Métrica de Comparación:",
-                ["Macro-F1 Score (Penaliza desbalance)", "Tasa de Error de Clasificación (%)", "Error Cuadrático Medio RMSE (%)", "Exactitud (Accuracy con Zoom 90-100%)"],
+                obtener_texto("sel_metrica_comp", idioma_act),
+                [opc_f1, opc_err, opc_rmse, opc_acc],
                 index=0
             )
             
-            if opcion_metrica == "Macro-F1 Score (Penaliza desbalance)":
+            if opcion_metrica == opc_f1:
                 df_plot = pd.DataFrame({"Modelo": df_bench["Modelo"], "Valor": df_bench["Macro-F1"]})
-                y_titulo = "Macro-F1 Score (0 a 1)"
+                y_titulo = obtener_texto("y_f1", idioma_act)
                 rango_y = [0, 0.90]
                 text_plantilla = "%{y:.4f}"
-            elif opcion_metrica == "Tasa de Error de Clasificación (%)":
+            elif opcion_metrica == opc_err:
                 err_vals = [round(100.0 - float(x.replace("%", "")), 2) for x in df_bench["Accuracy"]]
                 df_plot = pd.DataFrame({"Modelo": df_bench["Modelo"], "Valor": err_vals})
-                y_titulo = "Tasa de Error (%) — Menor es Mejor"
+                y_titulo = obtener_texto("y_tasa_error", idioma_act)
                 rango_y = [0, max(err_vals) * 1.25]
                 text_plantilla = "%{y:.2f}%"
-            elif opcion_metrica == "Error Cuadrático Medio RMSE (%)":
+            elif opcion_metrica == opc_rmse:
                 rmse_vals = [float(x.replace("%", "")) for x in df_bench["RMSE (%)"]]
                 df_plot = pd.DataFrame({"Modelo": df_bench["Modelo"], "Valor": rmse_vals})
-                y_titulo = "RMSE en Pérdida Tisular (%) — Menor es Mejor"
+                y_titulo = obtener_texto("y_rmse", idioma_act)
                 rango_y = [0, max(rmse_vals) * 1.15]
                 text_plantilla = "%{y:.2f}%"
             else:
                 acc_vals = [float(x.replace("%", "")) for x in df_bench["Accuracy"]]
                 df_plot = pd.DataFrame({"Modelo": df_bench["Modelo"], "Valor": acc_vals})
-                y_titulo = "Accuracy (%)"
+                y_titulo = obtener_texto("y_acc", idioma_act)
                 rango_y = [92, 100.8]
                 text_plantilla = "%{y:.2f}%"
                 
@@ -479,7 +601,7 @@ elif seccion == "🧠 Motor de IA Predictivo":
                 x="Modelo",
                 y="Valor",
                 text="Valor",
-                title=f"Comparativa: {opcion_metrica}",
+                title=obtener_texto("graf_comp_title", idioma_act).format(metrica=opcion_metrica),
                 labels={"Valor": y_titulo},
                 color="Modelo",
                 color_discrete_map={
@@ -494,7 +616,7 @@ elif seccion == "🧠 Motor de IA Predictivo":
             st.plotly_chart(fig_met, use_container_width=True)
             
         with c_b2:
-            st.markdown("**Velocidad de Inferencia:**")
+            st.markdown(f"**{obtener_texto('velocidad_inferencia_lbl', idioma_act)}**")
             lat_vals = [float(x.replace(" ms", "")) for x in df_bench["Latencia Inferencia"]]
             df_plot_lat = pd.DataFrame({"Modelo": df_bench["Modelo"], "Latencia": lat_vals})
             fig_lat = px.bar(
@@ -502,8 +624,8 @@ elif seccion == "🧠 Motor de IA Predictivo":
                 x="Modelo",
                 y="Latencia",
                 text="Latencia",
-                title="Latencia de Inferencia por Muestra (Milisegundos — Menor es Mejor)",
-                labels={"Latencia": "Latencia (ms)"},
+                title=obtener_texto("graf_lat_title", idioma_act),
+                labels={"Latencia": obtener_texto("graf_lat_y", idioma_act)},
                 color="Modelo",
                 color_discrete_map={
                     "XGBoost (Ganador Operacional)": "#00CC96",
@@ -517,30 +639,18 @@ elif seccion == "🧠 Motor de IA Predictivo":
             st.plotly_chart(fig_lat, use_container_width=True)
             
         st.markdown("---")
-        st.markdown("##### 🔬 Discusión Técnica y Análisis de Compromisos (Trade-offs):")
+        st.markdown(f"##### {obtener_texto('discus_tecnica_title', idioma_act)}")
         
         c_an1, c_an2, c_an3 = st.columns(3)
         with c_an1:
-            st.markdown("""
-            **1. Capacidad Predictiva (Accuracy / F1)**
-            - **XGBoost (98.85%)** y **Random Forest (98.89%)** muestran paridad estadística ($R^2 > 0.999$), capturando con precisión las respuestas no lineales del blanqueamiento.
-            - **LSTM (94.68%)** presentó menor generalización en resolución mensual, confirmando que en datos tabulares oceanográficos con variables termodinámicas los modelos basados en árboles superan a las redes recurrentes.
-            """)
+            st.markdown(f"**{obtener_texto('disc_1_tit', idioma_act)}**\n\n{obtener_texto('disc_1_body', idioma_act)}")
         with c_an2:
-            st.markdown("""
-            **2. Eficiencia y Latencia Operativa**
-            - **XGBoost ejecuta en 0.0094 ms**, siendo **37 veces más rápido** que Random Forest (0.35 ms) y **51 veces más veloz** que LSTM.
-            - Esta velocidad es determinante para el gemelo digital, permitiendo recalcular el estado de las 25 estaciones en menos de un cuarto de milisegundo ante cada nuevo dato satelital NOAA.
-            """)
+            st.markdown(f"**{obtener_texto('disc_2_tit', idioma_act)}**\n\n{obtener_texto('disc_2_body', idioma_act)}")
         with c_an3:
-            st.markdown("""
-            **3. Huella de Memoria y Despliegue**
-            - El ensamble de Random Forest genera un archivo masivo de **61.6 MB**, mientras que XGBoost compila toda la estructura en apenas **1.45 MB** (reducción del 97.6%).
-            - Esto optimiza drásticamente el consumo de RAM en contenedores cloud y facilita el despliegue serverless sin degradación de rendimiento.
-            """)
+            st.markdown(f"**{obtener_texto('disc_3_tit', idioma_act)}**\n\n{obtener_texto('disc_3_body', idioma_act)}")
         
     with tab_shap:
-        st.markdown("#### 🔍 Ranking de Importancia de Factores Ambientales (TreeSHAP)")
+        st.markdown(f"#### {obtener_texto('shap_title', idioma_act)}")
         df_shap = obtener_ranking_importancia()
         
         fig_shap = px.bar(
@@ -550,7 +660,7 @@ elif seccion == "🧠 Motor de IA Predictivo":
             orientation="h",
             color="Importancia_SHAP",
             color_continuous_scale="Viridis",
-            title="Importancia Global de Características en la Predicción de Blanqueamiento y Mortalidad",
+            title=obtener_texto("graf_shap_title", idioma_act),
             template="plotly_dark"
         )
         fig_shap.update_layout(yaxis=dict(autorange="reversed"), height=360)
@@ -558,27 +668,25 @@ elif seccion == "🧠 Motor de IA Predictivo":
         
         st.dataframe(df_shap[["Variable", "Importancia_SHAP", "Efecto_Direccional", "Mecanismo_Ecológico"]], use_container_width=True)
         
-        st.markdown("#### 📈 Curva de Respuesta Térmica ante DHW")
+        st.markdown(f"#### {obtener_texto('curva_dhw_title', idioma_act)}")
         df_curva = curva_sensibilidad_dhw()
         fig_curva = px.line(
             df_curva,
             x="DHW_degC_weeks",
             y=["Severidad_Blanqueamiento_Pct", "Perdida_Cobertura_Pct"],
-            title="Sensibilidad No Lineal: Severidad y Mortalidad vs Estrés Térmico Acumulado",
-            labels={"value": "Porcentaje (%)", "DHW_degC_weeks": "DHW (°C-semanas)"},
+            title=obtener_texto("graf_curva_title", idioma_act),
+            labels={
+                "value": obtener_texto("graf_curva_y", idioma_act),
+                "DHW_degC_weeks": obtener_texto("graf_curva_x", idioma_act)
+            },
             template="plotly_dark"
         )
         st.plotly_chart(fig_curva, use_container_width=True)
         
-        st.info("""
-        💡 **Interpretación de la Dinámica Ecológica (Puntos de Inflexión):**
-        - **Zona de Tolerancia (DHW 0–4 °C-sem):** La respuesta es sub-lineal; el holobionte coralino amortigua el estrés térmico mediante proteínas de choque térmico (HSPs).
-        - **Punto de Inflexión Catastrófico (DHW 4–8 °C-sem):** Se activa la ruptura masiva de la fotosimbiosis (blanqueamiento acelerado), alcanzando el 50% de severidad promedio.
-        - **Saturación de Mortalidad (DHW > 8 °C-sem):** La curva de pérdida de cobertura coralina se dispara hacia niveles irreversibles si no existen refugios térmicos locales o siembras de super-corales tolerantes.
-        """)
+        st.info(obtener_texto("interp_ecologica_box", idioma_act))
         
     with tab_eda:
-        st.markdown("#### 📊 Matriz de Correlación Oceanográfica de Pearson")
+        st.markdown(f"#### {obtener_texto('eda_corr_title', idioma_act)}")
         corr = calcular_matriz_correlacion()
         if not corr.empty:
             fig_corr = px.imshow(
@@ -586,21 +694,22 @@ elif seccion == "🧠 Motor de IA Predictivo":
                 text_auto=True,
                 aspect="auto",
                 color_continuous_scale="RdBu_r",
-                title="Matriz de Correlaciones Bivariadas del Dataset CoralTwin-DT",
+                title=obtener_texto("graf_corr_title", idioma_act),
                 template="plotly_dark"
             )
             fig_corr.update_layout(height=520)
             st.plotly_chart(fig_corr, use_container_width=True)
             
-        st.markdown("#### 🌍 Resumen por Cuenca Oceánica")
+        st.markdown(f"#### {obtener_texto('eda_region_title', idioma_act)}")
         st.dataframe(obtener_resumen_por_region(), use_container_width=True)
 
 # ==========================================================
 # MÓDULO 5: PRIORIZACIÓN ESPACIAL (SRPI)
 # ==========================================================
-elif seccion == "🎯 Priorización Espacial (SRPI)":
-    st.header("🎯 Priorización Espacial de Restauración — Índice SRPI")
-    st.markdown("**Clasificación algorítmica de sitios para optimizar la inversión en micro-fragmentación y áreas marinas protegidas.**")
+elif seccion_id == "srpi":
+    st.header(obtener_texto("header_srpi", idioma_act))
+    st.markdown(f"**{obtener_texto('sub_srpi', idioma_act)}**")
+    st.markdown(f"*{obtener_texto('sub_desc_srpi', idioma_act)}*")
     st.markdown("---")
     
     df_srpi = cargar_ranking_srpi()
@@ -609,15 +718,15 @@ elif seccion == "🎯 Priorización Espacial (SRPI)":
         c1, c2, c3 = st.columns(3)
         with c1:
             n_t1 = int((df_srpi["Priority_Tier"].str.contains("Tier_1")).sum())
-            st.success(f"🟢 **Tier 1 (Alta Prioridad):** {n_t1} estaciones")
+            st.success(obtener_texto("tier1_box", idioma_act).format(n=n_t1))
         with c2:
             n_t2 = int((df_srpi["Priority_Tier"].str.contains("Tier_2")).sum())
-            st.warning(f"🟡 **Tier 2 (Conservación Secundaria):** {n_t2} estaciones")
+            st.warning(obtener_texto("tier2_box", idioma_act).format(n=n_t2))
         with c3:
             n_t3 = int((df_srpi["Priority_Tier"].str.contains("Tier_3")).sum())
-            st.error(f"🔴 **Tier 3 (Monitoreo Pasivo):** {n_t3} estaciones")
+            st.error(obtener_texto("tier3_box", idioma_act).format(n=n_t3))
             
-        st.markdown("#### 📋 Ranking Completo de Estaciones (Ordenadas por SRPI Descendente):")
+        st.markdown(f"#### {obtener_texto('ranking_completo_title', idioma_act)}")
         cols_mostrar = [
             "Station_Name", "Region", "Reef_Zone", "Depth_m",
             "DHW_degC_weeks", "pH_total", "Live_Coral_Cover_Pct",
@@ -637,43 +746,48 @@ elif seccion == "🎯 Priorización Espacial (SRPI)":
 # ==========================================================
 # MÓDULO 6: EVALUACIÓN DE HIPÓTESIS CIENTÍFICA
 # ==========================================================
-elif seccion == "🔬 Evaluación de Hipótesis":
-    st.header("🔬 Evaluación Cuantitativa de la Hipótesis Principal de Investigación")
+elif seccion_id == "hipotesis":
+    st.header(obtener_texto("header_hipotesis", idioma_act))
+    st.markdown(f"**{obtener_texto('sub_hipotesis', idioma_act)}**")
     st.markdown("---")
     
-    st.info("""
-    **Enunciado de la Hipótesis:**
-    *"Las áreas priorizadas mediante el gemelo digital mantienen una cobertura coralina superior al 30 % en escenarios RCP 4.5 a 2050, en comparación con áreas no priorizadas."*
-    """)
+    st.info(obtener_texto("hipotesis_enunciado_box", idioma_act))
     
     col_btn, col_opt = st.columns([1, 2])
     with col_btn:
-        ejecutar_exp = st.button("🧪 Ejecutar Experimento Monte Carlo (N=150)")
+        ejecutar_exp = st.button(obtener_texto("btn_ejecutar_mc", idioma_act))
     with col_opt:
-        st.caption("Modela variabilidad climática estocástica en olas de calor y acidificación decenal comparando sitios Tier 1 frente a gestión pasiva.")
+        st.caption(obtener_texto("caption_mc", idioma_act))
         
     res_hip = evaluar_hipotesis_investigacion(n_simulaciones=150)
     
     col_v1, col_v2, col_v3 = st.columns(3)
     with col_v1:
         color_dic = "green" if res_hip["hipotesis_confirmada"] else "red"
-        st.markdown(f"### Dictamen:")
+        st.markdown(f"### {obtener_texto('dictamen_lbl', idioma_act)}")
         st.markdown(f"<h2 style='color:{color_dic};'>{res_hip['dictamen']}</h2>", unsafe_allow_html=True)
     with col_v2:
-        st.metric("🪸 Cobertura Media Zonas Priorizadas (2050)", f"{res_hip['media_areas_priorizadas']} %", f"IC 95%: {res_hip['ci95_priorizadas']}")
-        st.metric("🎯 Probabilidad de Superar Umbral 30%", f"{res_hip['probabilidad_superar_30_prio']} %")
+        st.metric(obtener_texto("met_media_prio", idioma_act), f"{res_hip['media_areas_priorizadas']} %", f"IC 95%: {res_hip['ci95_priorizadas']}")
+        st.metric(obtener_texto("met_prob_30", idioma_act), f"{res_hip['probabilidad_superar_30_prio']} %")
     with col_v3:
-        st.metric("🍂 Cobertura Media Zonas No Priorizadas (2050)", f"{res_hip['media_areas_no_priorizadas']} %", f"IC 95%: {res_hip['ci95_no_priorizadas']}")
-        st.metric("📊 Ganancia Neta de Cobertura", f"+{res_hip['diferencia_cobertura_pct']} %")
+        st.metric(obtener_texto("met_media_noprio", idioma_act), f"{res_hip['media_areas_no_priorizadas']} %", f"IC 95%: {res_hip['ci95_no_priorizadas']}")
+        st.metric(obtener_texto("met_ganancia_neta", idioma_act), f"+{res_hip['diferencia_cobertura_pct']} %")
         
     st.markdown("---")
-    st.markdown("#### 📈 Distribución Comparativa de Cobertura Coralina al Año 2050")
+    st.markdown(f"#### {obtener_texto('dist_comparativa_title', idioma_act)}")
+    
+    grp_prio = obtener_texto("grupo_prio", idioma_act)
+    grp_noprio = obtener_texto("grupo_noprio", idioma_act)
     
     df_dist = pd.DataFrame({
         "Cobertura_2050": np.concatenate([res_hip["distribucion_priorizada"], res_hip["distribucion_no_priorizada"]]),
-        "Grupo": ["Áreas Priorizadas (Gemelo Digital + Restauración)"] * len(res_hip["distribucion_priorizada"]) +
-                 ["Áreas No Priorizadas (Gestión Pasiva Línea Base)"] * len(res_hip["distribucion_no_priorizada"])
+        "Grupo": [grp_prio] * len(res_hip["distribucion_priorizada"]) + [grp_noprio] * len(res_hip["distribucion_no_priorizada"])
     })
+    
+    color_map_box = {
+        grp_prio: "#00CC96",
+        grp_noprio: "#EF553B"
+    }
     
     fig_box = px.box(
         df_dist,
@@ -681,62 +795,57 @@ elif seccion == "🔬 Evaluación de Hipótesis":
         y="Cobertura_2050",
         color="Grupo",
         points="all",
-        title="Validación Estadística: Cobertura Coralina al 2050 bajo Escenario RCP/SSP 4.5",
-        labels={"Cobertura_2050": "Cobertura Coralina (%)"},
-        color_discrete_map={
-            "Áreas Priorizadas (Gemelo Digital + Restauración)": "#00CC96",
-            "Áreas No Priorizadas (Gestión Pasiva Línea Base)": "#EF553B"
-        },
+        title=obtener_texto("graf_dist_title", idioma_act),
+        labels={"Cobertura_2050": obtener_texto("graf_dist_y", idioma_act)},
+        color_discrete_map=color_map_box,
         template="plotly_dark"
     )
-    fig_box.add_hline(y=30.0, line_dash="dash", line_color="cyan", annotation_text="Umbral Crítico 30% Hipótesis")
+    fig_box.add_hline(y=30.0, line_dash="dash", line_color="cyan", annotation_text=obtener_texto("umbral_critico_hip", idioma_act))
     st.plotly_chart(fig_box, use_container_width=True)
     
-    st.markdown(f"""
-    **Evidencia Estadística:**
-    - Estadístico t de Welch: `t = {res_hip['estadistico_t']}`
-    - Significancia estadística: `p < 0.001` (diferencia altamente significativa)
-    - Tamaño del efecto (d de Cohen): `d = {res_hip['cohen_d']}` (Efecto de magnitud colosal)
-    - **Conclusión:** Se verifica que la priorización focalizada y la restauración con super-corales protege la biomasa por encima del 30% de cobertura coralina crítica.
-    """)
+    st.markdown(obtener_texto("evidencia_estadistica_md", idioma_act).format(
+        t=res_hip['estadistico_t'],
+        d=res_hip['cohen_d']
+    ))
 
 # ==========================================================
 # MÓDULO 7: CENTRO DE REPORTES
 # ==========================================================
-elif seccion == "📄 Centro de Reportes":
-    st.header("📄 Centro de Reportes — Exportación Multi-formato")
+elif seccion_id == "reportes":
+    st.header(obtener_texto("header_reportes", idioma_act))
+    st.markdown(f"**{obtener_texto('sub_reportes', idioma_act)}**")
     renderizar_interfaz_reportes()
 
 # ==========================================================
 # MÓDULO 8: ASISTENTE CORALAI
 # ==========================================================
-elif seccion == "💬 Asistente CoralAI":
-    st.header("💬 Asistente Conversacional Inteligente — CoralAI")
+elif seccion_id == "chat":
+    st.header(obtener_texto("header_chat", idioma_act))
     renderizar_interfaz_chatbot()
 
 # ==========================================================
 # MÓDULO 9: ADMINISTRACIÓN DEL SISTEMA
 # ==========================================================
-elif seccion == "⚙️ Administración del Sistema":
-    st.header("⚙️ Administración del Sistema y Sensores Operacionales")
+elif seccion_id == "admin":
+    st.header(obtener_texto("header_admin", idioma_act))
     st.markdown("---")
     
-    st.subheader("🗄️ Estado de la Base de Datos")
+    st.subheader(obtener_texto("sub_admin_db", idioma_act))
     from modulo_base_datos.conexion import probar_conexion, config as cfg_db
     ok_db, msg_db = probar_conexion()
     if ok_db:
-        st.success(f"✅ {msg_db} — Motor activo: `{cfg_db.DB_TIPO}`")
+        st.success(f"✅ {msg_db} — Motor: `{cfg_db.DB_TIPO}`")
     else:
-        st.error(f"❌ Error en base de datos: {msg_db}")
+        st.error(f"❌ Error DB: {msg_db}")
         
-    st.subheader("🛰️ Sincronización NOAA Coral Reef Watch")
-    st.info("El subsistema operacional permite asimilar lecturas en tiempo real de temperatura superficial (SST) y semanas de estrés térmico (DHW).")
+    st.subheader(obtener_texto("sub_admin_noaa", idioma_act))
+    st.info(obtener_texto("noaa_sync_info", idioma_act))
     
-    if st.button("🔄 Ejecutar Ciclo de Sincronización de Sensores"):
-        with st.spinner("Sincronizando 25 estaciones oceanográficas con productos satelitales NOAA..."):
+    if st.button(obtener_texto("btn_sync_noaa", idioma_act)):
+        with st.spinner(obtener_texto("spinner_sync", idioma_act)):
             import time
-            time.sleep(1.2)
-            st.success("✅ 25 estaciones sincronizadas exitosamente en operational/data/coraltwin.db")
+            time.sleep(1.0)
+            st.success(obtener_texto("sync_success", idioma_act))
 
 # Pie de página general
 st.markdown("---")
