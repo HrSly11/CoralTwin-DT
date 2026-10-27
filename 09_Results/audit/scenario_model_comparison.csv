@@ -1,0 +1,5 @@
+Scenario_Code,RK4_Eq5_6_Empirical_Baseline33_68_Mean_2050_Pct,RK4_Eq5_6_Empirical_Baseline33_68_CI95,RK4_Eq5_6_Empirical_Net_Accretion_2050,RK4_Eq5_6_Manuscript_Baseline28_50_Mean_2050_Pct,RK4_Eq5_6_Manuscript_Baseline28_50_CI95,RK4_Eq5_6_Manuscript_Net_Accretion_2050,Legacy_Euler_Script_Table2_2050_Pct,Legacy_Euler_Script_Table2_CI95,Legacy_Euler_Script_Net_Accretion_2050,Manuscript_Table4_Claimed_2050_Pct,Manuscript_Table4_Claimed_CI95,Manuscript_Table4_Claimed_Net_Accretion_2050
+S1_SSP585_Unmitigated,0.69,[0.1 - 6.2],-1.8,0.7,[0.1 - 6.2],-1.79,7.58,[5.0 - 11.2],-1.03,4.8,[2.1 - 8.4],-2.35
+S2_SSP245_Moderate,18.55,[0.5 - 52.7],0.94,18.42,[0.5 - 52.7],1.43,30.55,[25.3 - 35.6],3.94,21.4,[16.2 - 26.8],1.15
+S3_Active_Restoration,48.92,[23.3 - 67.4],5.5,48.89,[23.0 - 67.4],6.84,77.3,[67.9 - 85.0],2.83,38.7,[31.5 - 45.9],3.8
+S4_Integrated_Intervention,55.2,[36.2 - 70.5],7.46,55.2,[36.2 - 70.5],9.16,73.18,[66.8 - 79.4],3.31,46.2,[39.4 - 53.1],5.45

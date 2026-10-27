@@ -1,0 +1,78 @@
+{
+  "integration_method": "RK4 (4th-order Runge-Kutta)",
+  "dt_years": 0.05,
+  "n_steps": 500,
+  "horizon_years": [
+    2025,
+    2050
+  ],
+  "n_monte_carlo_runs_per_scenario": 5000,
+  "parameter_perturbation_gaussian_rel_sd": 0.15,
+  "seed": 42,
+  "empirical_baseline_2025": {
+    "Live_Coral_Cover_Pct": 33.68,
+    "Macroalgae_Cover_Pct": 31.41
+  },
+  "manuscript_claimed_baseline_2025": {
+    "Live_Coral_Cover_Pct": 28.5,
+    "Macroalgae_Cover_Pct": 22.0
+  },
+  "base_ode_parameters": {
+    "r": 0.45,
+    "d0": 0.05,
+    "alpha": 0.012,
+    "beta": 0.75,
+    "a": 0.85,
+    "gamma": 0.22
+  },
+  "scenario_configs": [
+    {
+      "id": "Scenario_1_Severe_Thermal_Stress_SSP585",
+      "code": "S1_SSP585_Unmitigated",
+      "label": "1. Severe Thermal Stress (SSP5-8.5)",
+      "dhw_0": 5.0,
+      "dhw_slope": 0.36,
+      "thermal_hardening": 0.0,
+      "omega_0": 3.65,
+      "omega_slope": -0.052,
+      "g_mpa": 0.25,
+      "phi_resto": 0.0
+    },
+    {
+      "id": "Scenario_2_Moderate_Mitigation_SSP245",
+      "code": "S2_SSP245_Moderate",
+      "label": "2. Moderate Mitigation (SSP2-4.5)",
+      "dhw_0": 5.0,
+      "dhw_slope": 0.18,
+      "thermal_hardening": 0.0,
+      "omega_0": 3.65,
+      "omega_slope": -0.022,
+      "g_mpa": 0.3,
+      "phi_resto": 0.0
+    },
+    {
+      "id": "Scenario_3_Active_Coral_Restoration",
+      "code": "S3_Active_Restoration",
+      "label": "3. Active Resilient Outplanting",
+      "dhw_0": 5.0,
+      "dhw_slope": 0.2,
+      "thermal_hardening": 2.0,
+      "omega_0": 3.65,
+      "omega_slope": -0.028,
+      "g_mpa": 0.35,
+      "phi_resto": 0.025
+    },
+    {
+      "id": "Scenario_4_MPA_Integrated_Protection",
+      "code": "S4_Integrated_Intervention",
+      "label": "4. Integrated MPA & Outplanting",
+      "dhw_0": 5.0,
+      "dhw_slope": 0.18,
+      "thermal_hardening": 2.0,
+      "omega_0": 3.65,
+      "omega_slope": -0.022,
+      "g_mpa": 0.68,
+      "phi_resto": 0.03
+    }
+  ]
+}

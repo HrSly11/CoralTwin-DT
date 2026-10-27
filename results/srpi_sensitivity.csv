@@ -1,0 +1,15 @@
+Formulation,Unit_of_Analysis,Total_Units,Threshold_Method,Threshold_Value,Tier_1_Count,Tier_1_Pct,SRPI_Min,SRPI_Mean,SRPI_Max
+Biophysical_Eq7_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.60,0.6,18,60.0,0.353,0.598,0.765
+Biophysical_Eq7_15000_Observations,Observation_Grid_Record (N=15000),15000,Fixed_Threshold_SRPI_ge_0.60,0.6,8701,58.01,0.255,0.598,0.805
+Relative_MinMax_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.60,0.6,7,23.33,0.291,0.512,0.694
+Biophysical_Eq7_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.70,0.7,10,33.33,0.353,0.598,0.765
+Biophysical_Eq7_15000_Observations,Observation_Grid_Record (N=15000),15000,Fixed_Threshold_SRPI_ge_0.70,0.7,4872,32.48,0.255,0.598,0.805
+Relative_MinMax_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.70,0.7,0,0.0,0.291,0.512,0.694
+Biophysical_Eq7_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.80,0.8,0,0.0,0.353,0.598,0.765
+Biophysical_Eq7_15000_Observations,Observation_Grid_Record (N=15000),15000,Fixed_Threshold_SRPI_ge_0.80,0.8,17,0.11,0.255,0.598,0.805
+Relative_MinMax_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.80,0.8,0,0.0,0.291,0.512,0.694
+Relative_MinMax_30_Stations,Station (N=30),30,Quantile_qcut_Top25Pct,0.593,8,26.67,0.291,0.512,0.694
+Relative_MinMax_Legacy_25_Stations,Station_Legacy (N=25),25,Fixed_Threshold_SRPI_ge_0.60,0.6,5,20.0,0.277,0.479,0.682
+Relative_MinMax_Legacy_25_Stations,Station_Legacy (N=25),25,Fixed_Threshold_SRPI_ge_0.70,0.7,0,0.0,0.277,0.479,0.682
+Relative_MinMax_Legacy_25_Stations,Station_Legacy (N=25),25,Fixed_Threshold_SRPI_ge_0.80,0.8,0,0.0,0.277,0.479,0.682
+Relative_MinMax_Legacy_25_Stations,Station_Legacy (N=25),25,Quantile_qcut_Top25Pct,0.553,6,24.0,0.277,0.479,0.682
