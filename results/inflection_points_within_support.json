@@ -1,0 +1,115 @@
+{
+  "scientific_disclaimer": "Partial dependence thresholds evaluated strictly within the empirical data support (10th to 90th percentiles of Omega); reflects learned response surface of the surrogate model.",
+  "empirical_support_statistics": {
+    "aragonite_saturation_omega": {
+      "min": 2.68,
+      "max": 4.4,
+      "mean": 3.523,
+      "std": 0.2955,
+      "p05": 3.08,
+      "p10": 3.16,
+      "p25": 3.3,
+      "median": 3.51,
+      "p75": 3.72,
+      "p90": 3.9,
+      "p95": 4.03,
+      "count_le_2_40": 0,
+      "count_le_2_60": 0,
+      "count_le_2_80": 18,
+      "count_le_3_00": 359,
+      "count_le_p10_3_16": 1562,
+      "count_ge_p90_3_90": 1546
+    },
+    "ph_total": {
+      "min": 7.962,
+      "max": 8.207,
+      "mean": 8.0766,
+      "std": 0.034,
+      "p05": 8.023,
+      "p10": 8.033,
+      "median": 8.076,
+      "p90": 8.12,
+      "p95": 8.135
+    }
+  },
+  "within_support_definitions": {
+    "high_omega_p90": {
+      "omega": 3.9,
+      "ph": 8.12,
+      "empirical_records_ge_390": 1546
+    },
+    "low_omega_p10": {
+      "omega": 3.16,
+      "ph": 8.03,
+      "empirical_records_le_316": 1562
+    }
+  },
+  "xgboost_within_support": {
+    "high_omega_390": {
+      "smoothed_max_derivative_dhw_degC_weeks": 7.3,
+      "predicted_loss_at_max_derivative_pct": 9.73,
+      "max_slope_pct_per_dhw": 21.676,
+      "ec50_half_maximal_dhw_degC_weeks": 10.7,
+      "ec50_step_raw_dhw_degC_weeks": 10.65,
+      "ec50_predicted_loss_pct": 36.05,
+      "dhw_crossing_20pct_loss_degC_weeks": 7.3,
+      "dhw_crossing_35pct_loss_degC_weeks": 10.6,
+      "loss_at_dhw_0_pct": 4.82,
+      "loss_at_dhw_8_pct": 31.54,
+      "loss_at_dhw_20_pct": 67.53
+    },
+    "low_omega_316": {
+      "smoothed_max_derivative_dhw_degC_weeks": 7.3,
+      "predicted_loss_at_max_derivative_pct": 15.32,
+      "max_slope_pct_per_dhw": 18.442,
+      "ec50_half_maximal_dhw_degC_weeks": 10.7,
+      "ec50_step_raw_dhw_degC_weeks": 10.65,
+      "ec50_predicted_loss_pct": 38.55,
+      "dhw_crossing_20pct_loss_degC_weeks": 7.1,
+      "dhw_crossing_35pct_loss_degC_weeks": 10.25,
+      "loss_at_dhw_0_pct": 7.29,
+      "loss_at_dhw_8_pct": 33.89,
+      "loss_at_dhw_20_pct": 69.49
+    },
+    "threshold_shift_low_minus_high": {
+      "delta_ec50_dhw_degC_weeks": 0.0,
+      "delta_crossing_35pct_dhw_degC_weeks": -0.35,
+      "delta_crossing_20pct_dhw_degC_weeks": -0.2,
+      "delta_inflection_dhw_degC_weeks": 0.0
+    }
+  },
+  "analytical_generator_within_support": {
+    "high_omega_390": {
+      "smoothed_max_derivative_dhw_degC_weeks": 10.15,
+      "predicted_loss_at_max_derivative_pct": 45.44,
+      "max_slope_pct_per_dhw": 10.759,
+      "ec50_half_maximal_dhw_degC_weeks": 9.85,
+      "ec50_step_raw_dhw_degC_weeks": 9.85,
+      "ec50_predicted_loss_pct": 42.22,
+      "dhw_crossing_20pct_loss_degC_weeks": 7.35,
+      "dhw_crossing_35pct_loss_degC_weeks": 9.2,
+      "loss_at_dhw_0_pct": 4.34,
+      "loss_at_dhw_8_pct": 24.51,
+      "loss_at_dhw_20_pct": 79.97
+    },
+    "low_omega_316": {
+      "smoothed_max_derivative_dhw_degC_weeks": 9.55,
+      "predicted_loss_at_max_derivative_pct": 46.38,
+      "max_slope_pct_per_dhw": 10.185,
+      "ec50_half_maximal_dhw_degC_weeks": 9.2,
+      "ec50_step_raw_dhw_degC_weeks": 9.25,
+      "ec50_predicted_loss_pct": 42.82,
+      "dhw_crossing_20pct_loss_degC_weeks": 6.45,
+      "dhw_crossing_35pct_loss_degC_weeks": 8.4,
+      "loss_at_dhw_0_pct": 6.16,
+      "loss_at_dhw_8_pct": 31.26,
+      "loss_at_dhw_20_pct": 79.98
+    },
+    "threshold_shift_low_minus_high": {
+      "delta_ec50_dhw_degC_weeks": -0.65,
+      "delta_crossing_35pct_dhw_degC_weeks": -0.8,
+      "delta_crossing_20pct_dhw_degC_weeks": -0.9,
+      "delta_inflection_dhw_degC_weeks": -0.6
+    }
+  }
+}

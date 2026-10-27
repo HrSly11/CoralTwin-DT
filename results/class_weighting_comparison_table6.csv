@@ -1,0 +1,5 @@
+Model,Weighting_Mode,Overall_Accuracy,Overall_Accuracy_CI95,Balanced_Accuracy,Balanced_Accuracy_CI95,Macro_F1,Macro_F1_CI95,Recall_Low,Recall_Medium,Recall_Medium_CI95,Recall_High,PR_AUC_Low,PR_AUC_Medium,PR_AUC_High
+XGBoost,Sin ponderar (Canónico),98.86,"[98.67%, 99.01%]",69.83,"[68.29%, 71.10%]",0.7225,"[0.6966, 0.7423]",99.99,9.78,"[5.26%, 13.64%]",99.72,0.9969,0.1431,1.0
+XGBoost,Ponderado (Balanced),98.18,"[98.05%, 98.44%]",70.23,"[68.81%, 71.85%]",0.7089,"[0.6933, 0.7285]",99.24,11.72,"[7.37%, 16.67%]",99.72,0.9969,0.1497,1.0
+Random_Forest,Sin ponderar (Canónico),98.88,"[98.71%, 99.04%]",70.17,"[68.75%, 71.68%]",0.7285,"[0.7045, 0.7521]",100.0,10.75,"[6.53%, 15.38%]",99.75,0.997,0.1688,1.0
+Random_Forest,Ponderado (Balanced),89.93,"[89.43%, 90.39%]",78.63,"[75.82%, 80.57%]",0.6818,"[0.6744, 0.6880]",90.0,45.91,"[37.62%, 51.76%]",99.97,0.9974,0.1068,1.0

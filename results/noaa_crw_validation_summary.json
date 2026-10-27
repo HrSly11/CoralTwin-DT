@@ -1,0 +1,57 @@
+{
+  "status": "completado_con_datos_reales",
+  "data_source": "NOAA Coral Reef Watch (CRW) Operational Daily Global 5km Satellite Bleaching Heat Stress (CRW_dhw_v1_0)",
+  "erddap_endpoint": "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/CRW_dhw_v1_0",
+  "temporal_coverage": "2015-01-01 to 2024-12-31 (weekly sample, stride=7)",
+  "n_stations_evaluated": 29,
+  "spearman_correlation_dhw_95th": {
+    "rho": -0.0921,
+    "p_value": 0.6345990363023872,
+    "significant_at_005": false
+  },
+  "pearson_correlation_dhw_95th": {
+    "r": -0.2016,
+    "p_value": 0.2944221211733736
+  },
+  "dhw_95th_summary": {
+    "n_valid_stations": 29,
+    "real_noaa_mean_across_stations": 6.533,
+    "real_noaa_min": 0.14,
+    "real_noaa_max": 14.071,
+    "synthetic_mean_across_stations": 5.529,
+    "synthetic_min": 0.305,
+    "synthetic_max": 15.339
+  },
+  "srpi_tier1_preservation": {
+    "synthetic_tier1_threshold": 0.7,
+    "synthetic_tier1_count": 17,
+    "real_noaa_tier1_count": 4,
+    "maintained_tier1_count": 2,
+    "preservation_rate_pct": 11.76,
+    "maintained_stations": [
+      "Hawaii_Kaneohe_28",
+      "Hawaii_OahuFore_29"
+    ],
+    "dropped_from_tier1": [
+      "Mesoamerican_Fore_01",
+      "Mesoamerican_Crest_02",
+      "Mesoamerican_Lagoon_04",
+      "Belize_Atoll_06",
+      "Cozumel_South_07",
+      "Roatan_South_10",
+      "Florida_Keys_Uppers_11",
+      "Florida_Keys_Lowers_12",
+      "Okinawa_Kerama_21",
+      "Okinawa_Ishigaki_22",
+      "RedSea_Aqaba_23",
+      "RedSea_Shallow_24",
+      "RedSea_Farasan_25",
+      "Seychelles_Mahe_26",
+      "Palau_RockIslands_30"
+    ],
+    "newly_qualifying_tier1": [
+      "CoralTriangle_RajaAmpat_16",
+      "CoralTriangle_Sulawesi_19"
+    ]
+  }
+}

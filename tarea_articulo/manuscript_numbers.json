@@ -15,7 +15,7 @@
     "n_columns": 36,
     "n_stations": 30,
     "records_per_station": 500,
-    "temporal_coverage": "2015-01-09 to 2024-06-21 (weekly sampling)",
+    "temporal_coverage": "2015-01-01 to 2024-12-30 (500 stochastic daily draws per station out of 3,652 days, average interval ~7.3 days, spanning full 10 years)",
     "synthetic_percentage": 100.0,
     "real_observation_percentage": 0.0,
     "exact_rng_reproduction_verified": true,
@@ -252,6 +252,72 @@
         {"Comparison_Pair": "Deep_MLP vs Stacked_LSTM", "Model_A": "Deep_MLP", "Model_B": "Stacked_LSTM", "Evaluation_Unit": "15000_Samples_OOF", "N_Paired_Units": 15000, "Metric": "Sample_Absolute_Error", "Mean_Model_A": 3.27845, "Mean_Model_B": 3.21865, "Mean_Difference_A_minus_B": 0.0598, "Wilcoxon_W": 53703311.5, "p_value_two_sided": 1.517536e-06, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 0.059}
       ]
     },
+    "hyperparameters_complete": {
+      "script_source": "06_AI_and_Modeling/machine_learning/train_models.py",
+      "nested_cv_file_source": "results/nested_cv_hyperparameters.json",
+      "tuning_method": "Nested 3-Fold Inner GroupKFold by Spatial_Cluster_ID across 5 Outer Spatial Folds",
+      "models": {
+        "XGBoost_Classifier": {"model_type": "xgb.XGBClassifier", "tuning_status": "Optimized via 3-Fold Inner Spatial CV grid search", "n_estimators": 350, "max_depth": 6, "learning_rate": 0.05, "subsample": 0.8, "colsample_bytree": 0.8, "min_child_weight": 3, "gamma": 0.1, "eval_metric": "mlogloss", "n_jobs": 4, "random_state": "seed (17, 42, 73, 108, 256)"},
+        "XGBoost_Regressor": {"model_type": "xgb.XGBRegressor", "tuning_status": "Optimized via 3-Fold Inner Spatial CV grid search", "n_estimators": 350, "max_depth": 6, "learning_rate": 0.05, "subsample": 0.8, "colsample_bytree": 0.8, "min_child_weight": 3, "gamma": 0.1, "n_jobs": 4, "random_state": "seed (17, 42, 73, 108, 256)"},
+        "Random_Forest_Classifier": {"model_type": "sklearn.ensemble.RandomForestClassifier", "tuning_status": "Optimized via 3-Fold Inner Spatial CV grid search", "n_estimators": 200, "max_depth": 12, "min_samples_split": 4, "min_samples_leaf": 2, "max_features": "sqrt", "bootstrap": true, "n_jobs": 4, "random_state": "seed (17, 42, 73, 108, 256)"},
+        "Random_Forest_Regressor": {"model_type": "sklearn.ensemble.RandomForestRegressor", "tuning_status": "Optimized via 3-Fold Inner Spatial CV grid search", "n_estimators": 200, "max_depth": 12, "min_samples_split": 4, "min_samples_leaf": 2, "max_features": 1.0, "bootstrap": true, "n_jobs": 4, "random_state": "seed (17, 42, 73, 108, 256)"},
+        "Deep_MLP": {
+          "framework": "PyTorch 2.1.2 / 2.2.0+",
+          "tuning_status": "Fixed canonical deep architecture with Early Stopping",
+          "layers": [10, 128, 64, 32],
+          "normalization": "BatchNorm1d",
+          "activation": "ReLU",
+          "dropout": 0.2,
+          "optimizer": "AdamW",
+          "learning_rate": 0.001,
+          "weight_decay": 0.0001,
+          "batch_size": 256,
+          "max_epochs": 30,
+          "early_stopping_patience": 5,
+          "early_stopping_criterion": "Validation loss non-decreasing (delta < 1e-4) on inner held-out spatial cluster",
+          "loss_classifier": "CrossEntropyLoss()",
+          "loss_regressor": "MSELoss()"
+        },
+        "Stacked_LSTM": {
+          "framework": "PyTorch 2.1.2 / 2.2.0+",
+          "tuning_status": "Fixed sequential architecture with Early Stopping",
+          "sequence_length": 8,
+          "input_dimension": 10,
+          "lstm_layer_1_hidden_units": 64,
+          "dropout_1": 0.2,
+          "lstm_layer_2_hidden_units": 32,
+          "dropout_2": 0.2,
+          "dense_head": [32, 32],
+          "activation": "ReLU",
+          "dense_head_dropout": 0.2,
+          "optimizer": "AdamW",
+          "learning_rate": 0.003,
+          "weight_decay": 0.0001,
+          "batch_size": 256,
+          "max_epochs": 25,
+          "early_stopping_patience": 5,
+          "early_stopping_criterion": "Validation loss non-decreasing (delta < 1e-4) on inner held-out spatial cluster",
+          "loss_classifier": "CrossEntropyLoss()",
+          "loss_regressor": "MSELoss()"
+        }
+      }
+    },
+    "class_weighting_table6": {
+      "script_source": "06_AI_and_Modeling/machine_learning/train_weighted_models.py",
+      "file_source": "results/class_weighting_comparison_table6.csv",
+      "summary": {
+        "description": "Comparison of unweighted canonical models vs. class-weighted models (addressing severe minority class imbalance in Medium risk)",
+        "protocol": "5-Fold Spatial Block CV (25 km buffer) x 5 Seeds (17, 42, 73, 108, 256)",
+        "script_source": "06_AI_and_Modeling/machine_learning/train_weighted_models.py",
+        "file_source": "results/class_weighting_comparison_table6.csv",
+        "table_rows": [
+          {"Model": "XGBoost", "Weighting_Mode": "Sin ponderar (Can\u00f3nico)", "Overall_Accuracy": 98.86, "Overall_Accuracy_CI95": "[98.67%, 99.01%]", "Balanced_Accuracy": 69.83, "Balanced_Accuracy_CI95": "[68.29%, 71.10%]", "Macro_F1": 0.7225, "Macro_F1_CI95": "[0.6966, 0.7423]", "Recall_Low": 99.99, "Recall_Medium": 9.78, "Recall_Medium_CI95": "[5.26%, 13.64%]", "Recall_High": 99.72, "PR_AUC_Low": 0.9969, "PR_AUC_Medium": 0.1431, "PR_AUC_High": 1.0},
+          {"Model": "XGBoost", "Weighting_Mode": "Ponderado (Balanced)", "Overall_Accuracy": 98.18, "Overall_Accuracy_CI95": "[98.05%, 98.44%]", "Balanced_Accuracy": 70.23, "Balanced_Accuracy_CI95": "[68.81%, 71.85%]", "Macro_F1": 0.7089, "Macro_F1_CI95": "[0.6933, 0.7285]", "Recall_Low": 99.24, "Recall_Medium": 11.72, "Recall_Medium_CI95": "[7.37%, 16.67%]", "Recall_High": 99.72, "PR_AUC_Low": 0.9969, "PR_AUC_Medium": 0.1497, "PR_AUC_High": 1.0},
+          {"Model": "Random_Forest", "Weighting_Mode": "Sin ponderar (Can\u00f3nico)", "Overall_Accuracy": 98.88, "Overall_Accuracy_CI95": "[98.71%, 99.04%]", "Balanced_Accuracy": 70.17, "Balanced_Accuracy_CI95": "[68.75%, 71.68%]", "Macro_F1": 0.7285, "Macro_F1_CI95": "[0.7045, 0.7521]", "Recall_Low": 100.0, "Recall_Medium": 10.75, "Recall_Medium_CI95": "[6.53%, 15.38%]", "Recall_High": 99.75, "PR_AUC_Low": 0.997, "PR_AUC_Medium": 0.1688, "PR_AUC_High": 1.0},
+          {"Model": "Random_Forest", "Weighting_Mode": "Ponderado (Balanced)", "Overall_Accuracy": 89.93, "Overall_Accuracy_CI95": "[89.43%, 90.39%]", "Balanced_Accuracy": 78.63, "Balanced_Accuracy_CI95": "[75.82%, 80.57%]", "Macro_F1": 0.6818, "Macro_F1_CI95": "[0.6744, 0.6880]", "Recall_Low": 90.0, "Recall_Medium": 45.91, "Recall_Medium_CI95": "[37.62%, 51.76%]", "Recall_High": 99.97, "PR_AUC_Low": 0.9974, "PR_AUC_Medium": 0.1068, "PR_AUC_High": 1.0}
+        ]
+      }
+    },
     "calibration": {
       "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
       "file_source": "results/calibration/calibration_metrics.csv",
@@ -439,6 +505,57 @@
           "threshold_shift_acidified_minus_ambient": {"max_derivative_dhw_shift": -1.55, "ec50_dhw_shift": -1.55, "crossing_35pct_loss_dhw_shift": -2.0}
         }
       }
+    },
+    "within_support_partial_dependence": {
+      "script_source": "06_AI_and_Modeling/explainability/SHAP_analysis/compute_within_support_thresholds.py",
+      "file_source": "results/inflection_points_within_support.json",
+      "curves_file_source": "results/partial_dependence_within_support.csv",
+      "details": {
+        "scientific_disclaimer": "Partial dependence thresholds evaluated strictly within the empirical data support (10th to 90th percentiles of Omega); reflects learned response surface of the surrogate model.",
+        "empirical_support_statistics": {
+          "aragonite_saturation_omega": {"min": 2.68, "max": 4.4, "mean": 3.523, "std": 0.2955, "p05": 3.08, "p10": 3.16, "p25": 3.3, "median": 3.51, "p75": 3.72, "p90": 3.9, "p95": 4.03, "count_le_2_40": 0, "count_le_2_60": 0, "count_le_2_80": 18, "count_le_3_00": 359, "count_le_p10_3_16": 1562, "count_ge_p90_3_90": 1546},
+          "ph_total": {"min": 7.962, "max": 8.207, "mean": 8.0766, "std": 0.034, "p05": 8.023, "p10": 8.033, "median": 8.076, "p90": 8.12, "p95": 8.135}
+        },
+        "within_support_definitions": {
+          "high_omega_p90": {"omega": 3.9, "ph": 8.12, "empirical_records_ge_390": 1546},
+          "low_omega_p10": {"omega": 3.16, "ph": 8.03, "empirical_records_le_316": 1562}
+        },
+        "xgboost_within_support": {
+          "high_omega_390": {"smoothed_max_derivative_dhw_degC_weeks": 7.3, "predicted_loss_at_max_derivative_pct": 9.73, "max_slope_pct_per_dhw": 21.676, "ec50_half_maximal_dhw_degC_weeks": 10.7, "ec50_step_raw_dhw_degC_weeks": 10.65, "ec50_predicted_loss_pct": 36.05, "dhw_crossing_20pct_loss_degC_weeks": 7.3, "dhw_crossing_35pct_loss_degC_weeks": 10.6, "loss_at_dhw_0_pct": 4.82, "loss_at_dhw_8_pct": 31.54, "loss_at_dhw_20_pct": 67.53},
+          "low_omega_316": {"smoothed_max_derivative_dhw_degC_weeks": 7.3, "predicted_loss_at_max_derivative_pct": 15.32, "max_slope_pct_per_dhw": 18.442, "ec50_half_maximal_dhw_degC_weeks": 10.7, "ec50_step_raw_dhw_degC_weeks": 10.65, "ec50_predicted_loss_pct": 38.55, "dhw_crossing_20pct_loss_degC_weeks": 7.1, "dhw_crossing_35pct_loss_degC_weeks": 10.25, "loss_at_dhw_0_pct": 7.29, "loss_at_dhw_8_pct": 33.89, "loss_at_dhw_20_pct": 69.49},
+          "threshold_shift_low_minus_high": {"delta_ec50_dhw_degC_weeks": 0.0, "delta_crossing_35pct_dhw_degC_weeks": -0.35, "delta_crossing_20pct_dhw_degC_weeks": -0.2, "delta_inflection_dhw_degC_weeks": 0.0}
+        },
+        "analytical_generator_within_support": {
+          "high_omega_390": {"smoothed_max_derivative_dhw_degC_weeks": 10.15, "predicted_loss_at_max_derivative_pct": 45.44, "max_slope_pct_per_dhw": 10.759, "ec50_half_maximal_dhw_degC_weeks": 9.85, "ec50_step_raw_dhw_degC_weeks": 9.85, "ec50_predicted_loss_pct": 42.22, "dhw_crossing_20pct_loss_degC_weeks": 7.35, "dhw_crossing_35pct_loss_degC_weeks": 9.2, "loss_at_dhw_0_pct": 4.34, "loss_at_dhw_8_pct": 24.51, "loss_at_dhw_20_pct": 79.97},
+          "low_omega_316": {"smoothed_max_derivative_dhw_degC_weeks": 9.55, "predicted_loss_at_max_derivative_pct": 46.38, "max_slope_pct_per_dhw": 10.185, "ec50_half_maximal_dhw_degC_weeks": 9.2, "ec50_step_raw_dhw_degC_weeks": 9.25, "ec50_predicted_loss_pct": 42.82, "dhw_crossing_20pct_loss_degC_weeks": 6.45, "dhw_crossing_35pct_loss_degC_weeks": 8.4, "loss_at_dhw_0_pct": 6.16, "loss_at_dhw_8_pct": 31.26, "loss_at_dhw_20_pct": 79.98},
+          "threshold_shift_low_minus_high": {"delta_ec50_dhw_degC_weeks": -0.65, "delta_crossing_35pct_dhw_degC_weeks": -0.8, "delta_crossing_20pct_dhw_degC_weeks": -0.9, "delta_inflection_dhw_degC_weeks": -0.6}
+        }
+      }
+    }
+  },
+  "noaa_crw_real_dhw_validation": {
+    "script_source": "03_Data/fetch_noaa_crw_real_dhw.py",
+    "summary_file_source": "results/noaa_crw_validation_summary.json",
+    "station_data_file_source": "results/noaa_crw_validation.csv",
+    "summary": {
+      "status": "completado_con_datos_reales",
+      "data_source": "NOAA Coral Reef Watch (CRW) Operational Daily Global 5km Satellite Bleaching Heat Stress (CRW_dhw_v1_0)",
+      "erddap_endpoint": "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/CRW_dhw_v1_0",
+      "temporal_coverage": "2015-01-01 to 2024-12-31 (weekly sample, stride=7)",
+      "n_stations_evaluated": 29,
+      "spearman_correlation_dhw_95th": {"rho": -0.0921, "p_value": 0.6345990363023872, "significant_at_005": false},
+      "pearson_correlation_dhw_95th": {"r": -0.2016, "p_value": 0.2944221211733736},
+      "dhw_95th_summary": {"n_valid_stations": 29, "real_noaa_mean_across_stations": 6.533, "real_noaa_min": 0.14, "real_noaa_max": 14.071, "synthetic_mean_across_stations": 5.529, "synthetic_min": 0.305, "synthetic_max": 15.339},
+      "srpi_tier1_preservation": {
+        "synthetic_tier1_threshold": 0.7,
+        "synthetic_tier1_count": 17,
+        "real_noaa_tier1_count": 4,
+        "maintained_tier1_count": 2,
+        "preservation_rate_pct": 11.76,
+        "maintained_stations": ["Hawaii_Kaneohe_28", "Hawaii_OahuFore_29"],
+        "dropped_from_tier1": ["Mesoamerican_Fore_01", "Mesoamerican_Crest_02", "Mesoamerican_Lagoon_04", "Belize_Atoll_06", "Cozumel_South_07", "Roatan_South_10", "Florida_Keys_Uppers_11", "Florida_Keys_Lowers_12", "Okinawa_Kerama_21", "Okinawa_Ishigaki_22", "RedSea_Aqaba_23", "RedSea_Shallow_24", "RedSea_Farasan_25", "Seychelles_Mahe_26", "Palau_RockIslands_30"],
+        "newly_qualifying_tier1": ["CoralTriangle_RajaAmpat_16", "CoralTriangle_Sulawesi_19"]
+      }
     }
   },
   "decadal_scenarios_2025_2050": {
@@ -565,6 +682,13 @@
     "total_stages": 17,
     "successful_stages": 17,
     "total_runtime_seconds": 95.99,
-    "all_stages_passed": true
+    "all_stages_passed": true,
+    "zenodo_deposit_package": {
+      "script_source": "12_Reproducibility/prepare_zenodo_package.py",
+      "archive_file": "results/zenodo_package/CoralTwin-DT_Zenodo_Archive_v1.0.0.zip",
+      "archive_size_mb": 8.52,
+      "readme_file": "results/zenodo_package/README_ZENODO.md",
+      "status": "Ready for Zenodo upload and real DOI generation"
+    }
   }
 }

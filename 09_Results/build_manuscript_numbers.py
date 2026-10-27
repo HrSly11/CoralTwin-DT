@@ -160,6 +160,37 @@ def build_manuscript_numbers():
         by="Spatial_Restoration_Priority_Index_SRPI", ascending=False
     )
 
+    # 7. Additional audited modules for Tasks 1, 4, 5, 6, 7
+    nested_cv_path = os.path.join(RESULTS_DIR, "nested_cv_hyperparameters.json")
+    nested_cv_json = {}
+    if os.path.exists(nested_cv_path):
+        with open(nested_cv_path, "r", encoding="utf-8") as f:
+            nested_cv_json = json.load(f)
+
+    within_support_path = os.path.join(RESULTS_DIR, "inflection_points_within_support.json")
+    within_support_json = {}
+    if os.path.exists(within_support_path):
+        with open(within_support_path, "r", encoding="utf-8") as f:
+            within_support_json = json.load(f)
+
+    within_curves_path = os.path.join(RESULTS_DIR, "partial_dependence_within_support.csv")
+    within_curves_df = pd.read_csv(within_curves_path) if os.path.exists(within_curves_path) else pd.DataFrame()
+
+    class_weight_path = os.path.join(RESULTS_DIR, "class_weighting_summary.json")
+    class_weight_json = {}
+    if os.path.exists(class_weight_path):
+        with open(class_weight_path, "r", encoding="utf-8") as f:
+            class_weight_json = json.load(f)
+
+    noaa_crw_path = os.path.join(RESULTS_DIR, "noaa_crw_validation_summary.json")
+    noaa_crw_json = {}
+    if os.path.exists(noaa_crw_path):
+        with open(noaa_crw_path, "r", encoding="utf-8") as f:
+            noaa_crw_json = json.load(f)
+
+    zenodo_zip_path = os.path.join(RESULTS_DIR, "zenodo_package", "CoralTwin-DT_Zenodo_Archive_v1.0.0.zip")
+    zenodo_size_mb = round(os.path.getsize(zenodo_zip_path) / (1024 * 1024), 2) if os.path.exists(zenodo_zip_path) else None
+
     srpi_cols = [
         "Station_ID",
         "Station_Name",
@@ -187,7 +218,7 @@ def build_manuscript_numbers():
             "n_columns": 36,
             "n_stations": 30,
             "records_per_station": 500,
-            "temporal_coverage": "2015-01-09 to 2024-06-21 (weekly sampling)",
+            "temporal_coverage": "2015-01-01 to 2024-12-30 (500 stochastic daily draws per station out of 3,652 days, average interval ~7.3 days, spanning full 10 years)",
             "synthetic_percentage": 100.0,
             "real_observation_percentage": 0.0,
             "exact_rng_reproduction_verified": True,
@@ -263,6 +294,108 @@ def build_manuscript_numbers():
                     stat_df[stat_df["Metric"].isin(["Macro_F1", "RMSE", "Sample_Absolute_Error"])]
                 ),
             },
+            "hyperparameters_complete": {
+                "script_source": "06_AI_and_Modeling/machine_learning/train_models.py",
+                "nested_cv_file_source": "results/nested_cv_hyperparameters.json",
+                "tuning_method": "Nested 3-Fold Inner GroupKFold by Spatial_Cluster_ID across 5 Outer Spatial Folds",
+                "models": {
+                    "XGBoost_Classifier": {
+                        "model_type": "xgb.XGBClassifier",
+                        "tuning_status": "Optimized via 3-Fold Inner Spatial CV grid search",
+                        "n_estimators": 350,
+                        "max_depth": 6,
+                        "learning_rate": 0.05,
+                        "subsample": 0.80,
+                        "colsample_bytree": 0.80,
+                        "min_child_weight": 3,
+                        "gamma": 0.1,
+                        "eval_metric": "mlogloss",
+                        "n_jobs": 4,
+                        "random_state": "seed (17, 42, 73, 108, 256)"
+                    },
+                    "XGBoost_Regressor": {
+                        "model_type": "xgb.XGBRegressor",
+                        "tuning_status": "Optimized via 3-Fold Inner Spatial CV grid search",
+                        "n_estimators": 350,
+                        "max_depth": 6,
+                        "learning_rate": 0.05,
+                        "subsample": 0.80,
+                        "colsample_bytree": 0.80,
+                        "min_child_weight": 3,
+                        "gamma": 0.1,
+                        "n_jobs": 4,
+                        "random_state": "seed (17, 42, 73, 108, 256)"
+                    },
+                    "Random_Forest_Classifier": {
+                        "model_type": "sklearn.ensemble.RandomForestClassifier",
+                        "tuning_status": "Optimized via 3-Fold Inner Spatial CV grid search",
+                        "n_estimators": 200,
+                        "max_depth": 12,
+                        "min_samples_split": 4,
+                        "min_samples_leaf": 2,
+                        "max_features": "sqrt",
+                        "bootstrap": True,
+                        "n_jobs": 4,
+                        "random_state": "seed (17, 42, 73, 108, 256)"
+                    },
+                    "Random_Forest_Regressor": {
+                        "model_type": "sklearn.ensemble.RandomForestRegressor",
+                        "tuning_status": "Optimized via 3-Fold Inner Spatial CV grid search",
+                        "n_estimators": 200,
+                        "max_depth": 12,
+                        "min_samples_split": 4,
+                        "min_samples_leaf": 2,
+                        "max_features": 1.0,
+                        "bootstrap": True,
+                        "n_jobs": 4,
+                        "random_state": "seed (17, 42, 73, 108, 256)"
+                    },
+                    "Deep_MLP": {
+                        "framework": "PyTorch 2.1.2 / 2.2.0+",
+                        "tuning_status": "Fixed canonical deep architecture with Early Stopping",
+                        "layers": [10, 128, 64, 32],
+                        "normalization": "BatchNorm1d",
+                        "activation": "ReLU",
+                        "dropout": 0.20,
+                        "optimizer": "AdamW",
+                        "learning_rate": 0.001,
+                        "weight_decay": 0.0001,
+                        "batch_size": 256,
+                        "max_epochs": 30,
+                        "early_stopping_patience": 5,
+                        "early_stopping_criterion": "Validation loss non-decreasing (delta < 1e-4) on inner held-out spatial cluster",
+                        "loss_classifier": "CrossEntropyLoss()",
+                        "loss_regressor": "MSELoss()"
+                    },
+                    "Stacked_LSTM": {
+                        "framework": "PyTorch 2.1.2 / 2.2.0+",
+                        "tuning_status": "Fixed sequential architecture with Early Stopping",
+                        "sequence_length": 8,
+                        "input_dimension": 10,
+                        "lstm_layer_1_hidden_units": 64,
+                        "dropout_1": 0.20,
+                        "lstm_layer_2_hidden_units": 32,
+                        "dropout_2": 0.20,
+                        "dense_head": [32, 32],
+                        "activation": "ReLU",
+                        "dense_head_dropout": 0.20,
+                        "optimizer": "AdamW",
+                        "learning_rate": 0.003,
+                        "weight_decay": 0.0001,
+                        "batch_size": 256,
+                        "max_epochs": 25,
+                        "early_stopping_patience": 5,
+                        "early_stopping_criterion": "Validation loss non-decreasing (delta < 1e-4) on inner held-out spatial cluster",
+                        "loss_classifier": "CrossEntropyLoss()",
+                        "loss_regressor": "MSELoss()"
+                    }
+                }
+            },
+            "class_weighting_table6": {
+                "script_source": "06_AI_and_Modeling/machine_learning/train_weighted_models.py",
+                "file_source": "results/class_weighting_comparison_table6.csv",
+                "summary": class_weight_json,
+            },
             "calibration": {
                 "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
                 "file_source": "results/calibration/calibration_metrics.csv",
@@ -300,6 +433,18 @@ def build_manuscript_numbers():
                 "curves_file_source": "results/partial_dependence_dhw_ph.csv",
                 "details": inflect_json,
             },
+            "within_support_partial_dependence": {
+                "script_source": "06_AI_and_Modeling/explainability/SHAP_analysis/compute_within_support_thresholds.py",
+                "file_source": "results/inflection_points_within_support.json",
+                "curves_file_source": "results/partial_dependence_within_support.csv",
+                "details": within_support_json,
+            },
+        },
+        "noaa_crw_real_dhw_validation": {
+            "script_source": "03_Data/fetch_noaa_crw_real_dhw.py",
+            "summary_file_source": "results/noaa_crw_validation_summary.json",
+            "station_data_file_source": "results/noaa_crw_validation.csv",
+            "summary": noaa_crw_json,
         },
         "decadal_scenarios_2025_2050": {
             "script_source": "07_Scenarios_and_Simulations/simulation_engine.py",
@@ -342,6 +487,13 @@ def build_manuscript_numbers():
             "successful_stages": exec_log.get("successful_stages", 17),
             "total_runtime_seconds": exec_log.get("total_runtime_seconds", 95.99),
             "all_stages_passed": exec_log.get("all_stages_passed", True),
+            "zenodo_deposit_package": {
+                "script_source": "12_Reproducibility/prepare_zenodo_package.py",
+                "archive_file": "results/zenodo_package/CoralTwin-DT_Zenodo_Archive_v1.0.0.zip",
+                "archive_size_mb": zenodo_size_mb,
+                "readme_file": "results/zenodo_package/README_ZENODO.md",
+                "status": "Ready for Zenodo upload and real DOI generation"
+            }
         },
     }
 
