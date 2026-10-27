@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "canonical_registry": {
+    "version": "2026-08-25",
+    "station_count": 25,
+    "station_ids": [
+      "station-01", "station-02", "station-03", "station-04", "station-05",
+      "station-06", "station-07", "station-08", "station-09", "station-10",
+      "station-11", "station-12", "station-13", "station-14", "station-15",
+      "station-16", "station-17", "station-18", "station-19", "station-20",
+      "station-21", "station-22", "station-23", "station-24", "station-25"
+    ]
+  },
+  "legacy_station_migration": [
+    {"legacy_registry_position": 1, "legacy_station_name": "Mesoamerican_Fore_01", "disposition": "canonical_alias", "canonical_station_id": "station-01"},
+    {"legacy_registry_position": 2, "legacy_station_name": "Mesoamerican_Crest_02", "disposition": "canonical_alias", "canonical_station_id": "station-02"},
+    {"legacy_registry_position": 3, "legacy_station_name": "Mesoamerican_Back_03", "disposition": "canonical_alias", "canonical_station_id": "station-03"},
+    {"legacy_registry_position": 4, "legacy_station_name": "Mesoamerican_Lagoon_04", "disposition": "canonical_alias", "canonical_station_id": "station-04"},
+    {"legacy_registry_position": 5, "legacy_station_name": "Belize_Barrier_05", "disposition": "canonical_alias", "canonical_station_id": "station-05"},
+    {"legacy_registry_position": 6, "legacy_station_name": "Belize_Atoll_06", "disposition": "canonical_alias", "canonical_station_id": "station-06"},
+    {"legacy_registry_position": 7, "legacy_station_name": "Cozumel_South_07", "disposition": "canonical_alias", "canonical_station_id": "station-07"},
+    {"legacy_registry_position": 8, "legacy_station_name": "Cozumel_Shallow_08", "disposition": "canonical_alias", "canonical_station_id": "station-08"},
+    {"legacy_registry_position": 9, "legacy_station_name": "Roatan_North_09", "disposition": "canonical_alias", "canonical_station_id": "station-09"},
+    {"legacy_registry_position": 10, "legacy_station_name": "Roatan_South_10", "disposition": "canonical_alias", "canonical_station_id": "station-10"},
+    {"legacy_registry_position": 11, "legacy_station_name": "Florida_Keys_Uppers_11", "disposition": "canonical_alias", "canonical_station_id": "station-11"},
+    {"legacy_registry_position": 12, "legacy_station_name": "Florida_Keys_Lowers_12", "disposition": "canonical_alias", "canonical_station_id": "station-12"},
+    {"legacy_registry_position": 13, "legacy_station_name": "GreatBarrier_Northern_13", "disposition": "canonical_alias", "canonical_station_id": "station-13"},
+    {"legacy_registry_position": 14, "legacy_station_name": "GreatBarrier_Central_14", "disposition": "canonical_alias", "canonical_station_id": "station-14"},
+    {"legacy_registry_position": 15, "legacy_station_name": "GreatBarrier_Lagoon_15", "disposition": "canonical_alias", "canonical_station_id": "station-15"},
+    {"legacy_registry_position": 16, "legacy_station_name": "CoralTriangle_RajaAmpat_16", "disposition": "canonical_alias", "canonical_station_id": "station-16"},
+    {"legacy_registry_position": 17, "legacy_station_name": "CoralTriangle_Misool_17", "disposition": "canonical_alias", "canonical_station_id": "station-17"},
+    {"legacy_registry_position": 18, "legacy_station_name": "CoralTriangle_Komodo_18", "disposition": "canonical_alias", "canonical_station_id": "station-18"},
+    {"legacy_registry_position": 19, "legacy_station_name": "CoralTriangle_Sulawesi_19", "disposition": "canonical_alias", "canonical_station_id": "station-19"},
+    {"legacy_registry_position": 20, "legacy_station_name": "CoralTriangle_Bali_20", "disposition": "archive_only", "canonical_station_id": null},
+    {"legacy_registry_position": 21, "legacy_station_name": "Okinawa_Kerama_21", "disposition": "canonical_alias", "canonical_station_id": "station-20"},
+    {"legacy_registry_position": 22, "legacy_station_name": "Okinawa_Ishigaki_22", "disposition": "archive_only", "canonical_station_id": null},
+    {"legacy_registry_position": 23, "legacy_station_name": "RedSea_Aqaba_23", "disposition": "canonical_alias", "canonical_station_id": "station-21"},
+    {"legacy_registry_position": 24, "legacy_station_name": "RedSea_Shallow_24", "disposition": "canonical_alias", "canonical_station_id": "station-22"},
+    {"legacy_registry_position": 25, "legacy_station_name": "RedSea_Farasan_25", "disposition": "archive_only", "canonical_station_id": null},
+    {"legacy_registry_position": 26, "legacy_station_name": "Seychelles_Mahe_26", "disposition": "archive_only", "canonical_station_id": null},
+    {"legacy_registry_position": 27, "legacy_station_name": "Maldives_AriAtoll_27", "disposition": "archive_only", "canonical_station_id": null},
+    {"legacy_registry_position": 28, "legacy_station_name": "Hawaii_Kaneohe_28", "disposition": "canonical_alias", "canonical_station_id": "station-23"},
+    {"legacy_registry_position": 29, "legacy_station_name": "Hawaii_OahuFore_29", "disposition": "canonical_alias", "canonical_station_id": "station-24"},
+    {"legacy_registry_position": 30, "legacy_station_name": "Palau_RockIslands_30", "disposition": "canonical_alias", "canonical_station_id": "station-25"}
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "operational-bootstrap-baseline",
+      "path": "03_Data/processed_data/coral_environmental_harmonized.csv",
+      "lifecycle": "active",
+      "provenance_kind": "simulated",
+      "station_identifiers": ["station-01", "station-02", "station-03", "station-04", "station-05", "station-06", "station-07", "station-08", "station-09", "station-10", "station-11", "station-12", "station-13", "station-14", "station-15", "station-16", "station-17", "station-18", "station-19", "station-20", "station-21", "station-22", "station-23", "station-24", "station-25"],
+      "generated_by": "03_Data/generate_datasets.py",
+      "external_validation": "not_claimed"
+    },
+    {
+      "artifact_id": "canonical-harmonized-generator",
+      "path": "03_Data/generate_datasets.py",
+      "lifecycle": "active",
+      "provenance_kind": "derived",
+      "station_identifiers": ["station-01", "station-02", "station-03", "station-04", "station-05", "station-06", "station-07", "station-08", "station-09", "station-10", "station-11", "station-12", "station-13", "station-14", "station-15", "station-16", "station-17", "station-18", "station-19", "station-20", "station-21", "station-22", "station-23", "station-24", "station-25"],
+      "external_validation": "not_claimed"
+    },
+    {
+      "artifact_id": "legacy-final-dataset",
+      "path": "03_Data/final_dataset.csv",
+      "lifecycle": "archived_legacy",
+      "provenance_kind": "simulated",
+      "station_identifiers": ["Mesoamerican_Fore_01", "Mesoamerican_Crest_02", "Mesoamerican_Back_03", "Mesoamerican_Lagoon_04", "Belize_Barrier_05", "Belize_Atoll_06", "Cozumel_South_07", "Cozumel_Shallow_08", "Roatan_North_09", "Roatan_South_10", "Florida_Keys_Uppers_11", "Florida_Keys_Lowers_12", "GreatBarrier_Northern_13", "GreatBarrier_Central_14", "GreatBarrier_Lagoon_15", "CoralTriangle_RajaAmpat_16", "CoralTriangle_Misool_17", "CoralTriangle_Komodo_18", "CoralTriangle_Sulawesi_19", "CoralTriangle_Bali_20", "Okinawa_Kerama_21", "Okinawa_Ishigaki_22", "RedSea_Aqaba_23", "RedSea_Shallow_24", "RedSea_Farasan_25", "Seychelles_Mahe_26", "Maldives_AriAtoll_27", "Hawaii_Kaneohe_28", "Hawaii_OahuFore_29", "Palau_RockIslands_30"],
+      "generated_by": "03_Data/build_final_dataset.py",
+      "external_validation": "not_claimed"
+    },
+    {
+      "artifact_id": "legacy-final-generator",
+      "path": "03_Data/build_final_dataset.py",
+      "lifecycle": "archived_legacy",
+      "provenance_kind": "derived",
+      "station_identifiers": ["Mesoamerican_Fore_01", "Mesoamerican_Crest_02", "Mesoamerican_Back_03", "Mesoamerican_Lagoon_04", "Belize_Barrier_05", "Belize_Atoll_06", "Cozumel_South_07", "Cozumel_Shallow_08", "Roatan_North_09", "Roatan_South_10", "Florida_Keys_Uppers_11", "Florida_Keys_Lowers_12", "GreatBarrier_Northern_13", "GreatBarrier_Central_14", "GreatBarrier_Lagoon_15", "CoralTriangle_RajaAmpat_16", "CoralTriangle_Misool_17", "CoralTriangle_Komodo_18", "CoralTriangle_Sulawesi_19", "CoralTriangle_Bali_20", "Okinawa_Kerama_21", "Okinawa_Ishigaki_22", "RedSea_Aqaba_23", "RedSea_Shallow_24", "RedSea_Farasan_25", "Seychelles_Mahe_26", "Maldives_AriAtoll_27", "Hawaii_Kaneohe_28", "Hawaii_OahuFore_29", "Palau_RockIslands_30"],
+      "external_validation": "not_claimed"
+    }
+  ]
+}
