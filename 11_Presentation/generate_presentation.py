@@ -129,16 +129,16 @@ def build_presentation():
 
     # Slide 4: AI Model Benchmarking & Performance
     slide4 = prs.slides.add_slide(blank_layout)
-    add_header(slide4, "3. Machine Learning Performance (5-Fold Spatial CV)", "XGBoost achieves state-of-the-art classification and regression accuracy")
+    add_header(slide4, "3. Machine Learning Performance (5-Fold Spatial Block CV)", "Clean 10-feature emulation across 5 seeds x 5 spatial folds (>25 km buffer, min 119.72 km)")
     tx4 = slide4.shapes.add_textbox(Inches(0.8), Inches(1.8), Inches(11.7), Inches(5.0))
     tf4 = tx4.text_frame
     tf4.word_wrap = True
     ml_pts = [
-        ("XGBoost Multi-Task Accuracy:", "Macro-F1 = 0.958, Accuracy = 96.1%, R² = 0.934 (RMSE = 3.82% cover loss)."),
-        ("Random Forest Performance:", "Macro-F1 = 0.942, Accuracy = 94.6%, R² = 0.918 (RMSE = 4.25%)."),
-        ("Deep MLP Neural Network:", "Macro-F1 = 0.915, Accuracy = 91.9%, R² = 0.885 (RMSE = 5.08%)."),
-        ("Linear Baseline Contrast:", "Logistic / Ridge baseline achieves only Macro-F1 = 0.782, demonstrating critical non-linearity."),
-        ("Spatial Generalization:", "Spatial block cross-validation confirms high out-of-fold generalization with zero spatial leakage.")
+        ("XGBoost (Selected):", "Accuracy = 98.85%, Macro-F1 = 0.7187, R² = 0.9336 (RMSE = 4.044%), Batch-1 Latency = 0.3218 ms."),
+        ("Random Forest:", "Accuracy = 98.88%, Macro-F1 = 0.7284, R² = 0.9375 (RMSE = 3.924%), Batch-1 Latency = 17.8013 ms (21.09 MB)."),
+        ("Deep MLP Neural Network:", "Accuracy = 98.79%, Macro-F1 = 0.6807, R² = 0.9337 (RMSE = 4.041%), 24,516 params (0.112 MB)."),
+        ("Stacked LSTM Recurrent:", "Accuracy = 98.81%, Macro-F1 = 0.6949, R² = 0.9371 (RMSE = 3.934%), 66,244 params (0.262 MB)."),
+        ("Leakage Ablation Proof:", "Excluding co-generated benthic response variables removes artificial R² = 0.9995 inflation and bounds R² near theoretical ceiling (0.9385).")
     ]
     for b_txt, n_txt in ml_pts:
         p = tf4.add_paragraph()
@@ -155,15 +155,15 @@ def build_presentation():
 
     # Slide 5: TreeSHAP Biophysical Explainability
     slide5 = prs.slides.add_slide(blank_layout)
-    add_header(slide5, "4. TreeSHAP Explainability & Tipping Point Discovery", "Quantifying the exact marginal contribution of compounding oceanographic stressors")
+    add_header(slide5, "4. Interventional TreeSHAP & Carbonate Tipping Points", "Clean 10-feature attribution and 2D partial dependence across carbonate regimes")
     tx5 = slide5.shapes.add_textbox(Inches(0.8), Inches(1.8), Inches(11.7), Inches(5.0))
     tf5 = tx5.text_frame
     tf5.word_wrap = True
     shap_pts = [
-        ("Dominant Feature Contribution:", "Degree Heating Weeks (DHW) drives 38.4% of total predictive variance."),
-        ("Carbonate System Impairment:", "Aragonite saturation (21.2%) and seawater pH (14.8%) represent secondary critical controls."),
-        ("Structural Resilience:", "Benthic rugosity (11.5%) and optical turbidity (6.9%) provide significant localized buffering."),
-        ("Synergistic Tipping Point:", "Under acidified conditions (pH 7.75, Omega 2.45), the thermal mortality threshold drops from 8.5 to 5.8 °C-weeks.")
+        ("Dominant Thermal Driver:", "Degree Heating Weeks (DHW) accounts for 53.71% (95% CI [51.37%, 55.98%]) of clean 10-feature TreeSHAP importance."),
+        ("Secondary Physical Drivers:", "Solar irradiance PAR (11.35%), SST Anomaly (9.28%), Aragonite Saturation Omega (8.81%), and SST (5.19%)."),
+        ("Reverse Leakage Eliminated:", "Removing Shannon Diversity H' (algebraically dependent on Bleaching Severity) eliminates its 58.65% dominance artifact."),
+        ("Carbonate Regime Shift:", "Under ocean acidification (Omega = 2.20 vs 3.85), analytical EC50 shifts from 9.85 to 8.30 °C-weeks (-1.55 °C-weeks).")
     ]
     for b_txt, n_txt in shap_pts:
         p = tf5.add_paragraph()
@@ -180,15 +180,15 @@ def build_presentation():
 
     # Slide 6: Decadal Scenario Projections (2025-2050)
     slide6 = prs.slides.add_slide(blank_layout)
-    add_header(slide6, "5. Forward Scenario Trajectories (2025–2050)", "Coupled dynamical simulations evaluate intervention trade-offs under IPCC pathways")
+    add_header(slide6, "5. Forward Scenario Trajectories (2025–2050, RK4 ODEs)", "4th-order Runge-Kutta integration (dt = 0.05 yr, N = 5,000 Monte Carlo runs) from 33.68% baseline")
     tx6 = slide6.shapes.add_textbox(Inches(0.8), Inches(1.8), Inches(11.7), Inches(5.0))
     tf6 = tx6.text_frame
     tf6.word_wrap = True
     sc_pts = [
-        ("Scenario 1 (SSP5-8.5 Unmitigated):", "Coral cover collapses to 4.8% by 2050; net framework dissolution (-1.82 kg CaCO3/m²/yr)."),
-        ("Scenario 2 (SSP2-4.5 Moderate):", "Coral cover stabilizes at 21.4% with modest framework accretion (+2.45 kg CaCO3/m²/yr)."),
-        ("Scenario 3 (Active Outplanting):", "Thermally resilient micro-fragments (+2°C tolerance) maintain 38.7% cover and +5.10 kg CaCO3/m²/yr."),
-        ("Scenario 4 (Integrated MPA + Outplant):", "Synergistic recovery to 46.2% live coral cover and +6.80 kg CaCO3/m²/yr framework growth.")
+        ("Scenario 1 (SSP5-8.5 Unmitigated):", "Coral cover collapses to 0.69% [0.1–6.2%] by 2050 (98.58% collapse risk <10%); net dissolution (-1.80 kg CaCO3/m²/yr)."),
+        ("Scenario 2 (SSP2-4.5 Moderate):", "Transitional state with 18.55% [0.5–52.7%] mean cover, 34.40% macroalgae, and +0.94 kg CaCO3/m²/yr accretion."),
+        ("Scenario 3 (Active Outplanting):", "Thermally hardened outplants (+2.0 °C-wk) sustain 48.92% [23.3–67.4%] cover and +5.50 kg CaCO3/m²/yr."),
+        ("Scenario 4 (Integrated MPA + Outplant):", "Enforced MPA grazing (g = 0.68) + outplanting achieves 55.20% [36.2–70.5%] cover and +7.46 kg CaCO3/m²/yr.")
     ]
     for b_txt, n_txt in sc_pts:
         p = tf6.add_paragraph()
@@ -205,14 +205,14 @@ def build_presentation():
 
     # Slide 7: Spatial Restoration Prioritization (SRPI)
     slide7 = prs.slides.add_slide(blank_layout)
-    add_header(slide7, "6. Spatial Restoration Priority Index (SRPI)", "Multi-criteria spatial decision analysis channels outplanting into hydrodynamic micro-refugia")
+    add_header(slide7, "6. Spatial Restoration Priority Index (Eq. 7 SRPI)", "Biophysical multi-criteria evaluation across all 30 benchmark reef stations (N = 15,000)")
     tx7 = slide7.shapes.add_textbox(Inches(0.8), Inches(1.8), Inches(11.7), Inches(5.0))
     tf7 = tx7.text_frame
     tf7.word_wrap = True
     srpi_pts = [
-        ("Multi-Criteria Formulation:", "Integrates Thermal Refugia (35%), Degradation Urgency (25%), Rugosity (25%), and Water Clarity (15%)."),
-        ("Tier 1 Action Zones:", "Top 25% priority parcels identified in well-flushed fore-reef sectors with high structural complexity."),
-        ("Open GIS Vector Delivery:", "Standard GeoJSON priority zoning layer enables seamless ingestion into QGIS, ArcGIS, and marine park portals.")
+        ("Biophysical Eq. 7 Formulation:", "Integrates Thermal Refugia (35%), Degradation Urgency (25%), Structural Rugosity (25%), and Water Clarity (15%)."),
+        ("Tier 1 Action Zones (SRPI >= 0.70):", "10 of 30 stations (33.33%) and 32.48% of observations qualify as Tier-1 Priority Restoration Zones (led by STN_06 Belize_Atoll_06 & STN_26 Seychelles_Mahe_26 at 0.765)."),
+        ("Threshold Sensitivity:", "At thresholds {0.60, 0.70, 0.80}, Tier-1 station shares are 60.00% (18/30), 33.33% (10/30), and 0.00% (0/30); legacy min-max yields 26.67% (8/30) under top-25% quantile tiering.")
     ]
     for b_txt, n_txt in srpi_pts:
         p = tf7.add_paragraph()

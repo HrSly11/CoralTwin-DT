@@ -1,97 +1,20 @@
 """
-CoralTwin-DT: Automated Scientific Manuscript Formatter (DOCX & PDF)
-===================================================================
-Compiles manuscript.md into publication-formatted DOCX and PDF documents.
+CoralTwin-DT: Automated Scientific Manuscript Formatter (PDF Only)
+==================================================================
+Compiles manuscript.md into a publication-formatted PDF document.
+Note: Direct .docx generation/modification is strictly disabled to preserve
+existing Word documents untouched.
 
 Author: CoralTwin-DT Publication Lead
 License: MIT
-Scientific Attribution: Resultado obtenido mediante prototipo computacional del gemelo digital.
 """
 
 import os
-from docx import Document
-from docx.shared import Inches, Pt, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 from fpdf import FPDF
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MANUSCRIPT_MD = os.path.join(BASE_DIR, "manuscript", "manuscript.md")
-DOCX_OUT = os.path.join(BASE_DIR, "manuscript", "article.docx")
 PDF_OUT = os.path.join(BASE_DIR, "manuscript", "article.pdf")
-
-
-def generate_docx():
-    print(f"Generating formatted DOCX: {DOCX_OUT}...")
-    doc = Document()
-
-    # Configure Margins
-    sections = doc.sections
-    for section in sections:
-        section.top_margin = Inches(1.0)
-        section.bottom_margin = Inches(1.0)
-        section.left_margin = Inches(1.0)
-        section.right_margin = Inches(1.0)
-
-    with open(MANUSCRIPT_MD, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-    for line in lines:
-        line_str = line.strip()
-        if not line_str:
-            continue
-
-        if line_str.startswith("# "):
-            p = doc.add_paragraph()
-            run = p.add_run(line_str[2:])
-            run.font.name = "Calibri"
-            run.font.size = Pt(18)
-            run.font.bold = True
-            run.font.color.rgb = RGBColor(27, 73, 101)
-            p.paragraph_format.space_before = Pt(12)
-            p.paragraph_format.space_after = Pt(8)
-        elif line_str.startswith("## "):
-            p = doc.add_paragraph()
-            run = p.add_run(line_str[3:])
-            run.font.name = "Calibri"
-            run.font.size = Pt(14)
-            run.font.bold = True
-            run.font.color.rgb = RGBColor(43, 108, 176)
-            p.paragraph_format.space_before = Pt(10)
-            p.paragraph_format.space_after = Pt(4)
-        elif line_str.startswith("### "):
-            p = doc.add_paragraph()
-            run = p.add_run(line_str[4:])
-            run.font.name = "Calibri"
-            run.font.size = Pt(12)
-            run.font.bold = True
-            p.paragraph_format.space_before = Pt(8)
-            p.paragraph_format.space_after = Pt(2)
-        elif line_str.startswith("- ") or line_str.startswith("* "):
-            p = doc.add_paragraph(style="List Bullet")
-            run = p.add_run(line_str[2:])
-            run.font.name = "Times New Roman"
-            run.font.size = Pt(11)
-        elif line_str.startswith("1. ") or line_str.startswith("2. ") or line_str.startswith("3. ") or line_str.startswith("4. "):
-            p = doc.add_paragraph()
-            run = p.add_run(line_str)
-            run.font.name = "Times New Roman"
-            run.font.size = Pt(11)
-        elif line_str.startswith("|"):
-            # Render Markdown table line as code/monospace or plain text
-            p = doc.add_paragraph()
-            run = p.add_run(line_str)
-            run.font.name = "Consolas"
-            run.font.size = Pt(9)
-        else:
-            p = doc.add_paragraph()
-            run = p.add_run(line_str)
-            run.font.name = "Times New Roman"
-            run.font.size = Pt(11)
-            p.paragraph_format.line_spacing = 1.15
-            p.paragraph_format.space_after = Pt(4)
-
-    doc.save(DOCX_OUT)
-    print("DOCX successfully generated.")
 
 
 class PDFReport(FPDF):
@@ -145,9 +68,8 @@ def generate_pdf():
             pdf.ln(1)
 
     pdf.output(PDF_OUT)
-    print("PDF successfully generated.")
+    print("PDF successfully generated (DOCX files left untouched).")
 
 
 if __name__ == "__main__":
-    generate_docx()
     generate_pdf()

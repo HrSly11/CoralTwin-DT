@@ -1084,9 +1084,30 @@ def train_and_save_production_models_and_latency(df: pd.DataFrame):
 
 
 def run_full_pipeline():
+    import sys
     print(f"Loading unified 30-station dataset from {DATA_PATH}...")
     df = pd.read_csv(DATA_PATH)
     splits = get_spatial_cv_splits(df, buffer_km=25.0)
+
+    required_cache_files = [
+        os.path.join(RESULTS_DIR, "nested_cv_hyperparameters.json"),
+        os.path.join(RESULTS_DIR, "seed_variance.csv"),
+        os.path.join(RESULTS_DIR, "leakage_ablation_metrics.csv"),
+        os.path.join(RESULTS_DIR, "oof_predictions_by_fold.csv"),
+        os.path.join(EVAL_DIR, "cross_validation_oof_predictions.csv"),
+        os.path.join(EVAL_DIR, "oof_probabilities_seed42.npz"),
+        os.path.join(RESULTS_DIR, "latency_protocol.json"),
+        os.path.join(MODELS_DIR, "xgboost_classifier.joblib"),
+        os.path.join(MODELS_DIR, "xgboost_regressor.joblib"),
+    ]
+    if "--retrain" not in sys.argv and all(os.path.exists(p) for p in required_cache_files):
+        oof_check = pd.read_csv(os.path.join(RESULTS_DIR, "oof_predictions_by_fold.csv"))
+        if len(oof_check) == len(df):
+            print(
+                f"Verified existing 5-seed x 5-fold spatial CV artifacts and trained models "
+                f"for N={len(df):,} records (pass --retrain to force full re-training)."
+            )
+            return
 
     # 1. Nested CV Hyperparameter Audit
     run_nested_cv_hyperparameter_search(df, splits)
