@@ -2,17 +2,18 @@
 10_Publication/generate_v4_manuscript.py
 =========================================
 Generates CoralTwin-DT_v4.docx strictly adhering to:
-1. PURE BLACK typography for ALL headings, title, body and tables (no blue colors, conforming to journal template).
-2. STRICT APA 7th EDITION table formatting:
+1. STRICT 15-PAGE HARD MAXIMUM (14-15 pages in Word) per professor requirement.
+2. PURE BLACK typography for ALL headings, title, body, tables and figures (no blue colors).
+3. STRICT APA 7th EDITION table formatting:
    - "Tabla X" in bold above table, flushed left.
    - Table title italicized directly below "Tabla X", flushed left.
    - Three horizontal rules only: top table border, header bottom border, table bottom border.
    - No vertical rules.
    - No row or header background color shading (clean white/transparent).
    - "Nota." in italics followed by explanatory note below table.
-3. STRICT APA figure captions:
+4. STRICT APA figure captions:
    - "Figura X." in bold followed by italicized title and descriptive note.
-4. Comprehensive resolution of all 20 reviewer points (FON-01 to FON-20) and all 8 audited tasks.
+5. Comprehensive resolution of all 20 reviewer points (FON-01 to FON-20) and all 8 audited tasks.
 """
 
 import os
@@ -32,10 +33,10 @@ os.makedirs(PUB_DIR, exist_ok=True)
 
 
 def set_apa_table_borders(table):
-    """Applies strict APA 7th edition table borders: top, bottom, and header underline only."""
+    """Applies strict APA 7th edition table borders: top, bottom, and header underline only, with compact cell padding."""
     tblPr = table._tbl.tblPr
     for child in list(tblPr):
-        if child.tag.endswith('tblBorders'):
+        if child.tag.endswith('tblBorders') or child.tag.endswith('tblCellMar'):
             tblPr.remove(child)
     
     borders = parse_xml(
@@ -49,6 +50,16 @@ def set_apa_table_borders(table):
         f'</w:tblBorders>'
     )
     tblPr.append(borders)
+
+    cell_mar = parse_xml(
+        f'<w:tblCellMar {nsdecls("w")}>\n'
+        f'  <w:top w:w="25" w:type="dxa"/>\n'
+        f'  <w:bottom w:w="25" w:type="dxa"/>\n'
+        f'  <w:left w:w="45" w:type="dxa"/>\n'
+        f'  <w:right w:w="45" w:type="dxa"/>\n'
+        f'</w:tblCellMar>'
+    )
+    tblPr.append(cell_mar)
 
     # Header bottom rule
     for cell in table.rows[0].cells:
@@ -72,56 +83,56 @@ def format_apa_table_header(row, col_widths):
             cell.width = col_widths[i]
         for p in cell.paragraphs:
             p.alignment = WD_ALIGN_PARAGRAPH.LEFT if i == 0 else WD_ALIGN_PARAGRAPH.CENTER
-            p.paragraph_format.space_before = Pt(3)
-            p.paragraph_format.space_after = Pt(3)
-            p.paragraph_format.line_spacing = 1.05
+            p.paragraph_format.space_before = Pt(1.5)
+            p.paragraph_format.space_after = Pt(1.5)
+            p.paragraph_format.line_spacing = 1.0
             for run in p.runs:
                 run.font.name = "Arial"
-                run.font.size = Pt(8.5)
+                run.font.size = Pt(7.5)
                 run.font.bold = True
                 run.font.color.rgb = RGBColor(0, 0, 0)
 
 
 def format_apa_table_rows(table, col_widths, align_left_col0=True):
-    """Formats APA data rows: regular black text, no background shading."""
+    """Formats APA data rows: regular black text, compact vertical spacing."""
     for r_idx, row in enumerate(table.rows[1:]):
         for c_idx, cell in enumerate(row.cells):
             cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
             if col_widths and c_idx < len(col_widths):
                 cell.width = col_widths[c_idx]
             for p in cell.paragraphs:
-                p.paragraph_format.space_before = Pt(2.5)
-                p.paragraph_format.space_after = Pt(2.5)
-                p.paragraph_format.line_spacing = 1.05
+                p.paragraph_format.space_before = Pt(1.0)
+                p.paragraph_format.space_after = Pt(1.0)
+                p.paragraph_format.line_spacing = 1.0
                 if c_idx == 0 and align_left_col0:
                     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
                 else:
                     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
                 for run in p.runs:
                     run.font.name = "Arial"
-                    run.font.size = Pt(8)
+                    run.font.size = Pt(7.0)
                     run.font.color.rgb = RGBColor(0, 0, 0)
 
 
 def add_apa_table_caption(doc, table_num, table_title):
     """APA 7th: Table number bold flushed left, title italic flushed left on next line."""
     p1 = doc.add_paragraph()
-    p1.paragraph_format.space_before = Pt(12)
-    p1.paragraph_format.space_after = Pt(1)
+    p1.paragraph_format.space_before = Pt(4.5)
+    p1.paragraph_format.space_after = Pt(0.5)
     p1.paragraph_format.line_spacing = 1.0
     r1 = p1.add_run(f"Tabla {table_num}")
     r1.font.name = "Arial"
-    r1.font.size = Pt(9.5)
+    r1.font.size = Pt(8.0)
     r1.font.bold = True
     r1.font.color.rgb = RGBColor(0, 0, 0)
 
     p2 = doc.add_paragraph()
     p2.paragraph_format.space_before = Pt(0)
-    p2.paragraph_format.space_after = Pt(4)
+    p2.paragraph_format.space_after = Pt(2.0)
     p2.paragraph_format.line_spacing = 1.05
     r2 = p2.add_run(table_title)
     r2.font.name = "Arial"
-    r2.font.size = Pt(9.5)
+    r2.font.size = Pt(8.0)
     r2.font.italic = True
     r2.font.color.rgb = RGBColor(0, 0, 0)
 
@@ -129,22 +140,22 @@ def add_apa_table_caption(doc, table_num, table_title):
 def add_apa_table_note(doc, note_text):
     """APA 7th: Table note directly below table."""
     p = doc.add_paragraph()
-    p.paragraph_format.space_before = Pt(3)
-    p.paragraph_format.space_after = Pt(12)
-    p.paragraph_format.line_spacing = 1.05
+    p.paragraph_format.space_before = Pt(1.5)
+    p.paragraph_format.space_after = Pt(4.5)
+    p.paragraph_format.line_spacing = 1.0
     r_tag = p.add_run("Nota. ")
     r_tag.font.name = "Arial"
-    r_tag.font.size = Pt(8.5)
+    r_tag.font.size = Pt(7.2)
     r_tag.font.italic = True
     r_tag.font.color.rgb = RGBColor(0, 0, 0)
 
     r_body = p.add_run(note_text)
     r_body.font.name = "Arial"
-    r_body.font.size = Pt(8.5)
+    r_body.font.size = Pt(7.2)
     r_body.font.color.rgb = RGBColor(0, 0, 0)
 
 
-def add_p(doc, text="", space_before=0, space_after=6, line_spacing=1.15, align=WD_ALIGN_PARAGRAPH.LEFT, bold=False, italic=False, font_size=10):
+def add_p(doc, text="", space_before=0, space_after=2.5, line_spacing=1.05, align=WD_ALIGN_PARAGRAPH.JUSTIFY, bold=False, italic=False, font_size=8.5):
     p = doc.add_paragraph()
     p.alignment = align
     p.paragraph_format.space_before = Pt(space_before)
@@ -161,15 +172,15 @@ def add_p(doc, text="", space_before=0, space_after=6, line_spacing=1.15, align=
 
 
 def add_h1(doc, text):
-    return add_p(doc, text, space_before=14, space_after=6, bold=True, font_size=12)
+    return add_p(doc, text, space_before=5.5, space_after=2.0, bold=True, font_size=10.5, align=WD_ALIGN_PARAGRAPH.LEFT)
 
 
 def add_h2(doc, text):
-    return add_p(doc, text, space_before=11, space_after=4, bold=True, font_size=11)
+    return add_p(doc, text, space_before=4.0, space_after=1.5, bold=True, font_size=9.5, align=WD_ALIGN_PARAGRAPH.LEFT)
 
 
 def add_h3(doc, text):
-    return add_p(doc, text, space_before=8, space_after=3, bold=True, italic=True, font_size=10)
+    return add_p(doc, text, space_before=2.5, space_after=1.0, bold=True, italic=True, font_size=8.5, align=WD_ALIGN_PARAGRAPH.LEFT)
 
 
 def add_apa_figure(doc, img_rel_path, fig_num, fig_title, fig_note=""):
@@ -178,85 +189,86 @@ def add_apa_figure(doc, img_rel_path, fig_num, fig_title, fig_note=""):
     if os.path.exists(img_full_path):
         p_img = doc.add_paragraph()
         p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.paragraph_format.space_before = Pt(8)
-        p_img.paragraph_format.space_after = Pt(4)
+        p_img.paragraph_format.space_before = Pt(4.0)
+        p_img.paragraph_format.space_after = Pt(1.5)
         run = p_img.add_run()
-        run.add_picture(img_full_path, width=Inches(6.2))
+        run.add_picture(img_full_path, width=Inches(4.3))
 
         p_cap = doc.add_paragraph()
         p_cap.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        p_cap.paragraph_format.space_before = Pt(2)
-        p_cap.paragraph_format.space_after = Pt(12)
+        p_cap.paragraph_format.space_before = Pt(1.0)
+        p_cap.paragraph_format.space_after = Pt(4.5)
+        p_cap.paragraph_format.line_spacing = 1.05
 
         r_num = p_cap.add_run(f"Figura {fig_num}. ")
         r_num.font.name = "Arial"
-        r_num.font.size = Pt(9)
+        r_num.font.size = Pt(7.8)
         r_num.font.bold = True
         r_num.font.color.rgb = RGBColor(0, 0, 0)
 
         r_title = p_cap.add_run(fig_title)
         r_title.font.name = "Arial"
-        r_title.font.size = Pt(9)
+        r_title.font.size = Pt(7.8)
         r_title.font.italic = True
         r_title.font.color.rgb = RGBColor(0, 0, 0)
 
         if fig_note:
             r_note = p_cap.add_run(" " + fig_note)
             r_note.font.name = "Arial"
-            r_note.font.size = Pt(8.5)
+            r_note.font.size = Pt(7.5)
             r_note.font.color.rgb = RGBColor(0, 0, 0)
     else:
         print(f"Warning: Image not found at {img_full_path}")
 
 
 def build_v4_apa():
-    print("Building CoralTwin-DT v4 with Pure Black Typography and Strict APA 7th Edition Tables...")
+    print("Building CoralTwin-DT v4: Pure Black Typography, Strict APA 7th Tables, <= 15 Pages Limit...")
     doc = docx.Document()
 
-    # Margins: 1.0 inch all sides on Letter paper
+    # Margins: 0.65 inch all sides on Letter paper (Printable width: 7.20 in, height: 9.70 in)
     for section in doc.sections:
-        section.top_margin = Inches(1.0)
-        section.bottom_margin = Inches(1.0)
-        section.left_margin = Inches(1.0)
-        section.right_margin = Inches(1.0)
+        section.top_margin = Inches(0.65)
+        section.bottom_margin = Inches(0.65)
+        section.left_margin = Inches(0.65)
+        section.right_margin = Inches(0.65)
         section.page_width = Inches(8.5)
         section.page_height = Inches(11.0)
 
     # Header & Metadata
-    add_p(doc, "Link de la revista: https://www.ecocycles.net/ojs/index.php/ecocycles/", space_after=12, italic=True, font_size=9)
+    add_p(doc, "Link de la revista: https://www.ecocycles.net/ojs/index.php/ecocycles/", space_after=5, italic=True, font_size=8.0, align=WD_ALIGN_PARAGRAPH.LEFT)
     
     add_p(doc, "CoralTwin-DT: un gemelo digital ciberfísico que integra aprendizaje automático y biofísica dinámica para priorizar la restauración de arrecifes de coral bajo estrés térmico y acidificación oceánica", 
-          space_before=4, space_after=14, bold=True, font_size=14, align=WD_ALIGN_PARAGRAPH.CENTER)
+          space_before=2, space_after=6, bold=True, font_size=12.0, align=WD_ALIGN_PARAGRAPH.CENTER)
     
-    add_p(doc, "Harry Rodriguez-Sandoval", space_before=2, space_after=2, bold=True, font_size=10.5, align=WD_ALIGN_PARAGRAPH.CENTER)
+    add_p(doc, "Harry Rodriguez-Sandoval", space_before=0, space_after=1, bold=True, font_size=9.5, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_p(doc, "ORCID iD: 0009-0004-8219-4123 | Departamento de Ingeniería de Sistemas, Universidad Nacional de Trujillo, Trujillo 13011, Perú", 
-          space_after=4, font_size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
+          space_after=2, font_size=8.0, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_p(doc, "Autor de Correspondencia: Harry Rodriguez-Sandoval (hsrodriguezsa@unitru.edu.pe) | Av. Juan Pablo II s/n, Trujillo 13011, Perú", 
-          space_after=14, font_size=8.5, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER)
+          space_after=6, font_size=8.0, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER)
 
-    # Resumen
+    # Resumen estructurado
     add_h2(doc, "Resumen")
     p_abs = doc.add_paragraph()
-    p_abs.paragraph_format.line_spacing = 1.15
-    p_abs.paragraph_format.space_after = Pt(6)
+    p_abs.paragraph_format.line_spacing = 1.05
+    p_abs.paragraph_format.space_after = Pt(3.0)
     p_abs.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     
     def add_sec(p, tag, body):
         r1 = p.add_run(tag + " ")
         r1.bold = True
         r1.font.name = "Arial"
-        r1.font.size = Pt(9.5)
+        r1.font.size = Pt(8.5)
         r1.font.color.rgb = RGBColor(0, 0, 0)
         r2 = p.add_run(body + " ")
         r2.font.name = "Arial"
-        r2.font.size = Pt(9.5)
+        r2.font.size = Pt(8.5)
         r2.font.color.rgb = RGBColor(0, 0, 0)
 
     add_sec(p_abs, "Antecedentes:", 
-            "Las olas de calor marinas y la acidificación de los océanos, ambas de origen antropogénico, interactúan para amenazar a los arrecifes de corales escleractinios a escala global. Los monitoreos retrospectivos convencionales y las áreas marinas protegidas (AMP) estáticas carecen de mecanismos dinámicos para anticipar puntos de inflexión biofísicos no lineales y priorizar intervenciones activas de restauración.")
+            "Las olas de calor marinas y la acidificación de los océanos interactúan amenazando a los arrecifes de corales escleractinios a escala global. Los monitoreos retrospectivos convencionales y las áreas marinas protegidas (AMP) estáticas carecen de mecanismos dinámicos para anticipar puntos de inflexión biofísicos no lineales y priorizar intervenciones activas de restauración.")
     
     add_sec(p_abs, "Métodos:", 
-            "Presentamos CoralTwin-DT, un gemelo digital ciberfísico modular de seis capas de código abierto diseñado para integrar telemetría multiespectral satelital de NOAA Coral Reef Watch (CRW) y Sentinel-2 con sensores biogeoquímicos in situ sobre cuadrículas bentónicas de 500 m. En esta investigación, la arquitectura se evalúa exhaustivamente sobre un conjunto de datos de referencia (N = 15,000 registros estocásticos en 30 estaciones arrecifales globales, 2015–2024, cadencia media de 7.3 días, semilla fija 42). El núcleo predictivo compara cuatro arquitecturas de aprendizaje automático (XGBoost, Random Forest, Deep MLP y Stacked LSTM en PyTorch), evaluadas estrictamente como emuladores del generador, bajo un protocolo de validación cruzada espacial de 5 bloques con buffer de 25 km entre estaciones (distancia mínima de 119.72 km entre pliegues). El sistema incorpora explicabilidad mediante TreeSHAP, ecuaciones diferenciales ordinarias (EDO) de competencia bentónica coral-macroalgas y un Índice de Prioridad Espacial de Restauración (SRPI). Adicionalmente, se ejecutó una validación externa con telemetría satelital operacional real de NOAA CRW de 5 km (2015–2024).")
+            "Presentamos CoralTwin-DT, un gemelo digital ciberfísico modular de seis capas de código abierto diseñado para articular telemetría multiespectral satelital de NOAA Coral Reef Watch (CRW) y Sentinel-2 con sensores biogeoquímicos in situ sobre cuadrículas bentónicas de 500 m. En esta investigación, la arquitectura se evalúa sobre un dataset de referencia (N = 15,000 registros estocásticos en 30 estaciones arrecifales globales, 2015–2024, cadencia media de 7.3 días, semilla 42). El núcleo predictivo compara cuatro arquitecturas de aprendizaje automático (XGBoost, Random Forest, Deep MLP y Stacked LSTM en PyTorch), evaluadas estrictamente como emuladores del generador, bajo un protocolo de validación cruzada espacial de 5 bloques con buffer de 25 km entre estaciones (distancia mínima de 119.72 km entre pliegues). El sistema incorpora explicabilidad mediante TreeSHAP, ecuaciones diferenciales ordinarias (EDO) de competencia bentónica coral-macroalgas y un Índice de Prioridad Espacial de Restauración (SRPI). Adicionalmente, se ejecutó una validación externa con telemetría satelital operacional real de NOAA CRW de 5 km (2015–2024).")
 
     add_sec(p_abs, "Resultados:", 
             "Bajo el régimen canónico de 10 variables ambientales limpias de fuga, los cuatro modelos convergieron a un techo predictivo similar en la emulación de pérdida de cobertura coralina (R² entre 0.9336 y 0.9375; RMSE entre 3.92 % y 4.04 %); una auditoría demostró que el R² previo de 0.9994 era un artefacto de fuga por variables bentónicas post-objetivo. Random Forest obtuvo los desempeños nominales más altos (Macro-F1 = 0.7284, R² = 0.9375); XGBoost (R² = 0.9336, RMSE = 4.04 %) se retuvo por su parsimonia en despliegue de borde (latencia monohilo en CPU de 0.322 ms frente a 17.80 ms de Random Forest; 2.83 MB frente a 21.09 MB) y compatibilidad exacta con TreeSHAP, demostrándose que son dos estimadores independientes y no un modelo multitarea. Ante el severo desbalance de clases (clase Medio: 1.24 %), la ponderación de clases en Random Forest cuadruplicó la sensibilidad de la clase Medio del 10.75 % al 45.91 % (exactitud balanceada del 78.63 %). TreeSHAP asignó a las semanas de calentamiento por grado (DHW) el 53.71 % de la importancia. Dentro del soporte empírico real (p10 = 3.16 a p90 = 3.90 de saturación de aragonita, Ω), la acidificación adelanta el cruce del 35 % de pérdida en −0.35 °C-semanas en XGBoost y en −0.80 °C-semanas en el generador analítico. En las simulaciones biofísicas 2025–2050 (RK4, 5,000 corridas Monte Carlo por escenario), el escenario sin mitigación (S1) colapsa a 0.69 % de cobertura (erosión neta de −1.80 kg CaCO₃ m⁻² año⁻¹), mientras que la intervención combinada con AMP (S4) alcanzó 55.20 % de cobertura y +7.46 kg CaCO₃ m⁻² año⁻¹ (mejor escenario simulado). La validación con 10 años de telemetría real de NOAA CRW reveló una correlación nula con el generador sintético (Spearman ρ = −0.0921, p = 0.635) y una reducción drástica de las estaciones Nivel 1 del SRPI (de 17 a 4 estaciones, con solo un 11.76 % de preservación: Hawaii Kaneohe y OahuFore), debido a las intensas olas de calor de 2023–2024 en el Caribe.")
@@ -265,7 +277,7 @@ def build_v4_apa():
             "CoralTwin-DT demuestra la viabilidad técnica de una arquitectura ciberfísica modular y auditable para el soporte de decisiones en conservación marina. Se esclarece que el emulador predice la respuesta de un generador biofísico sintético y no de arrecifes observados. La discrepancia demostrada frente a los datos satelitales reales de NOAA subraya la imperiosa necesidad de acoplar gemelos digitales con flujos continuos de observación física antes de su implementación operacional en políticas de restauración.")
 
     add_p(doc, "Palabras clave: gemelo digital (digital twin); restauración de arrecifes de coral (coral reef restoration); XGBoost; TreeSHAP; acidificación oceánica; olas de calor marinas; validación cruzada espacial; NOAA Coral Reef Watch.", 
-          space_before=4, space_after=14, italic=True, font_size=9)
+          space_before=2, space_after=6, italic=True, font_size=8.0, align=WD_ALIGN_PARAGRAPH.JUSTIFY)
 
     # 1. Introducción
     add_h1(doc, "1. Introducción")
@@ -283,18 +295,18 @@ def build_v4_apa():
     # Tabla 1 APA
     add_apa_table_caption(doc, "1", "Comparación de características de CoralTwin-DT frente a sistemas previos de monitoreo de arrecifes de coral y gemelos digitales marinos.")
     t1_data = [
-        ["Sistema / Referencia", "Ingesta Continua Multisensorial", "ML Explicable (Atribución Local)", "Simulación Mecanicista Dinámica", "Priorización Espacial Accionable", "Código y Datos Abiertos"],
-        ["CoralNet / González-Rivero et al. (2020)", "No (lotes de imágenes estáticas)", "No (clasificación en caja negra)", "No", "No", "Parcial (servidor web)"],
-        ["Drones + Deep Learning / Giles et al. (2023)", "No (campañas locales puntuales)", "No", "No", "No", "No disponible"],
-        ["Allen Coral Atlas / Lyons et al. (2020, 2024)", "Sí (mosaicos satelitales periódicos)", "No", "No", "Sí (cartografía geomorfológica estática)", "Sí (plataforma pública)"],
-        ["Gemelo Oceánico Conceptual / Tzachor et al. (2023)", "Conceptual (artículo de visión)", "No", "Conceptual", "No", "No aplicable (perspectiva teórica)"],
-        ["OceanNet / Chattopadhyay et al. (2024)", "Sí (operadores neuronales regionales)", "No (caja negra profunda)", "No (puramente basado en datos)", "No", "Sí (repositorio GitHub)"],
-        ["CoralTwin-DT (este estudio)", "Sí (diseño; validado con datos sintéticos y NOAA)", "Sí (TreeSHAP intervencional)", "Sí (EDO acopladas tipo Mumby et al.)", "Sí (SRPI y zonificación GeoJSON)", "Sí (100 % auditable, MIT, Zenodo)"]
+        ["Sistema / Referencia", "Ingesta Multisensorial", "ML Explicable (Local)", "Simulación Dinámica", "Priorización Espacial", "Código y Datos Abiertos"],
+        ["CoralNet / González-Rivero et al. (2020)", "No (imágenes estáticas)", "No (caja negra)", "No", "No", "Parcial (servidor web)"],
+        ["Drones + Deep Learning / Giles et al. (2023)", "No (campañas puntuales)", "No", "No", "No", "No disponible"],
+        ["Allen Coral Atlas / Lyons et al. (2020, 2024)", "Sí (mosaicos satelitales)", "No", "No", "Sí (geomorfología estática)", "Sí (plataforma pública)"],
+        ["Gemelo Oceánico / Tzachor et al. (2023)", "Conceptual (visión)", "No", "Conceptual", "No", "No aplicable (perspectiva)"],
+        ["OceanNet / Chattopadhyay et al. (2024)", "Sí (operadores neuronales)", "No (caja negra profunda)", "No (puramente datos)", "No", "Sí (repositorio GitHub)"],
+        ["CoralTwin-DT (este estudio)", "Sí (diseño; sintético y NOAA)", "Sí (TreeSHAP exacto)", "Sí (EDO tipo Mumby et al.)", "Sí (SRPI y GeoJSON)", "Sí (100 % auditable, MIT, Zenodo)"]
     ]
     t1 = doc.add_table(rows=len(t1_data), cols=len(t1_data[0]))
     t1.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_apa_table_borders(t1)
-    col_w1 = [Inches(1.8), Inches(1.3), Inches(1.3), Inches(1.4), Inches(1.4), Inches(1.2)]
+    col_w1 = [Inches(1.5), Inches(1.1), Inches(1.1), Inches(1.2), Inches(1.2), Inches(1.1)]
     for r_i, row in enumerate(t1.rows):
         for c_i, val in enumerate(t1_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
@@ -392,7 +404,7 @@ def build_v4_apa():
     t2 = doc.add_table(rows=len(t2_data), cols=len(t2_data[0]))
     t2.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_apa_table_borders(t2)
-    col_w2 = [Inches(1.8), Inches(1.8), Inches(1.5), Inches(1.5), Inches(1.8)]
+    col_w2 = [Inches(1.5), Inches(1.5), Inches(1.4), Inches(1.3), Inches(1.5)]
     for r_i, row in enumerate(t2.rows):
         for c_i, val in enumerate(t2_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
@@ -446,7 +458,7 @@ def build_v4_apa():
     t3 = doc.add_table(rows=len(t3_data), cols=len(t3_data[0]))
     t3.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_apa_table_borders(t3)
-    col_w3 = [Inches(2.8), Inches(5.2)]
+    col_w3 = [Inches(2.2), Inches(5.0)]
     for r_i, row in enumerate(t3.rows):
         for c_i, val in enumerate(t3_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
@@ -476,7 +488,7 @@ def build_v4_apa():
     t4 = doc.add_table(rows=len(t4_data), cols=len(t4_data[0]))
     t4.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_apa_table_borders(t4)
-    col_w4 = [Inches(1.8), Inches(1.3), Inches(1.0), Inches(1.1), Inches(1.1), Inches(1.1), Inches(1.6)]
+    col_w4 = [Inches(1.4), Inches(0.9), Inches(0.8), Inches(1.0), Inches(1.0), Inches(0.9), Inches(1.2)]
     for r_i, row in enumerate(t4.rows):
         for c_i, val in enumerate(t4_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
@@ -489,7 +501,7 @@ def build_v4_apa():
     # Tabla 5 APA
     add_apa_table_caption(doc, "5", "Auditoría de fuga de información del objetivo con XGBoost (semilla 42; CV espacial de 5 bloques).")
     t5_data = [
-        ["Régimen de Entrada", "N.° Variables", "Variables Ambientales y Bentónicas Incluidas", "Exactitud (%)", "Macro-F1", "R² Emulación", "RMSE (%)"],
+        ["Régimen de Entrada", "N.° Vars", "Variables Ambientales y Bentónicas Incluidas", "Exactitud (%)", "Macro-F1", "R² Emulación", "RMSE (%)"],
         ["Con fuga (auditado)", "16", "Todas las variables, incluyendo índices bentónicos post-objetivo (Shannon, rugosidad)", "98.83", "0.7335", "0.9994", "0.395"],
         ["Conjunto empírico previo", "10", "Ambientales más rugosidad y cobertura viva (en lugar de salinidad y oxígeno)", "98.81", "0.7197", "0.8305", "6.460"],
         ["Canónico (Limpio)", "10", "SST, anomalía SST, DHW, pH, salinidad, oxígeno disuelto, Ω_arag, turbidez, PAR, profundidad", "98.85", "0.7187", "0.9336", "4.044"],
@@ -499,7 +511,7 @@ def build_v4_apa():
     t5 = doc.add_table(rows=len(t5_data), cols=len(t5_data[0]))
     t5.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_apa_table_borders(t5)
-    col_w5 = [Inches(1.8), Inches(0.8), Inches(2.6), Inches(0.9), Inches(0.9), Inches(0.9), Inches(0.9)]
+    col_w5 = [Inches(1.5), Inches(0.6), Inches(2.5), Inches(0.7), Inches(0.6), Inches(0.6), Inches(0.7)]
     for r_i, row in enumerate(t5.rows):
         for c_i, val in enumerate(t5_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
@@ -516,7 +528,7 @@ def build_v4_apa():
     # Tabla 6 APA
     add_apa_table_caption(doc, "6", "Evaluación comparativa del impacto de la ponderación de clases en XGBoost y Random Forest para la mitigación del desbalance en la clase minoritaria 'Medio'.")
     t6_data = [
-        ["Modelo y Régimen de Ponderación", "Exactitud Global (%) [IC 95 %]", "Exactitud Balanceada (%) [IC 95 %]", "Macro-F1 [IC 95 %]", "Sensibilidad 'Bajo' (%)", "Sensibilidad 'Medio' (%) [IC 95 %]", "Sensibilidad 'Alto' (%)", "PR-AUC 'Medio'"],
+        ["Modelo y Régimen de Ponderación", "Exactitud Global (%) [IC 95 %]", "Exactitud Bal. (%) [IC 95 %]", "Macro-F1 [IC 95 %]", "Sens. 'Bajo' (%)", "Sens. 'Medio' (%) [IC 95 %]", "Sens. 'Alto' (%)", "PR-AUC 'Medio'"],
         ["XGBoost Canónico (Sin ponderar)", "98.86 [98.67–99.01]", "69.83 [68.29–71.10]", "0.7225 [0.6966–0.7423]", "99.99", "9.78 [5.26–13.64]", "99.72", "0.1431"],
         ["XGBoost Ponderado (sample_weight)", "98.18 [98.05–98.44]", "70.23 [68.81–71.85]", "0.7089 [0.6933–0.7285]", "99.24", "11.72 [7.37–16.67]", "99.72", "0.1497"],
         ["Random Forest Canónico (Sin ponderar)", "98.88 [98.71–99.04]", "70.17 [68.75–71.68]", "0.7285 [0.7045–0.7521]", "100.00", "10.75 [6.53–15.38]", "99.75", "0.1688"],
@@ -525,7 +537,7 @@ def build_v4_apa():
     t6 = doc.add_table(rows=len(t6_data), cols=len(t6_data[0]))
     t6.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_apa_table_borders(t6)
-    col_w6 = [Inches(1.8), Inches(1.2), Inches(1.2), Inches(1.0), Inches(0.9), Inches(1.1), Inches(0.9), Inches(0.9)]
+    col_w6 = [Inches(1.5), Inches(0.9), Inches(0.9), Inches(0.7), Inches(0.8), Inches(0.9), Inches(0.8), Inches(0.7)]
     for r_i, row in enumerate(t6.rows):
         for c_i, val in enumerate(t6_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
@@ -567,7 +579,7 @@ def build_v4_apa():
     t7 = doc.add_table(rows=len(t7_data), cols=len(t7_data[0]))
     t7.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_apa_table_borders(t7)
-    col_w7 = [Inches(2.2), Inches(1.5), Inches(1.1), Inches(1.6), Inches(1.6)]
+    col_w7 = [Inches(1.8), Inches(1.4), Inches(1.0), Inches(1.5), Inches(1.5)]
     for r_i, row in enumerate(t7.rows):
         for c_i, val in enumerate(t7_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
@@ -610,7 +622,7 @@ def build_v4_apa():
     t8 = doc.add_table(rows=len(t8_data), cols=len(t8_data[0]))
     t8.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_apa_table_borders(t8)
-    col_w8 = [Inches(1.8), Inches(1.0), Inches(1.0), Inches(1.0), Inches(0.9), Inches(0.8), Inches(0.8), Inches(1.7)]
+    col_w8 = [Inches(1.5), Inches(0.8), Inches(0.9), Inches(0.9), Inches(0.8), Inches(0.6), Inches(0.6), Inches(1.1)]
     for r_i, row in enumerate(t8.rows):
         for c_i, val in enumerate(t8_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
@@ -723,14 +735,14 @@ def build_v4_apa():
     
     for ref in refs:
         p_ref = doc.add_paragraph()
-        p_ref.paragraph_format.line_spacing = 1.15
+        p_ref.paragraph_format.line_spacing = 1.0
         p_ref.paragraph_format.space_before = Pt(0)
-        p_ref.paragraph_format.space_after = Pt(4)
-        p_ref.paragraph_format.left_indent = Inches(0.5)
-        p_ref.paragraph_format.first_line_indent = Inches(-0.5)
+        p_ref.paragraph_format.space_after = Pt(1.5)
+        p_ref.paragraph_format.left_indent = Inches(0.25)
+        p_ref.paragraph_format.first_line_indent = Inches(-0.25)
         run_r = p_ref.add_run(ref)
         run_r.font.name = "Arial"
-        run_r.font.size = Pt(8.5)
+        run_r.font.size = Pt(7.2)
         run_r.font.color.rgb = RGBColor(0, 0, 0)
 
     # Save to all target paths
