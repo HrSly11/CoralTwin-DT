@@ -1,0 +1,34 @@
+Model_Component,Parameter,Real_Value_In_Code,Tuning_Status,Technical_Justification
+XGBoost_Classifier,n_estimators,350,Optimized (Inner 3-Fold Spatial CV),Balance between spatial convergence and overfitting
+XGBoost_Classifier,max_depth,6,Optimized (Inner 3-Fold Spatial CV),Optimal tree depth for non-linear interactions
+XGBoost_Classifier,learning_rate,0.05,Optimized (Inner 3-Fold Spatial CV),Conservative shrinkage rate
+XGBoost_Classifier,subsample,0.80,Fixed,Stochastic row subsampling for variance reduction
+XGBoost_Classifier,colsample_bytree,0.80,Fixed,Feature fraction per split
+XGBoost_Classifier,min_child_weight,3,Optimized (Inner 3-Fold Spatial CV),Minimum sum of instance weight in a child
+XGBoost_Classifier,gamma,0.1,Optimized (Inner 3-Fold Spatial CV),Minimum loss reduction for split partition
+XGBoost_Classifier,eval_metric / objective,mlogloss / multi:softprob,Fixed,Probabilistic 3-class classification
+XGBoost_Classifier,random_state,Seeds 17 42 73 108 256,Fixed,Strict reproducibility across outer folds
+XGBoost_Regressor,n_estimators / max_depth / lr,Same as Classifier (350 / 6 / 0.05),Optimized (Inner 3-Fold Spatial CV),Dedicated independent regression model
+XGBoost_Regressor,objective,reg:squarederror,Fixed,Mean squared error loss
+Random_Forest_Classifier,n_estimators,200,Optimized (Inner 3-Fold Spatial CV),Ensemble variance stabilization
+Random_Forest_Classifier,max_depth,12,Optimized (Inner 3-Fold Spatial CV),Maximum depth constraint
+Random_Forest_Classifier,min_samples_split,4,Optimized (Inner 3-Fold Spatial CV),Minimum samples required to split internal node
+Random_Forest_Classifier,min_samples_leaf,2,Optimized (Inner 3-Fold Spatial CV),Leaf smoothing
+Random_Forest_Classifier,max_features,sqrt,Fixed,Canonical random feature subset
+Random_Forest_Regressor,max_features,1.0,Fixed,Full feature subset for regression trees
+Deep_MLP_PyTorch,Architecture,10 -> 128 -> 64 -> 32 -> Out,Fixed Canonical,Piramidal deep architecture
+Deep_MLP_PyTorch,Normalization,BatchNorm1d,Fixed,Batch normalization after every hidden linear layer
+Deep_MLP_PyTorch,Activation,ReLU,Fixed,Standard rectified linear unit
+Deep_MLP_PyTorch,Dropout,0.20,Fixed,Drop probability in hidden layers
+Deep_MLP_PyTorch,Optimizer,AdamW (lr=1e-3 weight_decay=1e-4),Fixed,Adaptive gradient descent with L2 penalty
+Deep_MLP_PyTorch,Batch_Size / Max_Epochs,256 / 30,Fixed,Mini-batch training
+Deep_MLP_PyTorch,Early_Stopping,Patience 5 epochs (delta < 1e-4),Dynamic,Best state loaded from inner held-out spatial cluster
+Deep_MLP_PyTorch,Loss_Function,CrossEntropyLoss (Clf) / MSELoss (Reg),Fixed,Canonical loss functions
+Stacked_LSTM_PyTorch,Sequence_Length,8 weekly time steps,Fixed,Historical lag sequence per station
+Stacked_LSTM_PyTorch,LSTM_Layer_1,input=10 hidden=64 batch_first=True,Fixed,Primary temporal feature extraction
+Stacked_LSTM_PyTorch,Dropout_Intermediate,0.20,Fixed,Recurrent dropout
+Stacked_LSTM_PyTorch,LSTM_Layer_2,input=64 hidden=32 batch_first=True,Fixed,Secondary temporal feature extraction
+Stacked_LSTM_PyTorch,Dense_Head,Linear(32 32) + ReLU + Linear(32 Out),Fixed,Mapping final hidden state to predictions
+Stacked_LSTM_PyTorch,Optimizer,AdamW (lr=3e-3 weight_decay=1e-4),Fixed,Adaptive gradient descent with L2 penalty
+Stacked_LSTM_PyTorch,Batch_Size / Max_Epochs,256 / 25,Fixed,Mini-batch sequential training
+Stacked_LSTM_PyTorch,Early_Stopping,Patience 5 epochs (delta < 1e-4),Dynamic,Best state loaded from inner held-out spatial cluster
