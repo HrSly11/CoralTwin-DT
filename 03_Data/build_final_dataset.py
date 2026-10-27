@@ -1,8 +1,10 @@
 """
-CoralTwin-DT: Environmental Data Engineering & Final Dataset Generator
-======================================================================
-Builds the gold-standard analysis-ready final dataset (N=15,000 observations),
-comprehensive ISO-19115 data dictionary, and detailed validation report.
+CoralTwin-DT: Environmental Data Engineering & Unified Dataset Generator
+========================================================================
+Builds the unified 30-station benchmark synthetic dataset (N=15,000 observations),
+writes both `03_Data/final_dataset.csv` and
+`03_Data/processed_data/coral_environmental_harmonized.csv` identically,
+and generates the comprehensive ISO-19115 data dictionary and validation report.
 
 Author: CoralTwin-DT Environmental Data Science Lead
 License: MIT
@@ -24,61 +26,65 @@ np.random.seed(SEED)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
 FINAL_DATA_CSV = os.path.join(BASE_DIR, "final_dataset.csv")
+HARMONIZED_DATA_CSV = os.path.join(BASE_DIR, "processed_data", "coral_environmental_harmonized.csv")
 FINAL_DICT_CSV = os.path.join(BASE_DIR, "data_dictionary_final.csv")
 VALIDATION_MD = os.path.join(BASE_DIR, "dataset_validation_report.md")
 
 
 def generate_extended_stations():
-    """Generates the archived legacy 30-station benchmark configuration."""
+    """Generates the unified 30-station benchmark configuration across 5 biogeographic provinces."""
     stations = [
         # Caribbean Province
-        {"name": "Mesoamerican_Fore_01", "lat": 18.250, "lon": -87.800, "zone": "Fore Reef", "depth": 12.5, "region": "Caribbean", "real_ratio": 0.45, "genus": "Acropora"},
-        {"name": "Mesoamerican_Crest_02", "lat": 18.280, "lon": -87.820, "zone": "Reef Crest", "depth": 4.2, "region": "Caribbean", "real_ratio": 0.40, "genus": "Porites"},
-        {"name": "Mesoamerican_Back_03", "lat": 18.310, "lon": -87.850, "zone": "Back Reef", "depth": 6.8, "region": "Caribbean", "real_ratio": 0.35, "genus": "Orbicella"},
-        {"name": "Mesoamerican_Lagoon_04", "lat": 18.350, "lon": -87.880, "zone": "Lagoon", "depth": 2.5, "region": "Caribbean", "real_ratio": 0.30, "genus": "Porites"},
-        {"name": "Belize_Barrier_05", "lat": 17.150, "lon": -87.900, "zone": "Fore Reef", "depth": 15.0, "region": "Caribbean", "real_ratio": 0.40, "genus": "Orbicella"},
-        {"name": "Belize_Atoll_06", "lat": 17.200, "lon": -87.550, "zone": "Reef Crest", "depth": 5.0, "region": "Caribbean", "real_ratio": 0.35, "genus": "Acropora"},
-        {"name": "Cozumel_South_07", "lat": 20.300, "lon": -87.020, "zone": "Fore Reef", "depth": 18.2, "region": "Caribbean", "real_ratio": 0.45, "genus": "Montastraea"},
-        {"name": "Cozumel_Shallow_08", "lat": 20.350, "lon": -86.980, "zone": "Lagoon", "depth": 3.1, "region": "Caribbean", "real_ratio": 0.30, "genus": "Porites"},
-        {"name": "Roatan_North_09", "lat": 16.380, "lon": -86.500, "zone": "Fore Reef", "depth": 14.0, "region": "Caribbean", "real_ratio": 0.40, "genus": "Acropora"},
-        {"name": "Roatan_South_10", "lat": 16.320, "lon": -86.550, "zone": "Back Reef", "depth": 8.0, "region": "Caribbean", "real_ratio": 0.35, "genus": "Agaricia"},
-        {"name": "Florida_Keys_Uppers_11", "lat": 25.020, "lon": -80.400, "zone": "Fore Reef", "depth": 9.5, "region": "Caribbean", "real_ratio": 0.50, "genus": "Acropora"},
-        {"name": "Florida_Keys_Lowers_12", "lat": 24.550, "lon": -81.450, "zone": "Reef Crest", "depth": 4.5, "region": "Caribbean", "real_ratio": 0.50, "genus": "Orbicella"},
+        {"id": "STN_01", "name": "Mesoamerican_Fore_01", "lat": 18.250, "lon": -87.800, "zone": "Fore Reef", "depth": 12.5, "region": "Caribbean", "real_ratio": 0.45, "genus": "Acropora"},
+        {"id": "STN_02", "name": "Mesoamerican_Crest_02", "lat": 18.280, "lon": -87.820, "zone": "Reef Crest", "depth": 4.2, "region": "Caribbean", "real_ratio": 0.40, "genus": "Porites"},
+        {"id": "STN_03", "name": "Mesoamerican_Back_03", "lat": 18.310, "lon": -87.850, "zone": "Back Reef", "depth": 6.8, "region": "Caribbean", "real_ratio": 0.35, "genus": "Orbicella"},
+        {"id": "STN_04", "name": "Mesoamerican_Lagoon_04", "lat": 18.350, "lon": -87.880, "zone": "Lagoon", "depth": 2.5, "region": "Caribbean", "real_ratio": 0.30, "genus": "Porites"},
+        {"id": "STN_05", "name": "Belize_Barrier_05", "lat": 17.150, "lon": -87.900, "zone": "Fore Reef", "depth": 15.0, "region": "Caribbean", "real_ratio": 0.40, "genus": "Orbicella"},
+        {"id": "STN_06", "name": "Belize_Atoll_06", "lat": 17.200, "lon": -87.550, "zone": "Reef Crest", "depth": 5.0, "region": "Caribbean", "real_ratio": 0.35, "genus": "Acropora"},
+        {"id": "STN_07", "name": "Cozumel_South_07", "lat": 20.300, "lon": -87.020, "zone": "Fore Reef", "depth": 18.2, "region": "Caribbean", "real_ratio": 0.45, "genus": "Montastraea"},
+        {"id": "STN_08", "name": "Cozumel_Shallow_08", "lat": 20.350, "lon": -86.980, "zone": "Lagoon", "depth": 3.1, "region": "Caribbean", "real_ratio": 0.30, "genus": "Porites"},
+        {"id": "STN_09", "name": "Roatan_North_09", "lat": 16.380, "lon": -86.500, "zone": "Fore Reef", "depth": 14.0, "region": "Caribbean", "real_ratio": 0.40, "genus": "Acropora"},
+        {"id": "STN_10", "name": "Roatan_South_10", "lat": 16.320, "lon": -86.550, "zone": "Back Reef", "depth": 8.0, "region": "Caribbean", "real_ratio": 0.35, "genus": "Agaricia"},
+        {"id": "STN_11", "name": "Florida_Keys_Uppers_11", "lat": 25.020, "lon": -80.400, "zone": "Fore Reef", "depth": 9.5, "region": "Caribbean", "real_ratio": 0.50, "genus": "Acropora"},
+        {"id": "STN_12", "name": "Florida_Keys_Lowers_12", "lat": 24.550, "lon": -81.450, "zone": "Reef Crest", "depth": 4.5, "region": "Caribbean", "real_ratio": 0.50, "genus": "Orbicella"},
 
         # Indo-Pacific Coral Triangle & GBR
-        {"name": "GreatBarrier_Northern_13", "lat": -14.500, "lon": 145.450, "zone": "Fore Reef", "depth": 11.0, "region": "Indo-Pacific", "real_ratio": 0.50, "genus": "Acropora"},
-        {"name": "GreatBarrier_Central_14", "lat": -18.250, "lon": 147.200, "zone": "Fore Reef", "depth": 13.5, "region": "Indo-Pacific", "real_ratio": 0.50, "genus": "Pocillopora"},
-        {"name": "GreatBarrier_Lagoon_15", "lat": -18.300, "lon": 147.150, "zone": "Lagoon", "depth": 3.8, "region": "Indo-Pacific", "real_ratio": 0.35, "genus": "Porites"},
-        {"name": "CoralTriangle_RajaAmpat_16", "lat": -0.550, "lon": 130.500, "zone": "Fore Reef", "depth": 10.5, "region": "Indo-Pacific", "real_ratio": 0.40, "genus": "Acropora"},
-        {"name": "CoralTriangle_Misool_17", "lat": -1.950, "lon": 130.150, "zone": "Reef Crest", "depth": 5.2, "region": "Indo-Pacific", "real_ratio": 0.35, "genus": "Pocillopora"},
-        {"name": "CoralTriangle_Komodo_18", "lat": -8.600, "lon": 119.550, "zone": "Fore Reef", "depth": 16.0, "region": "Indo-Pacific", "real_ratio": 0.40, "genus": "Porites"},
-        {"name": "CoralTriangle_Sulawesi_19", "lat": 1.650, "lon": 124.750, "zone": "Fore Reef", "depth": 12.0, "region": "Indo-Pacific", "real_ratio": 0.35, "genus": "Acropora"},
-        {"name": "CoralTriangle_Bali_20", "lat": -8.120, "lon": 115.650, "zone": "Reef Crest", "depth": 6.5, "region": "Indo-Pacific", "real_ratio": 0.35, "genus": "Pocillopora"},
-        {"name": "Okinawa_Kerama_21", "lat": 26.200, "lon": 127.350, "zone": "Fore Reef", "depth": 14.5, "region": "Indo-Pacific", "real_ratio": 0.45, "genus": "Acropora"},
-        {"name": "Okinawa_Ishigaki_22", "lat": 24.350, "lon": 124.150, "zone": "Lagoon", "depth": 3.2, "region": "Indo-Pacific", "real_ratio": 0.40, "genus": "Porites"},
+        {"id": "STN_13", "name": "GreatBarrier_Northern_13", "lat": -14.500, "lon": 145.450, "zone": "Fore Reef", "depth": 11.0, "region": "Indo-Pacific", "real_ratio": 0.50, "genus": "Acropora"},
+        {"id": "STN_14", "name": "GreatBarrier_Central_14", "lat": -18.250, "lon": 147.200, "zone": "Fore Reef", "depth": 13.5, "region": "Indo-Pacific", "real_ratio": 0.50, "genus": "Pocillopora"},
+        {"id": "STN_15", "name": "GreatBarrier_Lagoon_15", "lat": -18.300, "lon": 147.150, "zone": "Lagoon", "depth": 3.8, "region": "Indo-Pacific", "real_ratio": 0.35, "genus": "Porites"},
+        {"id": "STN_16", "name": "CoralTriangle_RajaAmpat_16", "lat": -0.550, "lon": 130.500, "zone": "Fore Reef", "depth": 10.5, "region": "Indo-Pacific", "real_ratio": 0.40, "genus": "Acropora"},
+        {"id": "STN_17", "name": "CoralTriangle_Misool_17", "lat": -1.950, "lon": 130.150, "zone": "Reef Crest", "depth": 5.2, "region": "Indo-Pacific", "real_ratio": 0.35, "genus": "Pocillopora"},
+        {"id": "STN_18", "name": "CoralTriangle_Komodo_18", "lat": -8.600, "lon": 119.550, "zone": "Fore Reef", "depth": 16.0, "region": "Indo-Pacific", "real_ratio": 0.40, "genus": "Porites"},
+        {"id": "STN_19", "name": "CoralTriangle_Sulawesi_19", "lat": 1.650, "lon": 124.750, "zone": "Fore Reef", "depth": 12.0, "region": "Indo-Pacific", "real_ratio": 0.35, "genus": "Acropora"},
+        {"id": "STN_20", "name": "CoralTriangle_Bali_20", "lat": -8.120, "lon": 115.650, "zone": "Reef Crest", "depth": 6.5, "region": "Indo-Pacific", "real_ratio": 0.35, "genus": "Pocillopora"},
+        {"id": "STN_21", "name": "Okinawa_Kerama_21", "lat": 26.200, "lon": 127.350, "zone": "Fore Reef", "depth": 14.5, "region": "Indo-Pacific", "real_ratio": 0.45, "genus": "Acropora"},
+        {"id": "STN_22", "name": "Okinawa_Ishigaki_22", "lat": 24.350, "lon": 124.150, "zone": "Lagoon", "depth": 3.2, "region": "Indo-Pacific", "real_ratio": 0.40, "genus": "Porites"},
 
         # Red Sea & Indian Ocean
-        {"name": "RedSea_Aqaba_23", "lat": 29.450, "lon": 34.950, "zone": "Fore Reef", "depth": 15.5, "region": "Red Sea", "real_ratio": 0.45, "genus": "Stylophora"},
-        {"name": "RedSea_Shallow_24", "lat": 27.200, "lon": 33.850, "zone": "Reef Crest", "depth": 4.0, "region": "Red Sea", "real_ratio": 0.40, "genus": "Porites"},
-        {"name": "RedSea_Farasan_25", "lat": 16.700, "lon": 41.950, "zone": "Fore Reef", "depth": 12.0, "region": "Red Sea", "real_ratio": 0.30, "genus": "Acropora"},
-        {"name": "Seychelles_Mahe_26", "lat": -4.680, "lon": 55.450, "zone": "Fore Reef", "depth": 10.8, "region": "Indian Ocean", "real_ratio": 0.35, "genus": "Pocillopora"},
-        {"name": "Maldives_AriAtoll_27", "lat": 3.850, "lon": 72.850, "zone": "Reef Crest", "depth": 5.5, "region": "Indian Ocean", "real_ratio": 0.35, "genus": "Acropora"},
+        {"id": "STN_23", "name": "RedSea_Aqaba_23", "lat": 29.450, "lon": 34.950, "zone": "Fore Reef", "depth": 15.5, "region": "Red Sea", "real_ratio": 0.45, "genus": "Stylophora"},
+        {"id": "STN_24", "name": "RedSea_Shallow_24", "lat": 27.200, "lon": 33.850, "zone": "Reef Crest", "depth": 4.0, "region": "Red Sea", "real_ratio": 0.40, "genus": "Porites"},
+        {"id": "STN_25", "name": "RedSea_Farasan_25", "lat": 16.700, "lon": 41.950, "zone": "Fore Reef", "depth": 12.0, "region": "Red Sea", "real_ratio": 0.30, "genus": "Acropora"},
+        {"id": "STN_26", "name": "Seychelles_Mahe_26", "lat": -4.680, "lon": 55.450, "zone": "Fore Reef", "depth": 10.8, "region": "Indian Ocean", "real_ratio": 0.35, "genus": "Pocillopora"},
+        {"id": "STN_27", "name": "Maldives_AriAtoll_27", "lat": 3.850, "lon": 72.850, "zone": "Reef Crest", "depth": 5.5, "region": "Indian Ocean", "real_ratio": 0.35, "genus": "Acropora"},
 
         # Pacific Province
-        {"name": "Hawaii_Kaneohe_28", "lat": 21.450, "lon": -157.800, "zone": "Lagoon", "depth": 3.5, "region": "Pacific", "real_ratio": 0.45, "genus": "Porites"},
-        {"name": "Hawaii_OahuFore_29", "lat": 21.300, "lon": -157.700, "zone": "Fore Reef", "depth": 11.2, "region": "Pacific", "real_ratio": 0.40, "genus": "Montipora"},
-        {"name": "Palau_RockIslands_30", "lat": 7.300, "lon": 134.450, "zone": "Lagoon", "depth": 4.8, "region": "Pacific", "real_ratio": 0.40, "genus": "Porites"},
+        {"id": "STN_28", "name": "Hawaii_Kaneohe_28", "lat": 21.450, "lon": -157.800, "zone": "Lagoon", "depth": 3.5, "region": "Pacific", "real_ratio": 0.45, "genus": "Porites"},
+        {"id": "STN_29", "name": "Hawaii_OahuFore_29", "lat": 21.300, "lon": -157.700, "zone": "Fore Reef", "depth": 11.2, "region": "Pacific", "real_ratio": 0.40, "genus": "Montipora"},
+        {"id": "STN_30", "name": "Palau_RockIslands_30", "lat": 7.300, "lon": 134.450, "zone": "Lagoon", "depth": 4.8, "region": "Pacific", "real_ratio": 0.40, "genus": "Porites"},
     ]
     return stations
 
 
 def build_final_dataset(n_total=15000):
     """
-    Constructs the rigorous, biophysically consistent final dataset (N=15,000 samples).
-    This legacy generator emits simulated records only.
+    Constructs the unified 30-station synthetic benchmark dataset (N=15,000 samples).
+    Preserves the exact RNG sequence (`SEED = 42`) so all numerical features match
+    the original dataset bit-for-bit, while labeling 100.0% of rows accurately as
+    `Digital_Twin_Simulated`.
     """
+    np.random.seed(SEED)
     stations = generate_extended_stations()
-    samples_per_station = n_total // len(stations) # 500 samples per station
+    samples_per_station = n_total // len(stations)  # 500 samples per station
 
     start_date = datetime(2015, 1, 1)
     end_date = datetime(2024, 12, 31)
@@ -102,13 +108,13 @@ def build_final_dataset(n_total=15000):
             base_sst, mmm, base_ph = 26.5, 28.5, 8.14
             base_cover = np.random.uniform(28.0, 48.0)
             base_rugosity = np.random.uniform(2.0, 2.8)
-            salinity_mean = 40.2 # High salinity in Red Sea
+            salinity_mean = 40.2  # High salinity in Red Sea
         elif st["region"] == "Indian Ocean":
             base_sst, mmm, base_ph = 28.2, 29.5, 8.09
             base_cover = np.random.uniform(25.0, 45.0)
             base_rugosity = np.random.uniform(1.9, 2.7)
             salinity_mean = 35.1
-        else: # Pacific
+        else:  # Pacific
             base_sst, mmm, base_ph = 25.8, 27.5, 8.07
             base_cover = np.random.uniform(22.0, 42.0)
             base_rugosity = np.random.uniform(1.7, 2.6)
@@ -221,7 +227,10 @@ def build_final_dataset(n_total=15000):
             lat_jitter = st["lat"] + np.random.uniform(-0.018, 0.018)
             lon_jitter = st["lon"] + np.random.uniform(-0.018, 0.018)
 
-            # Calibration references do not make synthetic rows empirical observations.
+            # Preserve legacy RNG advance for 100% bit-for-bit numerical reproducibility
+            _legacy_calibrated_draw = (year <= 2021) and (np.random.rand() < st["real_ratio"])
+
+            # All 15,000 rows are synthetically generated by the numerical simulator (100.0% simulated)
             data_type = "Digital_Twin_Simulated"
             agency = "CoralTwin-DT Numerical Simulator"
 
@@ -229,6 +238,7 @@ def build_final_dataset(n_total=15000):
             records.append({
                 "Record_ID": rec_id,
                 "Date": sample_date.strftime("%Y-%m-%d"),
+                "Station_ID": st["id"],
                 "Station_Name": st["name"],
                 "Region": st["region"],
                 "Latitude": round(lat_jitter, 5),
@@ -259,6 +269,7 @@ def build_final_dataset(n_total=15000):
                 "Bleaching_Risk": risk_cat,
                 "Coral_Cover_Loss_Pct": round(coral_cover_loss_pct, 2),
                 "Data_Source_Type": data_type,
+                "Data_Type": data_type,
                 "Data_Collection_Agency": agency,
                 "Scientific_Attribution": "Resultado obtenido mediante prototipo computacional del gemelo digital",
             })
@@ -270,39 +281,41 @@ def build_final_dataset(n_total=15000):
 def generate_final_data_dictionary():
     """Generates the comprehensive data_dictionary_final.csv."""
     entries = [
-        {"Variable_Name": "Record_ID", "Standard_Name": "record_identifier", "Data_Type": "Integer", "Units": "dimensionless", "Valid_Range": "1 to 20000", "Sensor_Source": "CoralTwin Core", "Description": "Unique primary key index", "Category": "Metadata"},
-        {"Variable_Name": "Date", "Standard_Name": "time", "Data_Type": "String (ISO-8601)", "Units": "YYYY-MM-DD", "Valid_Range": "2015-01-01 to 2024-12-31", "Sensor_Source": "NOAA CRW / In-situ", "Description": "Temporal observation timestamp", "Category": "Spatiotemporal"},
-        {"Variable_Name": "Station_Name", "Standard_Name": "platform_name", "Data_Type": "String", "Units": "nominal", "Valid_Range": "30 Named Stations", "Sensor_Source": "Consortium Grid", "Description": "Pilot monitoring station identifier", "Category": "Spatiotemporal"},
+        {"Variable_Name": "Record_ID", "Standard_Name": "record_identifier", "Data_Type": "Integer", "Units": "dimensionless", "Valid_Range": "1 to 15000", "Sensor_Source": "CoralTwin Core", "Description": "Unique primary key index", "Category": "Metadata"},
+        {"Variable_Name": "Date", "Standard_Name": "time", "Data_Type": "String (ISO-8601)", "Units": "YYYY-MM-DD", "Valid_Range": "2015-01-01 to 2024-12-31", "Sensor_Source": "CoralTwin Simulator", "Description": "Temporal observation timestamp", "Category": "Spatiotemporal"},
+        {"Variable_Name": "Station_ID", "Standard_Name": "platform_id", "Data_Type": "String", "Units": "nominal", "Valid_Range": "STN_01 to STN_30", "Sensor_Source": "Consortium Grid", "Description": "Canonical station identifier across 30 benchmark stations", "Category": "Spatiotemporal"},
+        {"Variable_Name": "Station_Name", "Standard_Name": "platform_name", "Data_Type": "String", "Units": "nominal", "Valid_Range": "30 Named Stations", "Sensor_Source": "Consortium Grid", "Description": "Pilot monitoring station name", "Category": "Spatiotemporal"},
         {"Variable_Name": "Region", "Standard_Name": "ocean_basin_province", "Data_Type": "String", "Units": "nominal", "Valid_Range": "Caribbean/Indo-Pacific/Red Sea/Indian Ocean/Pacific", "Sensor_Source": "Biogeographic Classification", "Description": "Biogeographic reef province", "Category": "Spatiotemporal"},
         {"Variable_Name": "Latitude", "Standard_Name": "latitude", "Data_Type": "Float", "Units": "decimal degrees", "Valid_Range": "-90.0 to 90.0", "Sensor_Source": "GIS Spatial Grid", "Description": "WGS84 Latitude coordinate", "Category": "Spatiotemporal"},
         {"Variable_Name": "Longitude", "Standard_Name": "longitude", "Data_Type": "Float", "Units": "decimal degrees", "Valid_Range": "-180.0 to 180.0", "Sensor_Source": "GIS Spatial Grid", "Description": "WGS84 Longitude coordinate", "Category": "Spatiotemporal"},
-        {"Variable_Name": "Reef_Zone", "Standard_Name": "benthic_geomorphic_zone", "Data_Type": "String", "Units": "categorical", "Valid_Range": "Fore Reef/Back Reef/Reef Crest/Lagoon", "Sensor_Source": "Allen Coral Atlas", "Description": "Geomorphic structural zone", "Category": "Benthic"},
-        {"Variable_Name": "Dominant_Coral_Genus", "Standard_Name": "taxonomic_dominant_genus", "Data_Type": "String", "Units": "taxonomic", "Valid_Range": "Acropora/Porites/Orbicella/Pocillopora/Montastraea", "Sensor_Source": "Benthic Monitoring", "Description": "Dominant framework coral genus", "Category": "Ecological"},
-        {"Variable_Name": "Depth_m", "Standard_Name": "depth_below_sea_level", "Data_Type": "Float", "Units": "meters", "Valid_Range": "0.5 to 35.0", "Sensor_Source": "GEBCO / Sonar", "Description": "Benthic depth below sea surface", "Category": "Physical"},
-        {"Variable_Name": "SST_degC", "Standard_Name": "sea_surface_temperature", "Data_Type": "Float", "Units": "degrees Celsius", "Valid_Range": "22.0 to 33.5", "Sensor_Source": "NOAA CRW 5km", "Description": "Daily mean sea surface temperature", "Category": "Oceanographic"},
-        {"Variable_Name": "SST_Anomaly_degC", "Standard_Name": "sea_surface_temperature_anomaly", "Data_Type": "Float", "Units": "degrees Celsius", "Valid_Range": "-2.5 to 4.5", "Sensor_Source": "NOAA CRW 5km", "Description": "SST anomaly relative to monthly climatology", "Category": "Oceanographic"},
-        {"Variable_Name": "MMM_Climatology_degC", "Standard_Name": "maximum_monthly_mean_climatology", "Data_Type": "Float", "Units": "degrees Celsius", "Valid_Range": "26.0 to 30.5", "Sensor_Source": "NOAA CRW Climatology", "Description": "Baseline Maximum Monthly Mean temperature", "Category": "Oceanographic"},
-        {"Variable_Name": "HotSpot_degC", "Standard_Name": "coral_bleaching_hotspot", "Data_Type": "Float", "Units": "degrees Celsius", "Valid_Range": "0.0 to 5.0", "Sensor_Source": "NOAA CRW 5km", "Description": "Instantaneous thermal anomaly above MMM", "Category": "Oceanographic"},
-        {"Variable_Name": "DHW_degC_weeks", "Standard_Name": "degree_heating_weeks", "Data_Type": "Float", "Units": "degC-weeks", "Valid_Range": "0.0 to 22.0", "Sensor_Source": "NOAA CRW 5km", "Description": "12-week accumulated thermal heat stress", "Category": "Oceanographic"},
-        {"Variable_Name": "pH_total", "Standard_Name": "sea_water_ph_reported_on_total_scale", "Data_Type": "Float", "Units": "pH scale", "Valid_Range": "7.60 to 8.25", "Sensor_Source": "Mooring SeaFET / In-situ", "Description": "Seawater pH on total hydrogen ion scale", "Category": "Biogeochemical"},
-        {"Variable_Name": "Salinity_PSU", "Standard_Name": "sea_water_practical_salinity", "Data_Type": "Float", "Units": "PSU", "Valid_Range": "30.0 to 42.0", "Sensor_Source": "CTD Sensor", "Description": "Practical salinity units", "Category": "Biogeochemical"},
-        {"Variable_Name": "Dissolved_Oxygen_mg_L", "Standard_Name": "dissolved_oxygen_concentration", "Data_Type": "Float", "Units": "mg/L", "Valid_Range": "2.0 to 10.0", "Sensor_Source": "Optical DO Sensor", "Description": "Dissolved oxygen concentration", "Category": "Biogeochemical"},
+        {"Variable_Name": "Reef_Zone", "Standard_Name": "benthic_geomorphic_zone", "Data_Type": "String", "Units": "categorical", "Valid_Range": "Fore Reef/Back Reef/Reef Crest/Lagoon", "Sensor_Source": "Geomorphic Parametrization", "Description": "Geomorphic structural zone", "Category": "Benthic"},
+        {"Variable_Name": "Dominant_Coral_Genus", "Standard_Name": "taxonomic_dominant_genus", "Data_Type": "String", "Units": "taxonomic", "Valid_Range": "Acropora/Porites/Orbicella/Pocillopora/Montastraea/Agaricia/Stylophora/Montipora", "Sensor_Source": "Ecological Parametrization", "Description": "Dominant framework coral genus", "Category": "Ecological"},
+        {"Variable_Name": "Depth_m", "Standard_Name": "depth_below_sea_level", "Data_Type": "Float", "Units": "meters", "Valid_Range": "0.5 to 35.0", "Sensor_Source": "Bathymetric Parametrization", "Description": "Benthic depth below sea surface", "Category": "Physical"},
+        {"Variable_Name": "SST_degC", "Standard_Name": "sea_surface_temperature", "Data_Type": "Float", "Units": "degrees Celsius", "Valid_Range": "22.0 to 33.5", "Sensor_Source": "Synthetic Thermal Generator", "Description": "Daily mean sea surface temperature", "Category": "Oceanographic"},
+        {"Variable_Name": "SST_Anomaly_degC", "Standard_Name": "sea_surface_temperature_anomaly", "Data_Type": "Float", "Units": "degrees Celsius", "Valid_Range": "-2.5 to 4.5", "Sensor_Source": "Synthetic Thermal Generator", "Description": "SST anomaly relative to seasonal climatology", "Category": "Oceanographic"},
+        {"Variable_Name": "MMM_Climatology_degC", "Standard_Name": "maximum_monthly_mean_climatology", "Data_Type": "Float", "Units": "degrees Celsius", "Valid_Range": "26.0 to 30.5", "Sensor_Source": "Regional Climatology", "Description": "Baseline Maximum Monthly Mean temperature", "Category": "Oceanographic"},
+        {"Variable_Name": "HotSpot_degC", "Standard_Name": "coral_bleaching_hotspot", "Data_Type": "Float", "Units": "degrees Celsius", "Valid_Range": "0.0 to 5.0", "Sensor_Source": "Synthetic Thermal Generator", "Description": "Instantaneous thermal anomaly above MMM", "Category": "Oceanographic"},
+        {"Variable_Name": "DHW_degC_weeks", "Standard_Name": "degree_heating_weeks", "Data_Type": "Float", "Units": "degC-weeks", "Valid_Range": "0.0 to 22.0", "Sensor_Source": "Synthetic Thermal Generator", "Description": "12-week accumulated thermal heat stress", "Category": "Oceanographic"},
+        {"Variable_Name": "pH_total", "Standard_Name": "sea_water_ph_reported_on_total_scale", "Data_Type": "Float", "Units": "pH scale", "Valid_Range": "7.60 to 8.25", "Sensor_Source": "Carbonate Chemistry Generator", "Description": "Seawater pH on total hydrogen ion scale", "Category": "Biogeochemical"},
+        {"Variable_Name": "Salinity_PSU", "Standard_Name": "sea_water_practical_salinity", "Data_Type": "Float", "Units": "PSU", "Valid_Range": "30.0 to 42.0", "Sensor_Source": "Biogeochemical Generator", "Description": "Practical salinity units", "Category": "Biogeochemical"},
+        {"Variable_Name": "Dissolved_Oxygen_mg_L", "Standard_Name": "dissolved_oxygen_concentration", "Data_Type": "Float", "Units": "mg/L", "Valid_Range": "2.0 to 10.0", "Sensor_Source": "Biogeochemical Generator", "Description": "Dissolved oxygen concentration", "Category": "Biogeochemical"},
         {"Variable_Name": "Aragonite_Saturation_Omega", "Standard_Name": "aragonite_saturation_state", "Data_Type": "Float", "Units": "dimensionless", "Valid_Range": "1.5 to 4.5", "Sensor_Source": "Carbonate Chemistry Solver", "Description": "Seawater aragonite saturation state", "Category": "Biogeochemical"},
-        {"Variable_Name": "Turbidity_NTU", "Standard_Name": "sea_water_turbidity", "Data_Type": "Float", "Units": "NTU", "Valid_Range": "0.05 to 15.0", "Sensor_Source": "Sentinel-2 / In-situ", "Description": "Optical turbidity and suspended sediment", "Category": "Optical"},
-        {"Variable_Name": "Kd_490_m_inv", "Standard_Name": "diffuse_attenuation_coefficient_490nm", "Data_Type": "Float", "Units": "m^-1", "Valid_Range": "0.02 to 1.0", "Sensor_Source": "Sentinel-2 MSI (Level-2A)", "Description": "Diffuse light attenuation coefficient at 490 nm", "Category": "Optical"},
-        {"Variable_Name": "PAR_umol_m2_s", "Standard_Name": "photosynthetically_active_radiation", "Data_Type": "Float", "Units": "umol photons m-2 s-1", "Valid_Range": "100 to 2200", "Sensor_Source": "MODIS / Radiometer", "Description": "Daily downwelling photosynthetically active radiation", "Category": "Optical"},
-        {"Variable_Name": "Live_Coral_Cover_Pct", "Standard_Name": "live_scleractinian_coral_cover_fraction", "Data_Type": "Float", "Units": "percentage", "Valid_Range": "0.0 to 85.0", "Sensor_Source": "GCRMN / Benthic Transects", "Description": "Substrate percentage covered by live corals", "Category": "Ecological"},
-        {"Variable_Name": "Macroalgae_Cover_Pct", "Standard_Name": "macroalgal_benthic_cover_fraction", "Data_Type": "Float", "Units": "percentage", "Valid_Range": "0.0 to 90.0", "Sensor_Source": "GCRMN / Benthic Transects", "Description": "Substrate percentage covered by fleshy macroalgae", "Category": "Ecological"},
-        {"Variable_Name": "Turf_Algae_Cover_Pct", "Standard_Name": "turf_algae_cover_fraction", "Data_Type": "Float", "Units": "percentage", "Valid_Range": "0.0 to 80.0", "Sensor_Source": "Benthic Transects", "Description": "Substrate percentage covered by epilithic turf algae", "Category": "Ecological"},
-        {"Variable_Name": "Structural_Rugosity", "Standard_Name": "benthic_structural_complexity_index", "Data_Type": "Float", "Units": "dimensionless", "Valid_Range": "1.0 to 3.5", "Sensor_Source": "Structure-from-Motion / Sonar", "Description": "Topographic surface rugosity ratio", "Category": "Benthic"},
-        {"Variable_Name": "Colony_Density_m2", "Standard_Name": "coral_colony_areal_density", "Data_Type": "Float", "Units": "colonies / m2", "Valid_Range": "0.1 to 30.0", "Sensor_Source": "Benthic Quadrats", "Description": "Colony count density per square meter", "Category": "Ecological"},
-        {"Variable_Name": "Shannon_Diversity_H", "Standard_Name": "shannon_wiener_diversity_index", "Data_Type": "Float", "Units": "dimensionless", "Valid_Range": "0.2 to 3.8", "Sensor_Source": "Ecological Surveys", "Description": "Species diversity index across coral morphotypes", "Category": "Ecological"},
-        {"Variable_Name": "Bleaching_Severity_Pct", "Standard_Name": "percentage_of_bleached_coral_colonies", "Data_Type": "Float", "Units": "percentage", "Valid_Range": "0.0 to 100.0", "Sensor_Source": "Benthic Transect / Model", "Description": "Fraction of coral colonies exhibiting pigment loss", "Category": "Ecological"},
-        {"Variable_Name": "Bleaching_Alert_Level", "Standard_Name": "noaa_coral_bleaching_alert_category", "Data_Type": "String", "Units": "categorical", "Valid_Range": "No_Stress/Watch/Warning/Alert_Level_1/Alert_Level_2", "Sensor_Source": "NOAA CRW Operational", "Description": "NOAA official bleaching alert level category", "Category": "Oceanographic"},
-        {"Variable_Name": "Bleaching_Risk", "Standard_Name": "coral_bleaching_risk_category", "Data_Type": "String", "Units": "categorical", "Valid_Range": "Low/Medium/High", "Sensor_Source": "CoralTwin Classifier", "Description": "Target classification category", "Category": "Target Variable"},
-        {"Variable_Name": "Coral_Cover_Loss_Pct", "Standard_Name": "coral_cover_loss_rate", "Data_Type": "Float", "Units": "percentage", "Valid_Range": "0.0 to 100.0", "Sensor_Source": "CoralTwin Regressor", "Description": "Target continuous coral cover degradation rate", "Category": "Target Variable"},
-        {"Variable_Name": "Data_Source_Type", "Standard_Name": "data_provenance_flag", "Data_Type": "String", "Units": "categorical", "Valid_Range": "Digital_Twin_Simulated", "Sensor_Source": "CoralTwin Metadata", "Description": "Declares rows generated by the digital-twin prototype", "Category": "Metadata"},
-        {"Variable_Name": "Data_Collection_Agency", "Standard_Name": "data_originating_authority", "Data_Type": "String", "Units": "nominal", "Valid_Range": "Agency Names", "Sensor_Source": "CoralTwin Metadata", "Description": "Originating monitoring institution or simulation core", "Category": "Metadata"},
+        {"Variable_Name": "Turbidity_NTU", "Standard_Name": "sea_water_turbidity", "Data_Type": "Float", "Units": "NTU", "Valid_Range": "0.05 to 15.0", "Sensor_Source": "Optical Generator", "Description": "Optical turbidity and suspended sediment", "Category": "Optical"},
+        {"Variable_Name": "Kd_490_m_inv", "Standard_Name": "diffuse_attenuation_coefficient_490nm", "Data_Type": "Float", "Units": "m^-1", "Valid_Range": "0.02 to 1.0", "Sensor_Source": "Optical Generator", "Description": "Diffuse light attenuation coefficient at 490 nm", "Category": "Optical"},
+        {"Variable_Name": "PAR_umol_m2_s", "Standard_Name": "photosynthetically_active_radiation", "Data_Type": "Float", "Units": "umol photons m-2 s-1", "Valid_Range": "100 to 2200", "Sensor_Source": "Optical Generator", "Description": "Daily downwelling photosynthetically active radiation", "Category": "Optical"},
+        {"Variable_Name": "Live_Coral_Cover_Pct", "Standard_Name": "live_scleractinian_coral_cover_fraction", "Data_Type": "Float", "Units": "percentage", "Valid_Range": "0.0 to 85.0", "Sensor_Source": "Post-Target Ecological Response", "Description": "Post-disturbance substrate percentage covered by live corals (excluded from X to prevent reverse leakage)", "Category": "Ecological"},
+        {"Variable_Name": "Macroalgae_Cover_Pct", "Standard_Name": "macroalgal_benthic_cover_fraction", "Data_Type": "Float", "Units": "percentage", "Valid_Range": "0.0 to 90.0", "Sensor_Source": "Post-Target Ecological Response", "Description": "Post-disturbance substrate percentage covered by fleshy macroalgae (excluded from X)", "Category": "Ecological"},
+        {"Variable_Name": "Turf_Algae_Cover_Pct", "Standard_Name": "turf_algae_cover_fraction", "Data_Type": "Float", "Units": "percentage", "Valid_Range": "0.0 to 80.0", "Sensor_Source": "Post-Target Ecological Response", "Description": "Post-disturbance substrate percentage covered by epilithic turf algae (excluded from X)", "Category": "Ecological"},
+        {"Variable_Name": "Structural_Rugosity", "Standard_Name": "benthic_structural_complexity_index", "Data_Type": "Float", "Units": "dimensionless", "Valid_Range": "1.0 to 3.5", "Sensor_Source": "Post-Target Ecological Response", "Description": "Post-disturbance topographic surface rugosity ratio (excluded from X)", "Category": "Benthic"},
+        {"Variable_Name": "Colony_Density_m2", "Standard_Name": "coral_colony_areal_density", "Data_Type": "Float", "Units": "colonies / m2", "Valid_Range": "0.1 to 30.0", "Sensor_Source": "Post-Target Ecological Response", "Description": "Post-disturbance colony count density per square meter (excluded from X)", "Category": "Ecological"},
+        {"Variable_Name": "Shannon_Diversity_H", "Standard_Name": "shannon_wiener_diversity_index", "Data_Type": "Float", "Units": "dimensionless", "Valid_Range": "0.2 to 3.8", "Sensor_Source": "Post-Target Ecological Response", "Description": "Deterministic linear function of Coral_Cover_Loss_Pct (excluded from X to prevent reverse target leakage)", "Category": "Ecological"},
+        {"Variable_Name": "Bleaching_Severity_Pct", "Standard_Name": "percentage_of_bleached_coral_colonies", "Data_Type": "Float", "Units": "percentage", "Valid_Range": "0.0 to 100.0", "Sensor_Source": "Biophysical Coupled Model", "Description": "Latent logistic bleaching severity response", "Category": "Ecological"},
+        {"Variable_Name": "Bleaching_Alert_Level", "Standard_Name": "noaa_coral_bleaching_alert_category", "Data_Type": "String", "Units": "categorical", "Valid_Range": "No_Stress/Watch/Warning/Alert_Level_1/Alert_Level_2", "Sensor_Source": "DHW Step Function", "Description": "5-class NOAA bleaching alert level category", "Category": "Target Variable"},
+        {"Variable_Name": "Bleaching_Risk", "Standard_Name": "coral_bleaching_risk_category", "Data_Type": "String", "Units": "categorical", "Valid_Range": "Low/Medium/High", "Sensor_Source": "CoralTwin Coupled Simulator", "Description": "Primary 3-class target classification category", "Category": "Target Variable"},
+        {"Variable_Name": "Coral_Cover_Loss_Pct", "Standard_Name": "coral_cover_loss_rate", "Data_Type": "Float", "Units": "percentage", "Valid_Range": "0.0 to 100.0", "Sensor_Source": "CoralTwin Coupled Simulator", "Description": "Target continuous coral cover degradation percentage", "Category": "Target Variable"},
+        {"Variable_Name": "Data_Source_Type", "Standard_Name": "data_provenance_flag", "Data_Type": "String", "Units": "categorical", "Valid_Range": "Digital_Twin_Simulated", "Sensor_Source": "CoralTwin Metadata", "Description": "Verified provenance flag (100.0% Digital_Twin_Simulated)", "Category": "Metadata"},
+        {"Variable_Name": "Data_Type", "Standard_Name": "data_type_flag", "Data_Type": "String", "Units": "categorical", "Valid_Range": "Digital_Twin_Simulated", "Sensor_Source": "CoralTwin Metadata", "Description": "Canonical data type flag (100.0% Digital_Twin_Simulated)", "Category": "Metadata"},
+        {"Variable_Name": "Data_Collection_Agency", "Standard_Name": "data_originating_authority", "Data_Type": "String", "Units": "nominal", "Valid_Range": "CoralTwin-DT Numerical Simulator", "Sensor_Source": "CoralTwin Metadata", "Description": "Originating simulation core", "Category": "Metadata"},
         {"Variable_Name": "Scientific_Attribution", "Standard_Name": "scientific_attribution_disclaimer", "Data_Type": "String", "Units": "text", "Valid_Range": "Standard Disclaimer", "Sensor_Source": "CoralTwin Metadata", "Description": "Mandatory scientific reproducibility attribution", "Category": "Metadata"}
     ]
     df_dict = pd.DataFrame(entries)
@@ -311,13 +324,12 @@ def generate_final_data_dictionary():
 
 
 def validate_ml_predictive_power(df):
-    """Verifies that the final dataset allows training high-performing predictive models."""
-    print("Verifying machine learning predictive performance on final dataset...")
+    """Verifies statistical emulation capability on the 12 clean pre-target environmental features."""
+    print("Verifying statistical emulation performance on clean pre-target features...")
     features = [
         "Depth_m", "SST_degC", "SST_Anomaly_degC", "HotSpot_degC", "DHW_degC_weeks",
         "pH_total", "Salinity_PSU", "Dissolved_Oxygen_mg_L", "Aragonite_Saturation_Omega",
-        "Turbidity_NTU", "Kd_490_m_inv", "PAR_umol_m2_s", "Structural_Rugosity",
-        "Live_Coral_Cover_Pct", "Macroalgae_Cover_Pct", "Shannon_Diversity_H"
+        "Turbidity_NTU", "Kd_490_m_inv", "PAR_umol_m2_s"
     ]
 
     X = df[features].values
@@ -348,7 +360,7 @@ def validate_ml_predictive_power(df):
     r2 = r2_score(y_reg, preds_reg)
     rmse = np.sqrt(mean_squared_error(y_reg, preds_reg))
 
-    print(f"Final Dataset Validation: Accuracy={acc:.4f}, Macro-F1={f1:.4f}, R2={r2:.4f}, RMSE={rmse:.3f}%")
+    print(f"Final Dataset Validation (Leakage-Free): Accuracy={acc:.4f}, Macro-F1={f1:.4f}, R2={r2:.4f}, RMSE={rmse:.3f}%")
     return {"accuracy": acc, "f1": f1, "r2": r2, "rmse": rmse}
 
 
@@ -374,43 +386,35 @@ def write_validation_report(df, ml_metrics):
         "# Dataset Quality & Biophysical Validation Report: CoralTwin-DT",
         "",
         "**Document Purpose:** Environmental Data Science Quality Audit & Biophysical Coherence Verification",
-        "**Dataset File:** `03_Data/final_dataset.csv`",
+        "**Primary Dataset File:** `03_Data/final_dataset.csv`",
+        "**Harmonized Mirror File:** `03_Data/processed_data/coral_environmental_harmonized.csv`",
         "**Data Dictionary:** `03_Data/data_dictionary_final.csv`",
-        f"**Total Records:** N = {total_count:,} spatio-temporal observations",
-        "**Temporal Range:** 2015-01-01 to 2024-12-31 (10-year multi-decadal baseline)",
-        "**Spatial Coverage:** 30 Global Benchmark Stations across 5 Biogeographic Provinces",
-        "**Status:** legacy simulated dataset; external validation is not claimed.",
+        f"**Total Records:** N = {total_count:,} spatio-temporal observations (500 per station)",
+        "**Temporal Range:** 2015-01-01 to 2024-12-31 (10-year baseline)",
+        "**Spatial Coverage:** 30 Global Benchmark Stations (`STN_01` to `STN_30`) across 5 Biogeographic Provinces",
+        "**Provenance Status:** 100.0% synthetic (`Digital_Twin_Simulated`, `SEED = 42`); 0.0% external empirical records.",
         "",
         "---",
         "",
-        "## 1. Distinction: Real vs. Simulated Data Provenance",
+        "## 1. Verified Data Provenance Breakdown",
         "",
         "```",
         "+-------------------------------------------------------------------------------+",
-        "|                       DATA PROVENANCE & BREAKDOWN                             |",
+        "|                       VERIFIED DATA PROVENANCE AUDIT                          |",
         "+------------------------------------+---------------------+--------------------+",
         "| Data Source Category               | Record Count        | Percentage (%)     |",
         "+------------------------------------+---------------------+--------------------+",
-        f"| Digital_Twin_Simulated             | {sim_count:,}               | {sim_pct}%              |",
-        f"| Total Analysis-Ready Harmonized    | {total_count:,}              | 100.0%             |",
+        "| External Empirical Observations    | 0                   | 0.0%               |",
+        f"| Digital_Twin_Simulated             | {sim_count:,}              | {sim_pct}%             |",
+        f"| Total Unified Benchmark Dataset    | {total_count:,}              | 100.0%             |",
         "+------------------------------------+---------------------+--------------------+",
         "```",
         "",
-        "### 1.1 Real Data Specifications (Calibrated Observations):",
-        "- **NOAA Coral Reef Watch (CRW) 5km Satellite Feeds:** Real operational Daily Global 5km Sea Surface Temperature (SST), Climatological Maximum Monthly Mean (MMM), Bleaching HotSpots, and Degree Heating Weeks (DHW).",
-        "- **Copernicus Sentinel-2 MSI (Level-2A):** Empirical bottom-reflectance and water column attenuation coefficients (Kd_490).",
-        "- **Allen Coral Atlas Benthic Habitats:** Geomorphic zoning and benthic polygon ground truths.",
-        "- **In-Situ Oceanographic Moorings & GCRMN Transects:** Calibrated baseline salinity (32 - 42 PSU), total seawater pH (8.04 - 8.14), and live coral cover surveys.",
-        "",
-        "### 1.2 Simulated Data Specifications (Digital Twin Synthetic Extensions):",
-        "- **Fine-Scale Spatio-Temporal Infilling:** High-resolution spatial micro-jittering and daily interpolation between satellite overpass intervals generated via the **CoralTwin-DT coupled numerical engine**.",
-        "- **Biophysical Stress Coupling:** Forward non-linear degradation responses and forward decadal scenario projections (2025-2050).",
-        "- **Mandatory Attribution Label:** Every simulated record carries the explicit metadata tag:",
-        '  `"Resultado obtenido mediante prototipo computacional del gemelo digital"`.',
+        "- **Audit Finding (`09_Results/audit/data_provenance_summary.json`):** In the legacy `final_dataset.csv`, 4,077 rows (27.18%) were tagged `Real_Observation_Calibrated` via the stochastic draw `(year <= 2021) and (np.random.rand() < st['real_ratio'])`. All 15,000 rows are deterministically generated by `np.random` (`SEED = 42`) and are now uniformly labeled `Digital_Twin_Simulated`.",
         "",
         "---",
         "",
-        "## 2. Statistical & Biophysical Coherence Audit",
+        "## 2. Statistical & Biophysical Coherence Summary",
         "",
         "| Variable Name | Mean | Std Dev | Min | Max | Ecological / Physical Plausibility |",
         "| :--- | :---: | :---: | :---: | :---: | :--- |",
@@ -418,22 +422,19 @@ def write_validation_report(df, ml_metrics):
         f"| **DHW (°C-weeks)** | {dhw_mean:.2f} | {dhw_std:.2f} | {dhw_min:.2f} | {dhw_max:.2f} | Captures acute marine heatwave spikes during 2016, 2023, and 2024. |",
         f"| **pH (Total Scale)** | {ph_mean:.3f} | {ph_std:.3f} | {ph_min:.3f} | {ph_max:.3f} | Reflects gradual ocean acidification trend (-0.0024 pH/yr). |",
         f"| **Aragonite Saturation (Omega)** | {omega_mean:.2f} | {omega_std:.2f} | {omega_min:.2f} | {omega_max:.2f} | Matches stoichiometric carbonate equilibria kinetics. |",
-        f"| **Live Coral Cover (%)** | {cover_mean:.1f} | {cover_std:.1f} | {cover_min:.1f} | {cover_max:.1f} | Realistic benthic substrate bounds (1.8% - 58.0%). |",
+        f"| **Live Coral Cover (%)** | {cover_mean:.1f} | {cover_std:.1f} | {cover_min:.1f} | {cover_max:.1f} | Post-disturbance benthic cover (excluded from predictor matrix X). |",
         f"| **Turbidity (NTU)** | {turb_mean:.2f} | {turb_std:.2f} | {turb_min:.2f} | {turb_max:.2f} | Higher in lagoons, lower in well-flushed fore reefs. |",
         "",
         "---",
         "",
-        "## 3. Machine Learning Predictive Readiness Verification",
+        "## 3. Leakage-Free Statistical Emulation Baseline",
         "",
-        "Under 5-Fold Spatially Stratified Cross-Validation across 30 geographic station clusters:",
+        "Using only the 12 pre-target physical, biogeochemical, and optical variables (excluding all post-target benthic variables):",
         "",
-        f"- **Classification Accuracy (Bleaching Risk):** **{acc_pct}%**",
-        f"- **Macro-F1 Score:** **{f1_val}** (Target threshold >0.90 achieved)",
-        f"- **Regression R² (Live Coral Cover Loss Rate):** **{r2_val}** (Target threshold >0.85 achieved)",
+        f"- **Classification Accuracy (Bleaching Risk, 3-class):** **{acc_pct}%**",
+        f"- **Macro-F1 Score:** **{f1_val}**",
+        f"- **Regression R² (Coral Cover Loss %):** **{r2_val}** (theoretical ceiling ~0.77 due to irreducible Gaussian noise $\\sigma = 3.2\\%$ and $\\sigma = 3.5\\%$)",
         f"- **Regression RMSE:** **{rmse_val}%**",
-        "",
-        "### Conclusion:",
-        "The `final_dataset.csv` is fully validated, free of missing values, biophysically consistent with marine ecological thermodynamics, and certified for training and benchmarking state-of-the-art predictive AI models."
     ]
 
     with open(VALIDATION_MD, "w", encoding="utf-8") as f:
@@ -442,16 +443,20 @@ def write_validation_report(df, ml_metrics):
 
 
 if __name__ == "__main__":
-    print("Building final harmonized dataset (N=15,000)...")
+    print("Building unified 30-station dataset (N=15,000)...")
     df_final = build_final_dataset(n_total=15000)
     df_final.to_csv(FINAL_DATA_CSV, index=False)
     print(f"Final dataset written to: {FINAL_DATA_CSV} ({len(df_final)} rows, {df_final.shape[1]} columns)")
+
+    os.makedirs(os.path.dirname(HARMONIZED_DATA_CSV), exist_ok=True)
+    df_final.to_csv(HARMONIZED_DATA_CSV, index=False)
+    print(f"Harmonized mirror written to: {HARMONIZED_DATA_CSV} ({len(df_final)} rows, {df_final.shape[1]} columns)")
 
     print("Generating comprehensive final data dictionary...")
     generate_final_data_dictionary()
     print(f"Data dictionary written to: {FINAL_DICT_CSV}")
 
-    print("Validating predictive capability...")
+    print("Validating statistical emulation capability...")
     ml_results = validate_ml_predictive_power(df_final)
 
     print("Writing validation report...")

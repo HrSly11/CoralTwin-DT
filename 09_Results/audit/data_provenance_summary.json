@@ -1,0 +1,93 @@
+{
+  "audit_timestamp_utc": "2026-10-27T00:00:00Z",
+  "dataset_path": "03_Data/final_dataset.csv",
+  "harmonized_mirror_path": "03_Data/processed_data/coral_environmental_harmonized.csv",
+  "generator_script": "03_Data/build_final_dataset.py",
+  "rng_seed": 42,
+  "exact_rng_reproduction_verified": true,
+  "total_records": 15000,
+  "total_stations": 30,
+  "samples_per_station": 500,
+  "legacy_final_dataset_labels": {
+    "Real_Observation_Calibrated": {
+      "count": 4077,
+      "percentage": 27.18
+    },
+    "Digital_Twin_Simulated": {
+      "count": 10923,
+      "percentage": 72.82
+    }
+  },
+  "legacy_harmonized_12500_labels": {
+    "total_records": 12500,
+    "total_stations": 25,
+    "Real_Observation": {
+      "count": 6120,
+      "percentage": 48.96
+    },
+    "Digital_Twin_Simulated": {
+      "count": 6380,
+      "percentage": 51.04
+    }
+  },
+  "readme_41_2_pct_discrepancy_explanation": {
+    "claimed_real_pct_in_legacy_readme": 41.2,
+    "claimed_simulated_pct_in_legacy_readme": 58.8,
+    "unconditioned_mean_real_ratio_25_stations": 0.406,
+    "unconditioned_mean_real_ratio_25_stations_pct": 40.6,
+    "unconditioned_mean_real_ratio_30_stations": 0.3967,
+    "unconditioned_mean_real_ratio_30_stations_pct": 39.67,
+    "temporal_gate_fraction_2015_2021": 0.7,
+    "expected_gated_pct_30_stations": 27.77,
+    "actual_legacy_final_dataset_real_pct": 27.18,
+    "explanation": "The unconditioned mean of `real_ratio` across the 25 active stations is 0.4060 (40.60%) and across all 30 stations is 0.3967 (39.67%), whereas the legacy README claimed 41.2% real / 58.8% simulated. In `build_final_dataset.py`, the stochastic draw was gated by `year <= 2021` (7 of 10 years = 70% of timestamps) across 30 stations, yielding 27.77% expected and 4,077 / 15,000 = 27.18% actual rows labeled `Real_Observation_Calibrated` (while `coral_environmental_harmonized.csv` had 6,120 / 12,500 = 48.96% labeled `Real_Observation`). In truth, 0 rows (0.0%) come from external empirical datasets."
+  },
+  "verified_provenance": {
+    "External_Empirical_Real": {
+      "count": 0,
+      "percentage": 0.0
+    },
+    "Digital_Twin_Simulated": {
+      "count": 15000,
+      "percentage": 100.0
+    }
+  },
+  "target_class_distributions": {
+    "Bleaching_Risk_3class": {
+      "Low": {
+        "count": 14097,
+        "percentage": 93.98
+      },
+      "High": {
+        "count": 717,
+        "percentage": 4.78
+      },
+      "Medium": {
+        "count": 186,
+        "percentage": 1.24
+      }
+    },
+    "Bleaching_Alert_Level_5class": {
+      "No_Stress": {
+        "count": 10508,
+        "percentage": 70.05
+      },
+      "Watch": {
+        "count": 3375,
+        "percentage": 22.5
+      },
+      "Alert_Level_2": {
+        "count": 717,
+        "percentage": 4.78
+      },
+      "Warning": {
+        "count": 379,
+        "percentage": 2.53
+      },
+      "Alert_Level_1": {
+        "count": 21,
+        "percentage": 0.14
+      }
+    }
+  }
+}
