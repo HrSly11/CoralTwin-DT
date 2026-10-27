@@ -1,8 +1,18 @@
 """
 10_Publication/generate_v4_manuscript.py
 =========================================
-Generates CoralTwin-DT_v4.docx resolving all 20 reviewer points (FON-01 to FON-20)
-and incorporating all 8 audited tasks into a cohesive, highly professional Word manuscript.
+Generates CoralTwin-DT_v4.docx strictly adhering to:
+1. PURE BLACK typography for ALL headings, title, body and tables (no blue colors, conforming to journal template).
+2. STRICT APA 7th EDITION table formatting:
+   - "Tabla X" in bold above table, flushed left.
+   - Table title italicized directly below "Tabla X", flushed left.
+   - Three horizontal rules only: top table border, header bottom border, table bottom border.
+   - No vertical rules.
+   - No row or header background color shading (clean white/transparent).
+   - "Nota." in italics followed by explanatory note below table.
+3. STRICT APA figure captions:
+   - "Figura X." in bold followed by italicized title and descriptive note.
+4. Comprehensive resolution of all 20 reviewer points (FON-01 to FON-20) and all 8 audited tasks.
 """
 
 import os
@@ -15,37 +25,24 @@ from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import qn, nsdecls
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RESULTS_DIR = os.path.join(BASE_DIR, "results")
 TRAEA_DIR = os.path.join(BASE_DIR, "traea_articulo")
 TAREA_DIR = os.path.join(BASE_DIR, "tarea_articulo")
 PUB_DIR = os.path.join(BASE_DIR, "10_Publication", "final_manuscript")
 os.makedirs(PUB_DIR, exist_ok=True)
 
 
-def set_cell_background(cell, fill_hex):
-    tcPr = cell._tc.get_or_add_tcPr()
-    shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{fill_hex}"/>')
-    tcPr.append(shd)
-
-
-def set_cell_margins(cell, top=100, bottom=100, left=140, right=140):
-    tcPr = cell._tc.get_or_add_tcPr()
-    tcMar = OxmlElement('w:tcMar')
-    for m, val in [('top', top), ('bottom', bottom), ('left', left), ('right', right)]:
-        node = OxmlElement(f'w:{m}')
-        node.set(qn('w:w'), str(val))
-        node.set(qn('w:type'), 'dxa')
-        tcMar.append(node)
-    tcPr.append(tcMar)
-
-
-def set_table_borders(table, color="D3D3D3"):
+def set_apa_table_borders(table):
+    """Applies strict APA 7th edition table borders: top, bottom, and header underline only."""
     tblPr = table._tbl.tblPr
+    for child in list(tblPr):
+        if child.tag.endswith('tblBorders'):
+            tblPr.remove(child)
+    
     borders = parse_xml(
         f'<w:tblBorders {nsdecls("w")}>\n'
-        f'  <w:top w:val="single" w:sz="6" w:space="0" w:color="{color}"/>\n'
-        f'  <w:bottom w:val="single" w:sz="8" w:space="0" w:color="003366"/>\n'
-        f'  <w:insideH w:val="single" w:sz="4" w:space="0" w:color="{color}"/>\n'
+        f'  <w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/>\n'
+        f'  <w:bottom w:val="single" w:sz="8" w:space="0" w:color="000000"/>\n'
+        f'  <w:insideH w:val="none"/>\n'
         f'  <w:insideV w:val="none"/>\n'
         f'  <w:left w:val="none"/>\n'
         f'  <w:right w:val="none"/>\n'
@@ -53,37 +50,49 @@ def set_table_borders(table, color="D3D3D3"):
     )
     tblPr.append(borders)
 
+    # Header bottom rule
+    for cell in table.rows[0].cells:
+        tcPr = cell._tc.get_or_add_tcPr()
+        for child in list(tcPr):
+            if child.tag.endswith('tcBorders'):
+                tcPr.remove(child)
+        tcBorders = parse_xml(
+            f'<w:tcBorders {nsdecls("w")}>\n'
+            f'  <w:bottom w:val="single" w:sz="6" w:space="0" w:color="000000"/>\n'
+            f'</w:tcBorders>'
+        )
+        tcPr.append(tcBorders)
 
-def format_table_header(row, col_widths, bg_hex="003366"):
+
+def format_apa_table_header(row, col_widths):
+    """Formats APA header row: bold black text, clean background, no shading."""
     for i, cell in enumerate(row.cells):
-        set_cell_background(cell, bg_hex)
-        set_cell_margins(cell, top=140, bottom=140, left=130, right=130)
         cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
         if col_widths and i < len(col_widths):
             cell.width = col_widths[i]
         for p in cell.paragraphs:
-            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p.paragraph_format.space_before = Pt(2)
-            p.paragraph_format.space_after = Pt(2)
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT if i == 0 else WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.space_before = Pt(3)
+            p.paragraph_format.space_after = Pt(3)
+            p.paragraph_format.line_spacing = 1.05
             for run in p.runs:
                 run.font.name = "Arial"
                 run.font.size = Pt(8.5)
                 run.font.bold = True
-                run.font.color.rgb = RGBColor(255, 255, 255)
+                run.font.color.rgb = RGBColor(0, 0, 0)
 
 
-def format_table_rows(table, col_widths, align_left_col0=True):
+def format_apa_table_rows(table, col_widths, align_left_col0=True):
+    """Formats APA data rows: regular black text, no background shading."""
     for r_idx, row in enumerate(table.rows[1:]):
-        bg = "F9FBFD" if r_idx % 2 == 1 else "FFFFFF"
         for c_idx, cell in enumerate(row.cells):
-            set_cell_background(cell, bg)
-            set_cell_margins(cell, top=90, bottom=90, left=110, right=110)
             cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
             if col_widths and c_idx < len(col_widths):
                 cell.width = col_widths[c_idx]
             for p in cell.paragraphs:
-                p.paragraph_format.space_before = Pt(1.5)
-                p.paragraph_format.space_after = Pt(1.5)
+                p.paragraph_format.space_before = Pt(2.5)
+                p.paragraph_format.space_after = Pt(2.5)
+                p.paragraph_format.line_spacing = 1.05
                 if c_idx == 0 and align_left_col0:
                     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
                 else:
@@ -91,10 +100,51 @@ def format_table_rows(table, col_widths, align_left_col0=True):
                 for run in p.runs:
                     run.font.name = "Arial"
                     run.font.size = Pt(8)
-                    run.font.color.rgb = RGBColor(40, 40, 40)
+                    run.font.color.rgb = RGBColor(0, 0, 0)
 
 
-def add_p(doc, text="", space_before=0, space_after=6, line_spacing=1.15, align=WD_ALIGN_PARAGRAPH.LEFT, bold=False, italic=False, font_size=10, font_color=(30, 30, 30)):
+def add_apa_table_caption(doc, table_num, table_title):
+    """APA 7th: Table number bold flushed left, title italic flushed left on next line."""
+    p1 = doc.add_paragraph()
+    p1.paragraph_format.space_before = Pt(12)
+    p1.paragraph_format.space_after = Pt(1)
+    p1.paragraph_format.line_spacing = 1.0
+    r1 = p1.add_run(f"Tabla {table_num}")
+    r1.font.name = "Arial"
+    r1.font.size = Pt(9.5)
+    r1.font.bold = True
+    r1.font.color.rgb = RGBColor(0, 0, 0)
+
+    p2 = doc.add_paragraph()
+    p2.paragraph_format.space_before = Pt(0)
+    p2.paragraph_format.space_after = Pt(4)
+    p2.paragraph_format.line_spacing = 1.05
+    r2 = p2.add_run(table_title)
+    r2.font.name = "Arial"
+    r2.font.size = Pt(9.5)
+    r2.font.italic = True
+    r2.font.color.rgb = RGBColor(0, 0, 0)
+
+
+def add_apa_table_note(doc, note_text):
+    """APA 7th: Table note directly below table."""
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(3)
+    p.paragraph_format.space_after = Pt(12)
+    p.paragraph_format.line_spacing = 1.05
+    r_tag = p.add_run("Nota. ")
+    r_tag.font.name = "Arial"
+    r_tag.font.size = Pt(8.5)
+    r_tag.font.italic = True
+    r_tag.font.color.rgb = RGBColor(0, 0, 0)
+
+    r_body = p.add_run(note_text)
+    r_body.font.name = "Arial"
+    r_body.font.size = Pt(8.5)
+    r_body.font.color.rgb = RGBColor(0, 0, 0)
+
+
+def add_p(doc, text="", space_before=0, space_after=6, line_spacing=1.15, align=WD_ALIGN_PARAGRAPH.LEFT, bold=False, italic=False, font_size=10):
     p = doc.add_paragraph()
     p.alignment = align
     p.paragraph_format.space_before = Pt(space_before)
@@ -106,23 +156,24 @@ def add_p(doc, text="", space_before=0, space_after=6, line_spacing=1.15, align=
         run.font.size = Pt(font_size)
         run.font.bold = bold
         run.font.italic = italic
-        run.font.color.rgb = RGBColor(*font_color)
+        run.font.color.rgb = RGBColor(0, 0, 0)  # Pure Black everywhere
     return p
 
 
 def add_h1(doc, text):
-    return add_p(doc, text, space_before=14, space_after=6, bold=True, font_size=13, font_color=(0, 51, 102))
+    return add_p(doc, text, space_before=14, space_after=6, bold=True, font_size=12)
 
 
 def add_h2(doc, text):
-    return add_p(doc, text, space_before=11, space_after=4, bold=True, font_size=11, font_color=(20, 40, 80))
+    return add_p(doc, text, space_before=11, space_after=4, bold=True, font_size=11)
 
 
 def add_h3(doc, text):
-    return add_p(doc, text, space_before=8, space_after=3, bold=True, italic=True, font_size=10, font_color=(40, 60, 100))
+    return add_p(doc, text, space_before=8, space_after=3, bold=True, italic=True, font_size=10)
 
 
-def add_fig(doc, img_rel_path, caption_text, width_inches=6.0):
+def add_apa_figure(doc, img_rel_path, fig_num, fig_title, fig_note=""):
+    """APA 7th figure presentation with image, bold figure number, italic title and note."""
     img_full_path = os.path.join(BASE_DIR, img_rel_path)
     if os.path.exists(img_full_path):
         p_img = doc.add_paragraph()
@@ -130,26 +181,39 @@ def add_fig(doc, img_rel_path, caption_text, width_inches=6.0):
         p_img.paragraph_format.space_before = Pt(8)
         p_img.paragraph_format.space_after = Pt(4)
         run = p_img.add_run()
-        run.add_picture(img_full_path, width=Inches(width_inches))
-        
+        run.add_picture(img_full_path, width=Inches(6.2))
+
         p_cap = doc.add_paragraph()
         p_cap.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         p_cap.paragraph_format.space_before = Pt(2)
-        p_cap.paragraph_format.space_after = Pt(10)
-        run_cap = p_cap.add_run(caption_text)
-        run_cap.font.name = "Arial"
-        run_cap.font.size = Pt(8.5)
-        run_cap.font.italic = True
-        run_cap.font.color.rgb = RGBColor(60, 60, 60)
+        p_cap.paragraph_format.space_after = Pt(12)
+
+        r_num = p_cap.add_run(f"Figura {fig_num}. ")
+        r_num.font.name = "Arial"
+        r_num.font.size = Pt(9)
+        r_num.font.bold = True
+        r_num.font.color.rgb = RGBColor(0, 0, 0)
+
+        r_title = p_cap.add_run(fig_title)
+        r_title.font.name = "Arial"
+        r_title.font.size = Pt(9)
+        r_title.font.italic = True
+        r_title.font.color.rgb = RGBColor(0, 0, 0)
+
+        if fig_note:
+            r_note = p_cap.add_run(" " + fig_note)
+            r_note.font.name = "Arial"
+            r_note.font.size = Pt(8.5)
+            r_note.font.color.rgb = RGBColor(0, 0, 0)
     else:
         print(f"Warning: Image not found at {img_full_path}")
 
 
-def build_v4():
-    print("Initializing CoralTwin-DT v4 Word Document Builder...")
+def build_v4_apa():
+    print("Building CoralTwin-DT v4 with Pure Black Typography and Strict APA 7th Edition Tables...")
     doc = docx.Document()
-    
-    # Configure 1.0 in margins on Letter paper
+
+    # Margins: 1.0 inch all sides on Letter paper
     for section in doc.sections:
         section.top_margin = Inches(1.0)
         section.bottom_margin = Inches(1.0)
@@ -158,21 +222,20 @@ def build_v4():
         section.page_width = Inches(8.5)
         section.page_height = Inches(11.0)
 
-    # 1. Metadata & Header
-    add_p(doc, "Link de la revista: https://www.ecocycles.net/ojs/index.php/ecocycles/", space_after=12, italic=True, font_size=9, font_color=(100, 100, 100))
+    # Header & Metadata
+    add_p(doc, "Link de la revista: https://www.ecocycles.net/ojs/index.php/ecocycles/", space_after=12, italic=True, font_size=9)
     
     add_p(doc, "CoralTwin-DT: un gemelo digital ciberfísico que integra aprendizaje automático y biofísica dinámica para priorizar la restauración de arrecifes de coral bajo estrés térmico y acidificación oceánica", 
-          space_before=4, space_after=14, bold=True, font_size=15, font_color=(0, 51, 102), align=WD_ALIGN_PARAGRAPH.CENTER)
+          space_before=4, space_after=14, bold=True, font_size=14, align=WD_ALIGN_PARAGRAPH.CENTER)
     
     add_p(doc, "Harry Rodriguez-Sandoval", space_before=2, space_after=2, bold=True, font_size=10.5, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_p(doc, "ORCID iD: 0009-0004-8219-4123 | Departamento de Ingeniería de Sistemas, Universidad Nacional de Trujillo, Trujillo 13011, Perú", 
-          space_after=4, font_size=9, font_color=(80, 80, 80), align=WD_ALIGN_PARAGRAPH.CENTER)
+          space_after=4, font_size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_p(doc, "Autor de Correspondencia: Harry Rodriguez-Sandoval (hsrodriguezsa@unitru.edu.pe) | Av. Juan Pablo II s/n, Trujillo 13011, Perú", 
-          space_after=14, font_size=8.5, italic=True, font_color=(100, 100, 100), align=WD_ALIGN_PARAGRAPH.CENTER)
+          space_after=14, font_size=8.5, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER)
 
-    # 2. Resumen Estructurado
+    # Resumen
     add_h2(doc, "Resumen")
-    
     p_abs = doc.add_paragraph()
     p_abs.paragraph_format.line_spacing = 1.15
     p_abs.paragraph_format.space_after = Pt(6)
@@ -183,9 +246,11 @@ def build_v4():
         r1.bold = True
         r1.font.name = "Arial"
         r1.font.size = Pt(9.5)
+        r1.font.color.rgb = RGBColor(0, 0, 0)
         r2 = p.add_run(body + " ")
         r2.font.name = "Arial"
         r2.font.size = Pt(9.5)
+        r2.font.color.rgb = RGBColor(0, 0, 0)
 
     add_sec(p_abs, "Antecedentes:", 
             "Las olas de calor marinas y la acidificación de los océanos, ambas de origen antropogénico, interactúan para amenazar a los arrecifes de corales escleractinios a escala global. Los monitoreos retrospectivos convencionales y las áreas marinas protegidas (AMP) estáticas carecen de mecanismos dinámicos para anticipar puntos de inflexión biofísicos no lineales y priorizar intervenciones activas de restauración.")
@@ -200,9 +265,9 @@ def build_v4():
             "CoralTwin-DT demuestra la viabilidad técnica de una arquitectura ciberfísica modular y auditable para el soporte de decisiones en conservación marina. Se esclarece que el emulador predice la respuesta de un generador biofísico sintético y no de arrecifes observados. La discrepancia demostrada frente a los datos satelitales reales de NOAA subraya la imperiosa necesidad de acoplar gemelos digitales con flujos continuos de observación física antes de su implementación operacional en políticas de restauración.")
 
     add_p(doc, "Palabras clave: gemelo digital (digital twin); restauración de arrecifes de coral (coral reef restoration); XGBoost; TreeSHAP; acidificación oceánica; olas de calor marinas; validación cruzada espacial; NOAA Coral Reef Watch.", 
-          space_before=4, space_after=14, italic=True, font_size=9, font_color=(60, 60, 60))
+          space_before=4, space_after=14, italic=True, font_size=9)
 
-    # 3. Introducción
+    # 1. Introducción
     add_h1(doc, "1. Introducción")
     add_p(doc, "A escala global, los arrecifes de coral tropicales constituyen epicentros esenciales de la biodiversidad marina: ocupan menos del 0.1 % del lecho marino pero albergan más del 25 % de las especies biológicas descritas en los océanos (Anthony et al., 2020; Klein et al., 2022; Madin et al., 2016). Más allá de su incalculable valor ecológico, las complejas biocenosis arrecifales proporcionan servicios ecosistémicos críticos, incluyendo la disipación de la energía del oleaje costero durante ciclones tropicales, el sustento de la pesca artesanal de subsistencia y el soporte de economías turísticas que sostienen a más de 500 millones de personas en regiones en desarrollo (Anthony et al., 2020; Hein et al., 2021). No obstante, la concurrencia simultánea de perturbaciones climáticas antropogénicas agudas —específicamente las olas de calor marinas (Marine Heatwaves, MHW)— y tensiones biogeoquímicas crónicas como la acidificación oceánica y la hipoxia, sitúan a estos frágiles ecosistemas ante el riesgo inminente de un colapso funcional planetario (Cornwall et al., 2021; Klein et al., 2022; van Hooidonk et al., 2016).")
     
@@ -215,10 +280,8 @@ def build_v4():
 
     add_p(doc, "Para sortear estas barreras, en este trabajo proponemos, formalizamos y evaluamos CoralTwin-DT, un gemelo digital ciberfísico de código abierto concebido para articular telemetría de observación terrestre multiespectral, aprendizaje automático explicable y biofísica dinámica no lineal en un flujo metodológico reproducible. Conforme a las taxonomías modernas de gemelos digitales en ingeniería de software y ciencias ecológicas (Aguzzi et al., 2025; Chen et al., 2023; Dalibor et al., 2022; Føre et al., 2024; Guinea-Cabrera & Holgado-Terriza, 2024), la contribución de CoralTwin-DT es fundamentalmente arquitectónica e integradora, y no la propuesta de un nuevo algoritmo que supere intrínsecamente a los clasificadores especializados del estado del arte (Tabla 1).")
 
-    # Tabla 1
-    add_p(doc, "Tabla 1: Comparación de características de CoralTwin-DT frente a sistemas previos de monitoreo de arrecifes de coral y gemelos digitales marinos.", 
-          space_before=8, space_after=3, bold=True, font_size=8.5, font_color=(0, 51, 102))
-    
+    # Tabla 1 APA
+    add_apa_table_caption(doc, "1", "Comparación de características de CoralTwin-DT frente a sistemas previos de monitoreo de arrecifes de coral y gemelos digitales marinos.")
     t1_data = [
         ["Sistema / Referencia", "Ingesta Continua Multisensorial", "ML Explicable (Atribución Local)", "Simulación Mecanicista Dinámica", "Priorización Espacial Accionable", "Código y Datos Abiertos"],
         ["CoralNet / González-Rivero et al. (2020)", "No (lotes de imágenes estáticas)", "No (clasificación en caja negra)", "No", "No", "Parcial (servidor web)"],
@@ -228,23 +291,23 @@ def build_v4():
         ["OceanNet / Chattopadhyay et al. (2024)", "Sí (operadores neuronales regionales)", "No (caja negra profunda)", "No (puramente basado en datos)", "No", "Sí (repositorio GitHub)"],
         ["CoralTwin-DT (este estudio)", "Sí (diseño; validado con datos sintéticos y NOAA)", "Sí (TreeSHAP intervencional)", "Sí (EDO acopladas tipo Mumby et al.)", "Sí (SRPI y zonificación GeoJSON)", "Sí (100 % auditable, MIT, Zenodo)"]
     ]
-    
     t1 = doc.add_table(rows=len(t1_data), cols=len(t1_data[0]))
     t1.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(t1)
+    set_apa_table_borders(t1)
     col_w1 = [Inches(1.8), Inches(1.3), Inches(1.3), Inches(1.4), Inches(1.4), Inches(1.2)]
     for r_i, row in enumerate(t1.rows):
         for c_i, val in enumerate(t1_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
-    format_table_header(t1.rows[0], col_w1)
-    format_table_rows(t1, col_w1, align_left_col0=True)
+    format_apa_table_header(t1.rows[0], col_w1)
+    format_apa_table_rows(t1, col_w1, align_left_col0=True)
+    add_apa_table_note(doc, "La comparación se basa en las especificaciones declaradas en los artículos originales de cada sistema citado.")
 
     add_p(doc, "Estructuramos la presente investigación alrededor de tres Preguntas de Investigación (PI) cuantitativas y verificables:")
     add_p(doc, "PI1 (Capacidad predictiva y latencia en despliegue de borde): ¿Cómo se compara una arquitectura basada en Extreme Gradient Boosting (XGBoost) frente a modelos de ensamble por aleatorización (Random Forest), redes neuronales profundas (Deep MLP) y redes recurrentes para series temporales (Stacked LSTM en PyTorch) en la clasificación de riesgo de blanqueamiento y emulación de pérdida de cobertura viva, bajo validación espacial estricta?")
     add_p(doc, "PI2 (Atribución algorítmica y umbrales de interacción dentro del soporte empírico): ¿Cuáles son las variables ambientales predominantes y cuál es la sensibilidad cuantitativa de los umbrales de estrés térmico (DHW) ante la acidificación oceánica (Ω_arag, pH), según la teoría de juegos cooperativos (TreeSHAP) evaluada dentro del soporte empírico real de los datos?")
     add_p(doc, "PI3 (Proyección decadal de escenarios de restauración y priorización territorial): ¿De qué manera la articulación de ecuaciones diferenciales biofísicas acopladas y el Índice de Prioridad Espacial de Restauración (SRPI) permiten diferenciar trayectorias de cobertura coralina y balances netos de carbonato (2025–2050) bajo distintos regímenes de forzamiento climático y mitigación activa? Clarificamos expresamente que se trata de un análisis comparativo de escenarios y no de una optimización matemática formal (Sección 2.7).")
 
-    # 4. Materiales y Métodos
+    # 2. Materiales y Métodos
     add_h1(doc, "2. Materiales y métodos")
     
     add_h2(doc, "2.1 Dominio empírico y red global de estaciones de referencia")
@@ -269,9 +332,9 @@ def build_v4():
 
     add_p(doc, "Capa 6. Zonificación operativa y soporte de decisiones: Algoritmo de cómputo del Índice de Prioridad Espacial de Restauración (SRPI), generador automatizado de polígonos geoespaciales en formato GeoJSON para su exportación a consolas SIG y servicios de suscripción a alertas tempranas mediante webhooks para administradores de áreas protegidas.")
 
-    add_fig(doc, "traea_articulo/Figure1_digital_twin_architecture.png", 
-            "Figura 1: Arquitectura ciberfísica modular de seis capas de CoralTwin-DT, ilustrando el flujo de datos desde la ingesta satelital y de boyas (Capa 1) hasta la zonificación operativa en GeoJSON (Capa 6). Se aclara que las Capas 1 y 2 constituyen especificaciones de diseño arquitectónico alimentadas por el generador sintético estandarizado en este banco de pruebas.", 
-            width_inches=6.2)
+    add_apa_figure(doc, "traea_articulo/Figure1_digital_twin_architecture.png", "1",
+                   "Flujo conceptual de la arquitectura ciberfísica de seis capas implementada en CoralTwin-DT.",
+                   "Se ilustra el flujo de datos desde la ingesta satelital y de boyas (Capa 1) hasta la zonificación operativa en GeoJSON (Capa 6). Se aclara que las Capas 1 y 2 constituyen especificaciones de diseño arquitectónico alimentadas por el generador sintético estandarizado en este banco de pruebas.")
 
     add_h2(doc, "2.3 Formulaciones matemáticas y biofísica computacional")
     add_h3(doc, "2.3.1 Estrés térmico acumulado")
@@ -305,10 +368,8 @@ def build_v4():
 
     add_p(doc, "Ajuste e hiperparámetros de los cuatro modelos evaluados: En la Tabla 2 se documentan exhaustivamente los hiperparámetros reales utilizados en el código fuente. Para XGBoost y Random Forest, los hiperparámetros críticos se seleccionaron mediante una búsqueda en malla anidada espacial de 3 pliegues (GroupKFold por estación) ejecutada internamente dentro de cada pliegue de entrenamiento externo (results/nested_cv_hyperparameters.json). Para Deep MLP y Stacked LSTM, se implementaron arquitecturas canónicas en PyTorch con normalización por lotes, regularización por dropout y un mecanismo estricto de parada temprana (Early Stopping con paciencia de 5 épocas sobre el conjunto espacial de validación interna).")
 
-    # Tabla 2
-    add_p(doc, "Tabla 2: Especificación exhaustiva de hiperparámetros, esquemas de optimización espacial y arquitecturas de aprendizaje profundo implementadas en CoralTwin-DT.", 
-          space_before=8, space_after=3, bold=True, font_size=8.5, font_color=(0, 51, 102))
-
+    # Tabla 2 APA
+    add_apa_table_caption(doc, "2", "Especificación exhaustiva de hiperparámetros, esquemas de optimización espacial y arquitecturas de aprendizaje profundo implementadas en CoralTwin-DT.")
     t2_data = [
         ["Modelo y Componente", "Hiperparámetro / Capa", "Valor Real en Código", "Esquema de Ajuste", "Justificación Técnica"],
         ["XGBoost Clasificador", "n_estimators / max_depth", "350 árboles / profundidad 6", "Optimizado (CV interna 3-fold)", "Equilibrio entre capacidad no lineal y prevención de sobreajuste"],
@@ -330,13 +391,14 @@ def build_v4():
     ]
     t2 = doc.add_table(rows=len(t2_data), cols=len(t2_data[0]))
     t2.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(t2)
+    set_apa_table_borders(t2)
     col_w2 = [Inches(1.8), Inches(1.8), Inches(1.5), Inches(1.5), Inches(1.8)]
     for r_i, row in enumerate(t2.rows):
         for c_i, val in enumerate(t2_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
-    format_table_header(t2.rows[0], col_w2)
-    format_table_rows(t2, col_w2, align_left_col0=True)
+    format_apa_table_header(t2.rows[0], col_w2)
+    format_apa_table_rows(t2, col_w2, align_left_col0=True)
+    add_apa_table_note(doc, "Todos los modelos se evaluaron bajo las mismas particiones espaciales con semillas externas (17, 42, 73, 108, 256).")
 
     add_p(doc, "Construcción del target y naturaleza de emulación (surrogate model): Para disipar cualquier duda sobre fuga de datos, documentamos explícitamente cómo se construye la variable objetivo continua (Coral_Cover_Loss_Pct): en el generador, dicha variable se obtiene como una combinación lineal directa de la severidad del blanqueamiento más una perturbación gaussiana estocástica (Coral_Cover_Loss_Pct = 0.78 · Bleaching_Severity_Pct + N(0, 2²)). A su vez, la severidad es una transformación logística determinista de un índice de estrés biofísico acoplado a DHW, Ω_arag y radiación PAR. Por consiguiente, la tarea de regresión no predice un fenómeno ecológico no observado, sino que actúa como una emulación estricta (modelo sustituto) de la superficie analítica del generador. Las variables bentónicas locales (Shannon_Diversity_H, Structural_Rugosity, Live_Coral_Cover_Pct, Macroalgae_Cover_Pct) se generan después de la severidad; su inclusión en modelos previos explicaba el R² atípico de 0.9995. Al excluirlas, el régimen canónico queda restringido a 10 variables ambientales limpias de fuga (SST, SST Anomaly, DHW, pH, Salinidad, Oxígeno disuelto, Ω_arag, Turbidez, PAR, Profundidad).")
 
@@ -352,9 +414,9 @@ def build_v4():
 
     add_p(doc, "Aclaración sobre las '480 cuadrículas por pliegue': En el código de spatial_cv.py (línea 223), se asignó nominalmente un identificador teórico de N_Grid_Cells = 80 celdas por estación, totalizando 480 cuadrículas nominales por pliegue (6 estaciones × 80). En la estructura tabular real de final_dataset.csv no existe una columna Grid_Cell_ID; la resolución espacial submétrica de los puntos proviene de una dispersión estocástica controlada de las coordenadas de la estación, conteniendo cada pliegue exactamente 3,000 registros observacionales (6 estaciones × 500 filas).")
 
-    add_fig(doc, "traea_articulo/Fig_spatial_folds_diagram.png", 
-            "Figura 2: Diseño del protocolo de validación cruzada espacial de 5 bloques con buffer de exclusión de 25 km entre estaciones de entrenamiento y evaluación. Se ilustra la distribución global de las 30 estaciones en cinco provincias biogeográficas y la matriz de distancias mínimas inter-pliegue (mínimo de 119.72 km; 0 violaciones del buffer).", 
-            width_inches=6.0)
+    add_apa_figure(doc, "traea_articulo/Fig_spatial_folds_diagram.png", "2",
+                   "Diseño del protocolo de validación cruzada espacial de 5 bloques con buffer de exclusión de 25 km.",
+                   "Se ilustra la distribución geográfica de las 30 estaciones en cinco provincias marinas y la matriz de distancias mínimas inter-pliegue (mínimo de 119.72 km; 0 violaciones del buffer de 25 km).")
 
     add_h2(doc, "2.6 Inferencia estadística y protocolo riguroso de latencia computacional")
     add_p(doc, "Evaluación de significancia y robustez: Para evaluar la solidez de las diferencias métricas entre las cuatro arquitecturas, se aplicaron pruebas pareadas bilaterales de rangos con signo de Wilcoxon sobre las 25 ejecuciones pareadas (5 pliegues espaciales × 5 semillas aleatorias) de Macro-F1 y RMSE, calculando el tamaño del efecto mediante la d de Cohen y controlando la tasa de error por familia con la corrección estricta de Bonferroni (α_ajustado = 0.05 / 6 comparaciones = 0.00833). Asimismo, se obtuvieron intervalos de confianza del 95 % mediante remuestreo bootstrap con 1,000 iteraciones.")
@@ -370,10 +432,8 @@ def build_v4():
     add_h2(doc, "2.8 Entorno de software, hardware y reproducibilidad computacional")
     add_p(doc, "En la Tabla 3 se detallan las especificaciones del entorno computacional reproducible que sustentan los resultados presentados, alineados con el contenedor Docker oficial del proyecto.")
 
-    # Tabla 3
-    add_p(doc, "Tabla 3: Especificaciones del software, hardware y entorno computacional para la replicación independiente de CoralTwin-DT.", 
-          space_before=8, space_after=3, bold=True, font_size=8.5, font_color=(0, 51, 102))
-
+    # Tabla 3 APA
+    add_apa_table_caption(doc, "3", "Especificaciones del software, hardware y entorno computacional para la replicación independiente de CoralTwin-DT.")
     t3_data = [
         ["Componente de Infraestructura", "Especificación Verificada"],
         ["Lenguaje y Entorno Base", "Python 3.11.9 sobre Windows 10 x64 / Linux contenedor Docker"],
@@ -385,15 +445,16 @@ def build_v4():
     ]
     t3 = doc.add_table(rows=len(t3_data), cols=len(t3_data[0]))
     t3.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(t3)
+    set_apa_table_borders(t3)
     col_w3 = [Inches(2.8), Inches(5.2)]
     for r_i, row in enumerate(t3.rows):
         for c_i, val in enumerate(t3_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
-    format_table_header(t3.rows[0], col_w3)
-    format_table_rows(t3, col_w3, align_left_col0=True)
+    format_apa_table_header(t3.rows[0], col_w3)
+    format_apa_table_rows(t3, col_w3, align_left_col0=True)
+    add_apa_table_note(doc, "Todos los paquetes y versiones coinciden exactamente con requirements.txt y el Dockerfile del repositorio.")
 
-    # 5. Resultados
+    # 3. Resultados
     add_h1(doc, "3. Resultados")
     
     add_h2(doc, "3.1 PI1: Comparación predictiva, exactitud de clasificación y latencia de inferencia")
@@ -403,10 +464,8 @@ def build_v4():
 
     add_p(doc, "Justificación técnica de la selección de XGBoost: La elección de XGBoost como núcleo del gemelo digital se justifica exclusivamente por razones de ingeniería de software y eficiencia en despliegue de borde: (i) Latencia de inferencia: con tamaño de lote unitario (lote = 1) en CPU monohilo, XGBoost ejecuta la inferencia en 0.322 ms, siendo aproximadamente 55 veces más rápido que Random Forest (17.80 ms); (ii) Huella de almacenamiento: el ensamble serializado de XGBoost ocupa 2.83 MB frente a 21.09 MB de Random Forest; y (iii) Interpretabilidad nativa: XGBoost es directamente compatible con la formulación de complejidad polinomial de TreeSHAP, permitiendo explicaciones locales en milisegundos sin recurrir a aproximaciones lentas.")
 
-    # Tabla 4
-    add_p(doc, "Tabla 4: Desempeño predictivo de las cuatro arquitecturas (régimen canónico de 10 variables ambientales; CV espacial de 5 bloques; 5 semillas) y latencia de inferencia en CPU monohilo. Intervalos de confianza del 95 % por remuestreo bootstrap entre corchetes.", 
-          space_before=8, space_after=3, bold=True, font_size=8.5, font_color=(0, 51, 102))
-
+    # Tabla 4 APA
+    add_apa_table_caption(doc, "4", "Desempeño predictivo de las cuatro arquitecturas (régimen canónico de 10 variables ambientales; CV espacial de 5 bloques; 5 semillas) y latencia de inferencia en CPU monohilo.")
     t4_data = [
         ["Arquitectura Evaluada", "Exactitud Global (%) [IC 95 %]", "Exactitud Balanceada (%)", "Macro-F1 [IC 95 %]", "R² de Emulación [IC 95 %]", "RMSE (%) [IC 95 %]", "Latencia lote 1 / 256 (ms) · Tamaño"],
         ["XGBoost (Núcleo explicable)", "98.85 [98.67–99.01]", "69.62", "0.7187 [0.6966–0.7423]", "0.9336 [0.9292–0.9374]", "4.044 [3.996–4.091]", "0.322 / 0.0064 ms · 2.83 MB"],
@@ -416,20 +475,19 @@ def build_v4():
     ]
     t4 = doc.add_table(rows=len(t4_data), cols=len(t4_data[0]))
     t4.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(t4)
+    set_apa_table_borders(t4)
     col_w4 = [Inches(1.8), Inches(1.3), Inches(1.0), Inches(1.1), Inches(1.1), Inches(1.1), Inches(1.6)]
     for r_i, row in enumerate(t4.rows):
         for c_i, val in enumerate(t4_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
-    format_table_header(t4.rows[0], col_w4)
-    format_table_rows(t4, col_w4, align_left_col0=True)
+    format_apa_table_header(t4.rows[0], col_w4)
+    format_apa_table_rows(t4, col_w4, align_left_col0=True)
+    add_apa_table_note(doc, "Intervalos de confianza del 95 % obtenidos mediante 1,000 remuestreos bootstrap. Latencias medidas en CPU monohilo (n_jobs = 1) tras 50 iteraciones de calentamiento.")
 
     add_p(doc, "Auditoría de fuga del objetivo (Leakage Ablation): En la Tabla 5 se evidencia la prueba de ablación de variables. Cuando se incluyeron las 16 variables del repositorio previo (incluyendo Shannon_Diversity_H, rugosidad bentónica y coberturas), el R² alcanzó un valor artificial de 0.9994 (RMSE = 0.395 %). El análisis TreeSHAP reveló que Shannon_Diversity_H concentraba por sí sola el 80.61 % de la importancia total, al ser una variable generada matemáticamente a partir de la severidad del blanqueamiento (post-target). Al remover las variables bentónicas y entrenar exclusivamente con las 10 variables ambientales limpias, el R² se situó en el valor legítimo de 0.9336.")
 
-    # Tabla 5
-    add_p(doc, "Tabla 5: Auditoría de fuga de información del objetivo con XGBoost (semilla 42; CV espacial de 5 bloques). El régimen canónico de 10 variables ambientales elimina la fuga de métricas bentónicas.", 
-          space_before=8, space_after=3, bold=True, font_size=8.5, font_color=(0, 51, 102))
-
+    # Tabla 5 APA
+    add_apa_table_caption(doc, "5", "Auditoría de fuga de información del objetivo con XGBoost (semilla 42; CV espacial de 5 bloques).")
     t5_data = [
         ["Régimen de Entrada", "N.° Variables", "Variables Ambientales y Bentónicas Incluidas", "Exactitud (%)", "Macro-F1", "R² Emulación", "RMSE (%)"],
         ["Con fuga (auditado)", "16", "Todas las variables, incluyendo índices bentónicos post-objetivo (Shannon, rugosidad)", "98.83", "0.7335", "0.9994", "0.395"],
@@ -440,24 +498,23 @@ def build_v4():
     ]
     t5 = doc.add_table(rows=len(t5_data), cols=len(t5_data[0]))
     t5.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(t5)
+    set_apa_table_borders(t5)
     col_w5 = [Inches(1.8), Inches(0.8), Inches(2.6), Inches(0.9), Inches(0.9), Inches(0.9), Inches(0.9)]
     for r_i, row in enumerate(t5.rows):
         for c_i, val in enumerate(t5_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
-    format_table_header(t5.rows[0], col_w5)
-    format_table_rows(t5, col_w5, align_left_col0=True)
+    format_apa_table_header(t5.rows[0], col_w5)
+    format_apa_table_rows(t5, col_w5, align_left_col0=True)
+    add_apa_table_note(doc, "El régimen canónico de 10 variables ambientales elimina por completo la fuga de información de variables bentónicas.")
 
-    add_fig(doc, "traea_articulo/Figure2_methodological_workflow.png", 
-            "Figura 3: Desempeño predictivo de las cuatro arquitecturas evaluadas bajo validación cruzada espacial de 5 bloques en el régimen canónico de 10 variables (A-C) y curva de ablación de fuga de información con XGBoost (D). Las barras de error representan intervalos de confianza del 95 % obtenidos mediante remuestreo bootstrap.", 
-            width_inches=6.2)
+    add_apa_figure(doc, "traea_articulo/Figure2_methodological_workflow.png", "3",
+                   "Desempeño predictivo de las cuatro arquitecturas evaluadas bajo validación cruzada espacial de 5 bloques en el régimen canónico de 10 variables (A-C) y curva de ablación de fuga de información con XGBoost (D).",
+                   "Las barras de error representan intervalos de confianza del 95 % obtenidos mediante remuestreo bootstrap.")
 
     add_p(doc, "Mitigación del desbalance extremo en la clase minoritaria 'Medio' (Tabla 6): La marcada disparidad entre la exactitud global (98.85 %) y la exactitud balanceada (69.62 %) se origina en la distribución fuertemente asimétrica de las tres clases de riesgo de blanqueamiento: Bajo (93.98 %, 14,097 registros), Medio (1.24 %, 186 registros) y Alto (4.78 %, 717 registros). En los modelos canónicos no ponderados, la clase minoritaria Medio casi no se detecta (sensibilidad de 9.78 % en XGBoost y 10.75 % en Random Forest; Figura 4-B). Para resolver esta limitación operativa señalada en el informe de revisión por pares, reentrenamos XGBoost y Random Forest aplicando ponderación inversa de frecuencias de clase (sample_weight='balanced' y class_weight='balanced') bajo el mismo esquema de 5 pliegues espaciales × 5 semillas (Tabla 6).")
 
-    # Tabla 6
-    add_p(doc, "Tabla 6: Evaluación comparativa del impacto de la ponderación de clases en XGBoost y Random Forest para la mitigación del desbalance en la clase minoritaria 'Medio' (5 pliegues espaciales × 5 semillas).", 
-          space_before=8, space_after=3, bold=True, font_size=8.5, font_color=(0, 51, 102))
-
+    # Tabla 6 APA
+    add_apa_table_caption(doc, "6", "Evaluación comparativa del impacto de la ponderación de clases en XGBoost y Random Forest para la mitigación del desbalance en la clase minoritaria 'Medio'.")
     t6_data = [
         ["Modelo y Régimen de Ponderación", "Exactitud Global (%) [IC 95 %]", "Exactitud Balanceada (%) [IC 95 %]", "Macro-F1 [IC 95 %]", "Sensibilidad 'Bajo' (%)", "Sensibilidad 'Medio' (%) [IC 95 %]", "Sensibilidad 'Alto' (%)", "PR-AUC 'Medio'"],
         ["XGBoost Canónico (Sin ponderar)", "98.86 [98.67–99.01]", "69.83 [68.29–71.10]", "0.7225 [0.6966–0.7423]", "99.99", "9.78 [5.26–13.64]", "99.72", "0.1431"],
@@ -467,13 +524,14 @@ def build_v4():
     ]
     t6 = doc.add_table(rows=len(t6_data), cols=len(t6_data[0]))
     t6.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(t6)
+    set_apa_table_borders(t6)
     col_w6 = [Inches(1.8), Inches(1.2), Inches(1.2), Inches(1.0), Inches(0.9), Inches(1.1), Inches(0.9), Inches(0.9)]
     for r_i, row in enumerate(t6.rows):
         for c_i, val in enumerate(t6_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
-    format_table_header(t6.rows[0], col_w6)
-    format_table_rows(t6, col_w6, align_left_col0=True)
+    format_apa_table_header(t6.rows[0], col_w6)
+    format_apa_table_rows(t6, col_w6, align_left_col0=True)
+    add_apa_table_note(doc, "Promedios sobre 5 pliegues espaciales × 5 semillas. IC 95 % obtenidos mediante bootstrap. La ponderación de clases cuadruplica la sensibilidad en 'Medio' a expensas de la exactitud global.")
 
     add_p(doc, "Trade-off operacional de la ponderación de clases: En Random Forest ponderado, la sensibilidad (recall) de la clase minoritaria crítica Medio se cuadruplica, pasando de 10.75 % a 45.91 % (IC 95 %: 37.62–51.76 %), impulsando la exactitud balanceada hasta 78.63 %. No obstante, este incremento se produce a expensas de inducir falsos positivos en la clase mayoritaria Bajo, lo que reduce la exactitud global del 98.88 % al 89.93 % y disminuye el Macro-F1 a 0.6818. Este hallazgo demuestra la necesidad de que los gestores de áreas marinas elijan entre un modelo de máxima exactitud global (canónico) o un modelo de máxima sensibilidad hacia fases iniciales de estrés (ponderado).")
 
@@ -485,9 +543,9 @@ def build_v4():
     add_p(doc, "• En la superficie analítica directa del generador, el EC50 se desplaza de 9.85 a 9.20 °C-semanas (-0.65 °C-semanas), y el cruce del umbral del 35 % se adelanta de 9.20 a 8.40 °C-semanas (-0.80 °C-semanas).")
     add_p(doc, "Conclusión sobre la no causalidad de TreeSHAP: Se evidencia que el emulador XGBoost reproduce cualitativamente el aumento de pérdida basal por acidificación (+2.47 %) y un adelantamiento del umbral crítico (-0.35 °C-semanas), pero amortigua la sensibilidad biofísica programada en las fórmulas analíticas del generador. Reafirmamos que los umbrales de TreeSHAP describen dependencias estadísticas aprendidas por el emulador y no constituyen evidencia de causalidad ecológica en arrecifes reales.")
 
-    add_fig(doc, "traea_articulo/Figure4_ai_predictive_modeling_shap.png", 
-            "Figura 4: Análisis de explicabilidad algorítmica y puntos de inflexión con TreeSHAP sobre XGBoost. (A) Superficie de respuesta tridimensional de pérdida de cobertura en función de DHW y Ω_arag; (B) Matriz de confusión multiclase fuera de muestra (N = 15,000); (C) Ranking global de importancia relativa de variables con IC 95 % bootstrap; (D) Curvas de dependencia parcial de DHW dentro del soporte empírico de datos (p10 = 3.16 vs p90 = 3.90 de Ω).", 
-            width_inches=6.2)
+    add_apa_figure(doc, "traea_articulo/Figure4_ai_predictive_modeling_shap.png", "4",
+                   "Análisis de explicabilidad algorítmica y puntos de inflexión con TreeSHAP sobre XGBoost.",
+                   "(A) Superficie de respuesta tridimensional de pérdida de cobertura en función de DHW y Ω_arag; (B) Matriz de confusión multiclase fuera de muestra (N = 15,000); (C) Ranking global de importancia relativa de variables con IC 95 % bootstrap; (D) Curvas de dependencia parcial de DHW dentro del soporte empírico de datos (p10 = 3.16 vs p90 = 3.90 de Ω).")
 
     add_h2(doc, "3.3 PI3: Proyección decadal de escenarios de restauración y priorización territorial (2025–2050)")
     add_p(doc, "Dinámica comparativa de escenarios decadales (Tabla 7; Figura 5): La integración estocástica del sistema de EDO no lineales mediante 5,000 simulaciones Monte Carlo por escenario proyectó trayectorias ecológicas profundamente contrastantes hacia 2050 a partir de la línea base común (cobertura coralina de 33.68 % y macroalgas de 31.41 %):")
@@ -497,10 +555,8 @@ def build_v4():
     add_p(doc, "• Escenario 4 (S4, Intervención combinada: Trasplante + AMP estricta): Alcanza el desempeño más favorable entre los regímenes evaluados, proyectando una cobertura de 55.20 % [36.2 %–70.5 %], una virtual supresión de macroalgas (0.10 %) y una calcificación neta vigorosa de +7.46 kg CaCO₃ m⁻² año⁻¹, con 0.00 % de trayectorias de colapso.")
     add_p(doc, "Desmitificación del término 'óptimo': Aclaramos taxativamente que S4 es el mejor escenario simulado entre las alternativas analizadas, pero no representa una solución formalmente optimizada. Su superioridad combina simultáneamente tres factores acumulativos: mayor protección de pastoreo (g = 0.68), mayor tasa de trasplante (Φ = 0.030) y un forzamiento climático de fondo menos severo (DHW de 0.18 frente a 0.20 °C-sem/año en S3).")
 
-    # Tabla 7
-    add_p(doc, "Tabla 7: Proyecciones decadales del ecosistema arrecifal bajo cuatro regímenes de intervención y manejo (2025–2050), con línea base común de 33.68 % de cobertura coralina (media y percentiles de 5,000 corridas Monte Carlo).", 
-          space_before=8, space_after=3, bold=True, font_size=8.5, font_color=(0, 51, 102))
-
+    # Tabla 7 APA
+    add_apa_table_caption(doc, "7", "Proyecciones decadales del ecosistema arrecifal bajo cuatro regímenes de intervención y manejo (2025–2050), con línea base común de 33.68 % de cobertura coralina.")
     t7_data = [
         ["ID del Escenario y Estrategia de Intervención", "Cobertura Coralina Media 2050 (%) [IC 95 %]", "Cobertura Macroalgal (%)", "Tasa de Acreción Neta (kg CaCO₃ m⁻² año⁻¹)", "Estado Estructural y Probabilidad de Colapso (< 10 %)"],
         ["S1: Calentamiento severo (SSP5-8.5, sin acción)", "0.69 % [0.1 %–6.2 %]", "67.35 %", "−1.80 [−1.85 a −1.39] (disolución neta)", "Degradado / Dominio macroalgal (98.58 % colapso)"],
@@ -510,33 +566,32 @@ def build_v4():
     ]
     t7 = doc.add_table(rows=len(t7_data), cols=len(t7_data[0]))
     t7.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(t7)
+    set_apa_table_borders(t7)
     col_w7 = [Inches(2.2), Inches(1.5), Inches(1.1), Inches(1.6), Inches(1.6)]
     for r_i, row in enumerate(t7.rows):
         for c_i, val in enumerate(t7_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
-    format_table_header(t7.rows[0], col_w7)
-    format_table_rows(t7, col_w7, align_left_col0=True)
+    format_apa_table_header(t7.rows[0], col_w7)
+    format_apa_table_rows(t7, col_w7, align_left_col0=True)
+    add_apa_table_note(doc, "Medias de 5,000 corridas Monte Carlo por escenario bajo integración RK4. Los intervalos corresponden al 95 % de dispersión de trayectorias bajo perturbación gaussiana de ±15 % en parámetros.")
 
-    add_fig(doc, "traea_articulo/Figure5_restoration_climate_scenarios_2050.png", 
-            "Figura 5: Trayectorias temporales de simulación biofísica 2025–2050 bajo los cuatro regímenes de manejo mediante integración RK4 (5,000 corridas Monte Carlo por escenario). (A) Cobertura coralina viva media (%); (B) Tasa neta de calcificación biogénica (kg CaCO₃ m⁻² año⁻¹). Las bandas sombreadas y barras de error denotan los intervalos de dispersión del 95 %.", 
-            width_inches=6.0)
+    add_apa_figure(doc, "traea_articulo/Figure5_restoration_climate_scenarios_2050.png", "5",
+                   "Trayectorias temporales de simulación biofísica 2025–2050 bajo los cuatro regímenes de manejo mediante integración RK4 (5,000 corridas Monte Carlo por escenario).",
+                   "(A) Cobertura coralina viva media (%); (B) Tasa neta de calcificación biogénica (kg CaCO₃ m⁻² año⁻¹). Las bandas sombreadas y barras de error denotan los intervalos de dispersión del 95 %.")
 
     add_p(doc, "Zonificación espacial y análisis de sensibilidad del SRPI: Conforme a la formulación biofísica de la Ec. (7), exactamente 10 de las 30 estaciones (33.33 %) y 4,872 de los 15,000 registros sintéticos (32.48 %) calificaron como Zonas Prioritarias de Restauración de Nivel 1 (SRPI >= 0.70). El ranking principal estuvo encabezado por Belize_Atoll_06 (0.765), Seychelles_Mahe_26 (0.765), Hawaii_Kaneohe_28 (0.759), Mesoamerican_Fore_01 (0.756) y RedSea_Farasan_25 (0.734) (Figura 6).")
     
     add_p(doc, "Sensibilidad cuantitativa del umbral de corte: El umbral SRPI >= 0.70 es un estándar heurístico operativo y no una constante biológica universal. Un análisis de sensibilidad exhaustivo revela una fuerte dependencia de la selección de sitios respecto al corte elegido: con SRPI >= 0.60 califican 18 de las 30 estaciones (60.00 %; 8,701 registros, 58.01 %); con SRPI >= 0.70 califican 10 estaciones (33.33 %); y si se impusiera un umbral estricto de SRPI >= 0.80, exactamente 0 estaciones de las 30 calificarían (0.00 %; únicamente 17 registros individuales superan 0.80, alcanzando el máximo valor por estación 0.765).")
 
-    add_fig(doc, "traea_articulo/Figure6_spatial_restoration_priority_map.png", 
-            "Figura 6: Cartografía de priorización espacial de restauración derivada del Índice SRPI (Ec. 7) sobre la red global de estaciones arrecifales, clasificadas en tres niveles jerárquicos de intervención territorial (Nivel 1: Prioridad alta de restauración, SRPI >= 0.70; Nivel 2: Conservación secundaria; Nivel 3: Monitoreo pasivo).", 
-            width_inches=6.2)
+    add_apa_figure(doc, "traea_articulo/Figure6_spatial_restoration_priority_map.png", "6",
+                   "Cartografía de priorización espacial de restauración derivada del Índice SRPI (Ec. 7) sobre la red global de estaciones arrecifales.",
+                   "Clasificadas en tres niveles jerárquicos de intervención territorial (Nivel 1: Prioridad alta de restauración, SRPI >= 0.70; Nivel 2: Conservación secundaria; Nivel 3: Monitoreo pasivo).")
 
     add_h2(doc, "3.4 Validación externa con telemetría satelital operacional real de NOAA Coral Reef Watch (5 km, 2015–2024)")
     add_p(doc, "Para responder de manera rigurosa a las observaciones del arbitraje por pares sobre la validez de constructo, consultamos directamente el servidor ERDDAP de NOAA OceanWatch y descargamos la serie temporal continua completa de 10 años (2015–2024, 522 semanas por estación, totalizando 15,138 registros satelitales) del producto satelital operacional de 5 km de NOAA CRW (CRW_dhw_v1_0) para las coordenadas geográficas de las 30 estaciones de referencia (fetch_noaa_crw_real_dhw.py). Veintinueve de las 30 estaciones presentaron píxeles oceánicos válidos (la estación CoralTriangle_Misool_17 se localiza en un archipiélago denso que cae dentro de la máscara de tierra a 5 km) (Tabla 8).")
 
-    # Tabla 8
-    add_p(doc, "Tabla 8: Validación de estrés térmico con telemetría satelital operacional de 5 km de NOAA Coral Reef Watch (CRW) para las 30 estaciones de referencia (2015–2024), correlación con el generador sintético e impacto en la prioridad de restauración (SRPI).", 
-          space_before=8, space_after=3, bold=True, font_size=8.5, font_color=(0, 51, 102))
-
+    # Tabla 8 APA
+    add_apa_table_caption(doc, "8", "Validación de estrés térmico con telemetría satelital operacional de 5 km de NOAA Coral Reef Watch (CRW) para las 30 estaciones de referencia (2015–2024), correlación con el generador sintético e impacto en la prioridad de restauración (SRPI).")
     t8_data = [
         ["ID Estación y Nombre", "Región Biogeográfica", "DHW 95th NOAA Real (°C-sem)", "DHW 95th Sintético (°C-sem)", "Diferencia (Real − Sint.)", "SRPI Real (Ec. 7)", "SRPI Sintético (Ec. 7)", "Clasificación Tier 1 (Real vs Sintético)"],
         ["STN_01 Mesoamerican_Fore_01", "Caribe", "8.270", "0.305", "+7.965", "0.524", "0.756", "Pierde Tier 1 (Estrés real severo)"],
@@ -554,13 +609,14 @@ def build_v4():
     ]
     t8 = doc.add_table(rows=len(t8_data), cols=len(t8_data[0]))
     t8.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(t8)
+    set_apa_table_borders(t8)
     col_w8 = [Inches(1.8), Inches(1.0), Inches(1.0), Inches(1.0), Inches(0.9), Inches(0.8), Inches(0.8), Inches(1.7)]
     for r_i, row in enumerate(t8.rows):
         for c_i, val in enumerate(t8_data[r_i]):
             row.cells[c_i].paragraphs[0].text = val
-    format_table_header(t8.rows[0], col_w8)
-    format_table_rows(t8, col_w8, align_left_col0=True)
+    format_apa_table_header(t8.rows[0], col_w8)
+    format_apa_table_rows(t8, col_w8, align_left_col0=True)
+    add_apa_table_note(doc, "Datos satelitales operacionales de NOAA OceanWatch (CRW_dhw_v1_0, 2015–2024, stride=7 días, 522 semanas por estación). La estación STN_17 fue excluida por caer en máscara de tierra a 5 km.")
 
     add_p(doc, "Discrepancia estadística y física demostrada: La correlación entre el estrés térmico sintético (DHW_95th) y los datos satelitales observados de NOAA CRW a lo largo de los diez años fue estadísticamente nula:")
     add_p(doc, "ρ_Spearman = −0.0921   (p = 0.6346, no significativo)   |   r_Pearson = −0.2016   (p = 0.2944)", align=WD_ALIGN_PARAGRAPH.CENTER, bold=True)
@@ -568,7 +624,7 @@ def build_v4():
     
     add_p(doc, "Impacto en la preservación de refugios térmicos de Nivel 1: Al recalcular el SRPI utilizando el estrés térmico observado de NOAA, el número de estaciones que alcanzan Nivel 1 (SRPI >= 0.70) se desploma de 17 estaciones sintéticas a solo 4 estaciones con datos reales. De las 17 estaciones priorizadas por el modelo sintético, únicamente 2 estaciones mantienen su estatus de Nivel 1: Hawaii_Kaneohe_28 y Hawaii_OahuFore_29 (una tasa de preservación de apenas 11.76 %). Quince estaciones pierden la condición de refugio, principalmente en el Caribe y Mesoamérica, donde las olas de calor sin precedentes de 2023–2024 elevaron el DHW real a niveles extremos de entre 8.2 y 14.1 °C-semanas, reduciendo su resiliencia térmica real. En contrapartida, dos estaciones del Indo-Pacífico (Raja Ampat y Sulawesi) emergieron como refugios térmicos reales sobresalientes (DHW real < 4.4 °C-semanas).")
 
-    # 6. Discusión
+    # 4. Discusión
     add_h1(doc, "4. Discusión")
     
     add_h2(doc, "4.1 Perspectivas mecanicistas sobre las sinergias biofísicas")
@@ -595,14 +651,14 @@ def build_v4():
     add_p(doc, "2. Sesgo batimétrico de priorización: La ponderación de rugosidad estructural y refugios térmicos favorece taludes arrecifales profundos, lo que podría desatender arrecifes someros costeros que, si bien son térmicamente más vulnerables, sostienen directamente la seguridad alimentaria de comunidades pesqueras artesanales locales.")
     add_p(doc, "3. Sesgo por capacidad de gobernanza: El término g(H_MPA) asume una fiscalización efectiva de las reservas; en comunidades con debilidad institucional, las intervenciones recomendadas por el algoritmo fracasarían sistemáticamente si no se fortalecen las capacidades locales de co-manejo participativo.")
 
-    # 7. Conclusiones
+    # 5. Conclusiones
     add_h1(doc, "5. Conclusiones")
     add_p(doc, "CoralTwin-DT demuestra la viabilidad técnica y metodológica de articular aprendizaje automático explicable, simulación biofísica no lineal y telemetría geoespacial en una arquitectura ciberfísica modular y transparente. La resolución de la auditoría científica arroja tres conclusiones fundamentales:")
     add_p(doc, "En primer lugar, bajo validación espacial estricta de 5 bloques (buffer de 25 km, separación mínima de 119.72 km) y sin fuga del objetivo, las cuatro arquitecturas evaluadas convergen al techo de ruido estocástico del generador (R² = 0.9336 a 0.9375), demostrando que XGBoost consiste en dos estimadores independientes elegidos por su latencia en borde (0.322 ms) y parsimonia serializada (2.83 MB), y no por superioridad predictiva sobre Random Forest. La ponderación de clases cuadruplica la sensibilidad en la detección de la clase minoritaria 'Medio' (45.91 %), formalizando un compromiso operativo esencial.")
     add_p(doc, "En segundo lugar, la atribución TreeSHAP confirma a DHW como el forzante preponderante (53.71 %). Dentro del soporte empírico real delimitado (p10 = 3.16 a p90 = 3.90 de Ω_arag), la acidificación adelanta el umbral crítico de pérdida del 35 % en −0.35 °C-semanas en XGBoost y en −0.80 °C-semanas en el generador analítico, descartando interpretaciones causales no comprobadas.")
     add_p(doc, "En tercer lugar, las proyecciones decadales 2025–2050 corroboran que la combinación sinérgica de trasplante asistido y protección estricta en AMP (Escenario 4, mejor escenario simulado) sostiene balances positivos de carbonato (+7.46 kg CaCO₃ m⁻² año⁻¹), frente al colapso funcional del escenario sin mitigación (0.69 % de cobertura coralina). Crucialmente, la validación satelital con 10 años de telemetría real de NOAA CRW (2015–2024) demostró una correlación nula con los datos sintéticos (ρ = −0.0921) y redujo las estaciones de Nivel 1 del SRPI de 17 a 4 (11.76 % de preservación), evidenciando que los modelos deben reentrenarse con datos físicos antes de su utilización operacional en políticas públicas.")
 
-    # 8. Declaraciones Finales
+    # 6. Disponibilidad de Datos
     add_h1(doc, "6. Disponibilidad de datos, código y modelos")
     add_p(doc, "Todos los artefactos computacionales generados en esta investigación se publican bajo estándares estrictos FAIR:")
     add_p(doc, "• Repositorio público de código fuente: Disponible en https://github.com/HrSly11/CoralTwin-DT.git bajo licencia permisiva MIT.")
@@ -675,9 +731,9 @@ def build_v4():
         run_r = p_ref.add_run(ref)
         run_r.font.name = "Arial"
         run_r.font.size = Pt(8.5)
-        run_r.font.color.rgb = RGBColor(40, 40, 40)
+        run_r.font.color.rgb = RGBColor(0, 0, 0)
 
-    # Save to all destination paths
+    # Save to all target paths
     out_paths = [
         os.path.join(TRAEA_DIR, "CoralTwin-DT_v4.docx"),
         os.path.join(TAREA_DIR, "CoralTwin-DT_v4.docx"),
@@ -686,8 +742,8 @@ def build_v4():
     
     for path in out_paths:
         doc.save(path)
-        print(f"Successfully generated: {path} ({round(os.path.getsize(path)/(1024*1024), 2)} MB)")
+        print(f"Successfully generated APA v4 docx: {path} ({round(os.path.getsize(path)/(1024*1024), 2)} MB)")
 
 
 if __name__ == "__main__":
-    build_v4()
+    build_v4_apa()
