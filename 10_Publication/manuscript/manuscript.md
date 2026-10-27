@@ -9,7 +9,7 @@
 
 ## Abstract
 
-Tropical coral reefs are suffering catastrophic structural decline due to compounding marine heatwaves (MHWs) and ocean acidification driven by global anthropogenic emissions. Traditional spatial conservation strategies rely predominantly on retrospective benthic surveys or static marine protected areas (MPAs), which fail to capture non-linear biophysical tipping points or dynamically prioritize active restoration interventions. Here, we present **CoralTwin-DT**, an end-to-end cyber-physical digital twin architecture integrating daily NOAA Coral Reef Watch (CRW) 5km satellite thermal metrics, Copernicus Sentinel-2 multispectral turbidity unmixing, and in-situ biogeochemical moorings within a Six-Layer Framework. The digital twin couples a regularized extreme gradient boosting (XGBoost) multi-task predictive model with non-linear ordinary differential equations (ODEs) of coral-macroalgae competition and game-theoretic TreeSHAP explainability. Evaluated on a harmonized dataset of $N = 12,500$ spatio-temporal observations across Caribbean and Indo-Pacific reef sectors via 5-Fold Spatially Stratified Cross-Validation, CoralTwin-DT achieved exceptional predictive accuracy for bleaching risk classification ($\text{Macro-F1} = 0.958$) and continuous live coral cover loss ($R^2 = 0.934, \text{RMSE} = 3.82\%$). TreeSHAP attribution identified a compound tipping point where severe thermal stress ($DHW \ge 8^\circ\text{C-weeks}$) combined with seawater acidification ($pH \le 7.85, \Omega_{\text{arag}} \le 2.80$) accelerates mortality by $44\%$ relative to thermal stress alone. Forward decadal simulations (2025–2050; $N = 5,000$ Monte Carlo iterations) demonstrate that under unmitigated warming (SSP5-8.5), live coral cover collapses to $4.8\%$, driving net framework dissolution ($-1.82\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$). Conversely, an integrated management regime combining thermally hardened micro-fragment outplanting ($+2.0^\circ\text{C}$ tolerance) and strict MPA herbivory protection maintains $46.2\%$ live coral cover and positive calcification ($+6.80\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$). Finally, we introduce the Spatial Restoration Priority Index (SRPI), delivering high-resolution GeoJSON zoning layers that optimize nursery outplanting into hydrodynamic micro-refugia. CoralTwin-DT establishes a paradigm for proactive, evidence-based marine conservation under accelerating climate change.
+Tropical coral reefs are suffering catastrophic structural decline due to compounding marine heatwaves (MHWs) and ocean acidification driven by global anthropogenic emissions. Traditional spatial conservation strategies rely predominantly on retrospective benthic surveys or static marine protected areas (MPAs), which fail to capture non-linear biophysical tipping points or dynamically prioritize active restoration interventions. Here, we present **CoralTwin-DT**, an end-to-end cyber-physical digital twin architecture integrating simulated multi-source oceanographic metrics within a Six-Layer Framework. The digital twin couples a regularized extreme gradient boosting (XGBoost) multi-task predictive emulator with non-linear ordinary differential equations (ODEs) of coral-macroalgae competition and game-theoretic interventional TreeSHAP explainability. Evaluated on the unified 30-station synthetic benchmark dataset ($N = 15,000$ observations, 36 columns, `SEED = 42`) via 5-Fold Spatial Block Cross-Validation ($>25\text{ km}$ buffer; minimum station distance $= 119.72\text{ km}$) across 5 random seeds on the Clean 10-Feature Environmental Set, XGBoost achieved $98.85\%$ classification accuracy ($\text{Macro-F1} = 0.7187$) and continuous live coral cover loss regression $R^2 = 0.9336$ ($\text{RMSE} = 4.044\%$, approaching the theoretical noise ceiling $R^2_{\max} \approx 0.9385$) with $0.3218\text{ ms}$ batch-1 latency ($0.0064\text{ ms}$ batch-256). Clean 10-feature TreeSHAP attribution identified `DHW_degC_weeks` ($53.71\%$), `PAR_umol_m2_s` ($11.35\%$), `SST_Anomaly_degC` ($9.28\%$), and `Aragonite_Saturation_Omega` ($8.81\%$) as the primary drivers, while in the generator ground truth ocean acidification ($\Omega_{\text{arag}} = 2.20$ vs. $3.85$) shifts the half-maximal loss threshold ($\text{EC}_{50}$) from $9.85$ to $8.30^\circ\text{C-weeks}$ ($-1.55^\circ\text{C-weeks}$). Forward decadal RK4 simulations (2025–2050; $\Delta t = 0.05\text{ yr}$, $N = 5,000$ Monte Carlo runs from a $33.68\%$ baseline) demonstrate that under unmitigated warming (SSP5-8.5), live coral cover collapses to $0.69\%$ mean ($0.10\%$ median; $-1.80\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$). Conversely, an integrated management regime combining thermally hardened outplanting ($+2.0^\circ\text{C-weeks}$ tolerance) and strict MPA herbivory protection ($g=0.68$) maintains $55.20\%$ mean live coral cover ($55.87\%$ median) and positive calcification ($+7.46\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$). Finally, the biophysical Spatial Restoration Priority Index (Eq. 7 SRPI) identifies 10 of 30 stations ($33.33\%$) as Tier-1 Priority Restoration Zones ($\text{SRPI} \ge 0.70$).
 
 **Keywords:** Digital Twin, Coral Bleaching, Ocean Acidification, Degree Heating Weeks, Machine Learning, XGBoost, TreeSHAP, Restoration Prioritization, Marine Protected Areas.
 
@@ -93,52 +93,52 @@ The complete dataset (`03_Data/processed_data/coral_environmental_harmonized.csv
 ## 6. Artificial Intelligence Modeling Results
 
 ### 6.1 Benchmark Predictive Performance
-Under rigorous 5-Fold Spatially Stratified Cross-Validation, tree-based ensemble architectures demonstrated clear superiority over deep linear baselines (Table 1, Figure 4A):
+Under 5-Fold Spatial Block Cross-Validation ($>25\text{ km}$ buffer; minimum station distance $= 119.72\text{ km}$) across 5 random seeds (`17, 42, 73, 108, 256`) on the Clean 10-Feature Environmental Set (`Regime_1_Clean_Emulation_10`, $N = 15,000$), all four architectures approached the theoretical generator noise ceiling ($R^2_{\max} \approx 0.9385, \text{RMSE}_{\min} \approx 3.89\%$; Table 1, Figure 4A):
 
 | Model Architecture | Classification Accuracy | Macro Precision | Macro Recall | Macro-F1 Score | Regression RMSE | Regression MAE | Regression $R^2$ |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **XGBoost (Selected)** | **0.961** | **0.959** | **0.957** | **0.958** | **3.82%** | **2.64%** | **0.934** |
-| Random Forest | 0.946 | 0.944 | 0.941 | 0.942 | 4.25% | 2.98% | 0.918 |
-| Deep MLP Neural Net | 0.919 | 0.916 | 0.914 | 0.915 | 5.08% | 3.65% | 0.885 |
-| Logistic / Ridge Baseline| 0.785 | 0.783 | 0.781 | 0.782 | 8.21% | 6.12% | 0.695 |
+| **XGBoost (Selected)** | **0.9885** | **0.9321** | **0.6962** | **0.7187** | **4.044%** | **3.293%** | **0.9336** |
+| Random Forest | 0.9888 | 0.9658 | 0.7016 | 0.7284 | 3.924% | 3.215% | 0.9375 |
+| Deep MLP Neural Net | 0.9879 | 0.9931 | 0.6756 | 0.6807 | 4.041% | 3.278% | 0.9337 |
+| Stacked LSTM (seq=8) | 0.9881 | 0.9954 | 0.6823 | 0.6949 | 3.934% | 3.219% | 0.9371 |
 
-*Note: Evaluated across N=12,500 samples. Outcome certified as: Resultado obtenido mediante prototipo computacional del gemelo digital.*
+*Note: Evaluated across N=15,000 synthetic observations (30 stations). Outcome certified as: Resultado obtenido mediante prototipo computacional del gemelo digital.*
 
 ### 6.2 TreeSHAP Biophysical Attribution
-Game-theoretic TreeSHAP feature importance ranking (Figure 4C) established the primary environmental drivers of coral degradation:
-1. **Degree Heating Weeks ($DHW$):** $38.4\%$ relative importance.
-2. **Aragonite Saturation State ($\Omega_{\text{arag}}$):** $21.2\%$ relative importance.
-3. **Seawater pH:** $14.8\%$ relative importance.
-4. **Benthic Structural Rugosity:** $11.5\%$ relative importance.
-5. **Solar PAR Irradiance:** $7.2\%$ relative importance.
-6. **Optical Turbidity (NTU):** $6.9\%$ relative importance.
+Clean 10-feature interventional TreeSHAP ranking (Figure 4C, `results/shap_global_importance.csv`) established the primary environmental predictors of coral cover loss:
+1. **Degree Heating Weeks (`DHW_degC_weeks`):** $53.71\%$ relative importance (95% CI $[51.37\%, 55.98\%]$).
+2. **Downwelling Solar Irradiance (`PAR_umol_m2_s`):** $11.35\%$ relative importance.
+3. **Sea Surface Temperature Anomaly (`SST_Anomaly_degC`):** $9.28\%$ relative importance.
+4. **Aragonite Saturation State (`Aragonite_Saturation_Omega`):** $8.81\%$ relative importance.
+5. **Sea Surface Temperature (`SST_degC`):** $5.19\%$ relative importance.
+6. **Salinity, Depth, pH, Dissolved Oxygen, Turbidity:** $11.66\%$ combined ($2.66\%, 2.53\%, 2.37\%, 2.15\%, 1.95\%$).
 
-Crucially, partial dependence analysis (Figure 4D) uncovered a pronounced non-linear interaction: under ambient pH ($8.10$), the mortality threshold occurs at $DHW \approx 8.5^\circ\text{C-weeks}$. However, under acidified conditions ($pH = 7.75, \Omega_{\text{arag}} = 2.45$), the critical bleaching tipping point drops to $DHW \approx 5.8^\circ\text{C-weeks}$, proving that acidification sharply curtails thermal tolerance.
+Two-dimensional partial dependence analysis (Figure 4D, `results/inflection_points.json`) showed that in the analytical generator ground truth, ocean acidification ($\Omega_{\text{arag}} = 2.20$ vs. $3.85$) lowers the half-maximal cover-loss threshold ($\text{EC}_{50}$) from $9.85$ to $8.30^\circ\text{C-weeks}$ ($-1.55^\circ\text{C-weeks}$) and the $35\%$ loss threshold from $9.20$ to $7.20^\circ\text{C-weeks}$ ($-2.00^\circ\text{C-weeks}$).
 
 ---
 
 ## 7. Decadal Forward Scenario Simulation (2025–2050)
 
-Monte Carlo simulations ($N = 5,000$ iterations) of the coupled dynamical ODE system yielded divergent decadal trajectories across the four management pathways (Table 2, Figure 5):
+Monte Carlo simulations ($N = 5,000$ iterations, 4th-order Runge-Kutta $\Delta t = 0.05\text{ yr}$) of the coupled dynamical ODE system (Eqs. 5 & 6) from the empirical 30-station baseline ($33.68\%$ coral cover) yielded divergent decadal trajectories across the four management pathways (Table 2, Figure 5):
 
-| Scenario ID & Strategy | Baseline Cover (2025) | Cover 2035 (Median) | Cover 2050 (Median) | 2050 95% Credible Interval | Net Calcification 2050 ($\text{kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$) | 2050 Ecological State |
+| Scenario ID & Strategy | Baseline Cover (2025) | Cover 2035 (Mean / Median) | Cover 2050 (Mean / Median) | 2050 95% Credible Interval | Net Calcification 2050 ($\text{kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$) | 2050 Ecological State |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **1. Severe Stress (SSP5-8.5)** | 32.0% | 14.5% | **4.8%** | [2.1% – 8.3%] | **-1.82** | Degraded / Macroalgal Dominated |
-| **2. Moderate Mitigation (SSP2-4.5)** | 32.0% | 26.2% | **21.4%** | [16.8% – 26.5%] | **+2.45** | Transitional Equilibrium |
-| **3. Active Resilient Outplanting** | 32.0% | 35.8% | **38.7%** | [32.4% – 45.2%] | **+5.10** | Coral-Dominated (Restored) |
-| **4. Integrated MPA & Outplanting** | 32.0% | 41.2% | **46.2%** | [40.1% – 52.8%] | **+6.80** | Highly Resilient Accreting Reef |
+| **1. Severe Stress (SSP5-8.5)** | 33.68% | 22.46% / 21.04% | **0.69% / 0.10%** | [0.1% – 6.2%] | **-1.80** | Degraded / Macroalgal Dominated |
+| **2. Moderate Mitigation (SSP2-4.5)** | 33.68% | 38.30% / 37.56% | **18.55% / 13.54%** | [0.5% – 52.7%] | **+0.94** | Transitional |
+| **3. Active Resilient Outplanting** | 33.68% | 65.98% / 66.95% | **48.92% / 49.91%** | [23.3% – 67.4%] | **+5.50** | Coral-Dominated (Restored) |
+| **4. Integrated MPA & Outplanting** | 33.68% | 73.25% / 73.70% | **55.20% / 55.87%** | [36.2% – 70.5%] | **+7.46** | Highly Resilient Accreting Reef |
 
 *Resultado obtenido mediante prototipo computacional del gemelo digital.*
 
-Under Scenario 1 (SSP5-8.5), persistent marine heatwaves combined with carbonate dissolution drive an irreversible phase shift to fleshy macroalgae ($71.4\%$ cover). In contrast, Scenario 4 (coupling $+2.0^\circ\text{C}$ thermally resilient micro-fragment outplanting with no-take MPA herbivory protection) maintains robust coral dominance ($46.2\%$) and superior net framework growth.
+Under Scenario 1 (SSP5-8.5), persistent marine heatwaves combined with carbonate dissolution drive a phase shift to fleshy macroalgae ($67.35\%$ mean cover; $98.58\%$ collapse risk $<10\%$ coral cover). In contrast, Scenario 4 (coupling $+2.0^\circ\text{C-weeks}$ thermally resilient outplanting with no-take MPA herbivory protection $g=0.68$) maintains coral dominance ($55.20\%$ mean, $55.87\%$ median) and superior net framework growth ($+7.46\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$).
 
 ---
 
 ## 8. Spatial Restoration & Conservation Prioritization
 
-The Spatial Restoration Priority Index ($\text{SRPI}$) integrated thermal refugia scores, degradation urgency, benthic rugosity, and water quality into a unified metric ($0.0 - 1.0$). 
+The Spatial Restoration Priority Index ($\text{SRPI}$, Eq. 7) integrated thermal refugia scores, degradation urgency, benthic rugosity, and water quality into a unified metric ($0.0 - 1.0$) across all 30 stations (`results/srpi_sensitivity.csv`).
 
-Top Tier-1 priority restoration zones ($\text{SRPI} \ge 0.70$; Figure 6) were concentrated in well-flushed fore-reef habitats with high structural complexity (e.g., *Mesoamerican_Fore_01*, *GreatBarrier_Northern_13*, *CoralTriangle_RajaAmpat_16*). These locations exhibit favorable hydrodynamic cooling while providing stable substrata for outplanted micro-fragments. All spatial polygons have been compiled into an open GIS vector layer (`08_GIS_and_Remote_Sensing/geospatial_outputs/priority_restoration_zones.geojson`).
+Ten of 30 stations ($33.33\%$) and $4,872$ of $15,000$ observations ($32.48\%$) qualified as Tier-1 Priority Restoration Zones ($\text{SRPI} \ge 0.70$; Figure 6), led by `STN_06 Belize_Atoll_06` ($0.765$), `STN_26 Seychelles_Mahe_26` ($0.765$), `STN_28 Hawaii_Kaneohe_28` ($0.759$), `STN_01 Mesoamerican_Fore_01` ($0.756$), and `STN_25 RedSea_Farasan_25` ($0.734$). All 30 spatial point features have been compiled into open GIS vector layers (`08_GIS_and_Remote_Sensing/geospatial_outputs/priority_restoration_zones.geojson` and `08_GIS_and_Remote_Sensing/ArcGIS_WebMaps/reef_stations_priority.geojson`).
 
 ---
 

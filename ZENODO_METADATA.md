@@ -3,7 +3,7 @@
 **Archive Target:** Zenodo Open-Science Repository (CERN / OpenAIRE)  
 **Project:** CoralTwin-DT (Cyber-Physical Environmental Digital Twin)  
 **Release Tag:** `v1.0.0`  
-**Target DOI Placeholder:** `10.5281/zenodo.10275001`  
+**Target DOI Placeholder (Unminted Pre-Registration):** `10.5281/zenodo.10275001` *(Note: Pre-audit manuscripts also referenced `10.5281/zenodo.16892401`; both are unminted placeholders until a live Zenodo deposit is published).*  
 **License:** Open Access (MIT License)  
 
 ---

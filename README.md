@@ -132,7 +132,7 @@ Layer 6: Decision Support & Spatial Actuation (SRPI Index, GeoJSON Polygons, Ear
 
 ## 5. Dataset Structure & FAIR Provenance
 
-The unified analysis-ready dataset (`03_Data/final_dataset.csv`) contains **$15,000$ spatio-temporal records across 34 standardized attributes** covering 30 global benchmark stations from 2015 to 2024.
+The unified analysis-ready dataset (`03_Data/final_dataset.csv`, synchronized identically with `03_Data/processed_data/coral_environmental_harmonized.csv`) contains **$15,000$ spatio-temporal records across 36 standardized attributes** covering 30 global benchmark stations (`STN_01` to `STN_30`, 500 weekly records per station from 2015 to 2024).
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -140,38 +140,41 @@ The unified analysis-ready dataset (`03_Data/final_dataset.csv`) contains **$15,
 +------------------------------------+---------------------+------------------------+
 | Data Source Category               | Record Count        | Percentage (%)         |
 +------------------------------------+---------------------+------------------------+
-| Real_Observation_Calibrated        | 6,180               | 41.2%                  |
-| Digital_Twin_Simulated             | 8,820               | 58.8%                  |
+| Digital_Twin_Simulated (SEED = 42) | 15,000              | 100.0%                 |
+| Real_Observation_Calibrated        | 0                   | 0.0%                   |
 +------------------------------------+---------------------+------------------------+
 ```
 
-- **Calibrated Empirical Baselines (41.2%):** Grounded in historical NOAA CRW 5km daily products, Sentinel-2 $K_d(490)$ optical unmixing, Allen Coral Atlas geomorphology, and in-situ GCRMN transects.
-- **Digital Twin Synthetic Extensions (58.8%):** Fine-scale 500m spatial infilling and extreme MHW stress testing generated via the calibrated biophysical simulator.
-- **Attribution Disclaimer:** All simulated records carry the mandatory metadata tag: `"Resultado obtenido mediante prototipo computacional del gemelo digital"`.
+- **100% Synthetic Digital Twin Benchmark (`SEED = 42`):** As verified by `03_Data/audit_data_provenance.py` (`09_Results/audit/data_provenance_summary.json`), all $15,000$ observations are deterministically generated in Python (`np.random.seed(42)`) using literature-calibrated biogeochemical ranges. Legacy label splits (`27.18%` / `72.82%` in pre-audit `final_dataset.csv` and `41.2%` / `58.8%` in pre-audit prose) were synthetic metadata flags assigned by `Reef_Zone` and have been unified to `Digital_Twin_Simulated` (`100.0%`).
+- **Attribution Disclaimer:** All records carry the mandatory metadata tag: `"Resultado obtenido mediante prototipo computacional del gemelo digital"`.
 
 ---
 
 ## 6. Key Scientific Results
 
-### 6.1 Machine Learning Predictive Performance (5-Fold Spatial CV)
-*Evaluated with a 25 km spatial buffer to eliminate spatial autocorrelation.*
+### 6.1 Machine Learning Emulation Performance (5-Fold Spatial Block CV, 5 Seeds)
+*Evaluated across 5 geographic folds ($>25\text{ km}$ buffer; minimum inter-fold station distance $= 119.72\text{ km}$) and 5 random seeds (`17, 42, 73, 108, 256`) using the Clean 10-Feature Environmental Predictor Set (`Regime_1_Clean_Emulation_10`).*
 
-| Model Architecture | Classification Accuracy | Macro-F1 Score | Regression $R^2$ Score | Regression RMSE (%) | Inference Latency |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **XGBoost (Selected)** | **98.85%** | **0.7298** | **0.9995** | **0.346%** | **0.009 ms** |
-| Random Forest | 98.89% | 0.7320 | 0.9996 | 0.323% | 0.349 ms |
-| Deep MLP Neural Net | 91.90% | 0.9150 | 0.8850 | 5.080% | 0.085 ms |
-| Stacked LSTM (Recurrent) | 94.68% | 0.3242 | 0.0310 | 14.578% | 0.481 ms |
+| Model Architecture | Classification Accuracy [95% CI] | Macro-F1 Score [95% CI] | Regression $R^2$ [95% CI] | Regression RMSE (%) [95% CI] | Single-Thread Batch-1 Latency (Batch-256) | Model Size |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **XGBoost (Selected)** | **98.85%** [98.67%, 99.01%] | **0.7187** [0.6966, 0.7423] | **0.9336** [0.9292, 0.9374] | **4.044%** [3.996%, 4.091%] | **0.3218 ms** (0.0064 ms) | 2.833 MB (350 trees/head) |
+| Random Forest | 98.88% [98.71%, 99.04%] | 0.7284 [0.7045, 0.7521] | 0.9375 [0.9335, 0.9412] | 3.924% [3.884%, 3.964%] | 17.8013 ms (0.0798 ms) | 21.090 MB (200 trees/head) |
+| Deep MLP Neural Net | 98.79% [98.62%, 98.96%] | 0.6807 [0.6681, 0.6968] | 0.9337 [0.9292, 0.9375] | 4.041% [3.997%, 4.086%] | 0.1967 ms (0.0015 ms) | 0.112 MB (24,516 params) |
+| Stacked LSTM (seq=8) | 98.81% [98.64%, 98.98%] | 0.6949 [0.6775, 0.7157] | 0.9371 [0.9331, 0.9408] | 3.934% [3.893%, 3.977%] | 0.4135 ms (0.0131 ms) | 0.262 MB (66,244 params) |
 
-### 6.2 Biophysical Tipping Point Discovery (TreeSHAP)
-- **Top Predictive Drivers:** Degree Heating Weeks ($47.0\%$), Benthic Structural Rugosity ($20.4\%$), Live Coral Cover ($7.4\%$), SST ($6.7\%$), Depth ($6.5\%$).
-- **Synergistic Acidification Interaction:** Ocean acidification ($pH \le 7.85, \Omega_{\text{arag}} \le 2.80$) drops the thermal mortality threshold from **$8.5$ to $5.8^\circ\text{C-weeks}$**, confirming that acidification severely curtails coral thermal resilience.
+*Note: All four models approach the theoretical noise ceiling of the synthetic data generator ($R^2_{\max} \approx 0.9385, \text{RMSE}_{\min} \approx 3.89\%$). Pre-audit $R^2 = 0.9995$ values were artifacts of including co-generated benthic response variables (`Shannon_Diversity_H`, `Structural_Rugosity`, `Live_Coral_Cover_Pct`) in the feature matrix (`results/leakage_ablation_metrics.csv`).*
 
-### 6.3 Decadal Forward Projections (2025–2050; $N=5,000$ Monte Carlo)
-- **Scenario 1 (Severe Stress, SSP5-8.5):** Live coral cover collapses to **$4.8\%$ [2.1% – 8.3%]**; net dissolution ($-1.82\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$).
-- **Scenario 2 (Moderate Mitigation, SSP2-4.5):** Live cover stabilizes at **$21.4\%$ [16.8% – 26.5%]** ($+2.45\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$).
-- **Scenario 3 (Active Outplanting):** Thermally hardened strains ($+2.0^\circ\text{C}$) reach **$38.7\%$ [32.4% – 45.2%]** cover.
-- **Scenario 4 (Integrated MPA & Outplanting):** Synergistic recovery to **$46.2\%$ [40.1% – 52.8%]** cover and vigorous accretion ($+6.80\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$).
+### 6.2 Clean 10-Feature Interventional TreeSHAP & Carbonate Regime Thresholds
+- **Top Clean Environmental Predictors (`results/shap_global_importance.csv`):** Degree Heating Weeks (`DHW_degC_weeks`, **53.71%**), Downwelling Solar Irradiance (`PAR_umol_m2_s`, **11.35%**), SST Anomaly (`SST_Anomaly_degC`, **9.28%**), Aragonite Saturation (`Aragonite_Saturation_Omega`, **8.81%**), and SST (`SST_degC`, **5.19%**).
+- **Carbonate Regime Shift (`results/inflection_points.json`):** In the analytical generator ground truth, ocean acidification ($\Omega_{\text{arag}} = 2.20$ vs. $3.85$) shifts the half-maximal cover-loss threshold ($\text{EC}_{50}$) downward by **$-1.55^\circ\text{C-weeks}$** (from **$9.85$** to **$8.30^\circ\text{C-weeks}$**) and the $35\%$ loss threshold by **$-2.00^\circ\text{C-weeks}$** (from **$9.20$** to **$7.20^\circ\text{C-weeks}$**).
+
+### 6.3 Decadal Forward Projections (2025–2050; RK4 Coupled ODEs, $N=5,000$ Monte Carlo)
+*Starting from the unified 30-station empirical baseline live coral cover of **$33.68\%$** (`results/scenario_2050_summary.csv`):*
+- **Scenario 1 (Severe Stress, SSP5-8.5):** Live coral cover collapses to **$0.69\%$ mean ($0.10\%$ median, 95% CI [0.1% – 6.2%])** with **$98.58\%$** probability of falling below $10\%$ cover; net framework dissolution ($-1.80\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$).
+- **Scenario 2 (Moderate Mitigation, SSP2-4.5):** Transitional regime with **$18.55\%$ mean ($13.54\%$ median, 95% CI [0.5% – 52.7%])** coral cover and $+0.94\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$ net accretion.
+- **Scenario 3 (Active Outplanting):** Thermally hardened outplants ($+2.0^\circ\text{C-weeks}$) maintain **$48.92\%$ mean ($49.91\%$ median, 95% CI [23.3% – 67.4%])** cover and $+5.50\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$ accretion.
+- **Scenario 4 (Integrated MPA & Outplanting):** Enforced MPA herbivory ($g = 0.68$) plus outplanting achieves **$55.20\%$ mean ($55.87\%$ median, 95% CI [36.2% – 70.5%])** cover and vigorous accretion ($+7.46\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$).
+- **Spatial Restoration Priority Index (Eq. 7 SRPI):** Across all 30 stations (`results/srpi_sensitivity.csv`), **$33.33\%$ ($10/30$ stations)** and **$32.48\%$ ($4,872/15,000$ observations)** qualify as Tier-1 Priority Restoration Zones ($\text{SRPI} \ge 0.70$), led by `STN_06 Belize_Atoll_06` ($0.765$), `STN_26 Seychelles_Mahe_26` ($0.765$), `STN_28 Hawaii_Kaneohe_28` ($0.759$), and `STN_01 Mesoamerican_Fore_01` ($0.756$).
 
 ---
 

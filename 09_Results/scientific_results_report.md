@@ -41,57 +41,57 @@ Traditional conservation relies on static historical maps or single-variable hea
 ## 2. Comprehensive Publication Tables
 
 ### Table 1: Cross-Validated Predictive Performance Across AI Architectures
-*Evaluated via 5-Fold Spatially Stratified Cross-Validation on $N = 15,000$ harmonized observations.*
+*Evaluated via 5-Fold Spatial Block Cross-Validation ($>25\text{ km}$ buffer; minimum inter-fold station distance $= 119.72\text{ km}$) across 5 random seeds (`17, 42, 73, 108, 256`) on $N = 15,000$ synthetic benchmark observations using the Clean 10-Feature Environmental Set (`Regime_1_Clean_Emulation_10`).*
 
-| Model Architecture | Architecture Class | Classification Accuracy | Macro-Precision | Macro-Recall | Macro-F1 Score | Regression RMSE (%) | Regression MAE (%) | Regression $R^2$ Score | Inference Latency |
+| Model Architecture | Architecture Class | Classification Accuracy [95% CI] | Macro-Precision | Macro-Recall | Macro-F1 Score [95% CI] | Regression RMSE (%) [95% CI] | Regression MAE (%) | Regression $R^2$ [95% CI] | Batch-1 (Batch-256) Latency |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **XGBoost (Operational)** | Gradient Boosted Trees | **98.85%** | **0.7310** | **0.7285** | **0.7298** | **0.346%** | **0.182%** | **0.9995** | **0.009 ms** |
-| Random Forest | Bagged Decision Forest | 98.89% | 0.7335 | 0.7305 | 0.7320 | 0.323% | 0.165% | 0.9996 | 0.349 ms |
-| Deep MLP Neural Net | 4-Layer Dense Perceptron| 91.90% | 0.9160 | 0.9140 | 0.9150 | 5.080% | 3.650% | 0.8850 | 0.085 ms |
-| LSTM (Recurrent) | Stacked Bidirectional | 94.68% | 0.3255 | 0.3230 | 0.3242 | 14.578%| 11.210%| 0.0310 | 0.481 ms |
-| Logistic / Ridge Baseline | Linear Regularized | 78.50% | 0.7830 | 0.7810 | 0.7820 | 8.210% | 6.120% | 0.6950 | 0.004 ms |
+| **XGBoost (Selected)** | Gradient Boosted Trees | **98.85%** [98.67, 99.01] | **0.9321** | **0.6962** | **0.7187** [0.6966, 0.7423] | **4.044%** [3.996, 4.091] | **3.293%** | **0.9336** [0.9292, 0.9374] | **0.3218 ms** (0.0064 ms) |
+| Random Forest | Bagged Decision Forest | 98.88% [98.71, 99.04] | 0.9658 | 0.7016 | 0.7284 [0.7045, 0.7521] | 3.924% [3.884, 3.964] | 3.215% | 0.9375 [0.9335, 0.9412] | 17.8013 ms (0.0798 ms) |
+| Deep MLP Neural Net | 4-Layer Dense Perceptron | 98.79% [98.62, 98.96] | 0.9931 | 0.6756 | 0.6807 [0.6681, 0.6968] | 4.041% [3.997, 4.086] | 3.278% | 0.9337 [0.9292, 0.9375] | 0.1967 ms (0.0015 ms) |
+| Stacked LSTM (seq=8) | 2-Layer Recurrent Net | 98.81% [98.64, 98.98] | 0.9954 | 0.6823 | 0.6949 [0.6775, 0.7157] | 3.934% [3.893, 3.977] | 3.219% | 0.9371 [0.9331, 0.9408] | 0.4135 ms (0.0131 ms) |
 
 ---
 
 ### Table 2: Decadal Forward Projections of Ecosystem Trajectories (2025–2050)
-*Generated via coupled dynamical ODEs with $N = 5,000$ Monte Carlo stochastic parameter draws.*
+*Generated via 4th-order Runge-Kutta ($\Delta t = 0.05\text{ yr}$, 500 steps) integration of coupled dynamical ODEs (Eqs. 5 & 6) with $N = 5,000$ Monte Carlo realizations (`SEED = 42`), starting from the empirical 30-station baseline ($33.68\%$ coral cover, $31.41\%$ macroalgae cover).*
 
-| Scenario ID & Strategy | Starting Cover (2025) | Projected Cover 2035 (Median) | Projected Cover 2050 (Median) | 2050 95% Credible Interval | Net Calcification 2050 ($\text{kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$) | Macroalgae Cover 2050 (%) | 2050 Ecological State |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **1. Severe Stress (SSP5-8.5)** | 32.0% | 14.5% | **4.8%** | [2.1% – 8.3%] | **-1.82** | 71.4% | Complete Collapse (Macroalgal Dominated) |
-| **2. Moderate Mitigation (SSP2-4.5)** | 32.0% | 26.2% | **21.4%** | [16.8% – 26.5%] | **+2.45** | 38.2% | Transitional Dynamic Equilibrium |
-| **3. Active Resilient Outplanting** | 32.0% | 35.8% | **38.7%** | [32.4% – 45.2%] | **+5.10** | 24.5% | Coral-Dominated (Restored Framework) |
-| **4. Integrated MPA & Outplanting** | 32.0% | 41.2% | **46.2%** | [40.1% – 52.8%] | **+6.80** | 14.2% | Highly Resilient Accreting Reef |
-
----
-
-### Table 3: Global Spatial Restoration Priority Index (SRPI) Rankings (Top 10 Benchmark Stations)
-*Multi-criteria formula: $\text{SRPI} = 0.35(\text{Refugia}) + 0.25(\text{Urgency}) + 0.25(\text{Rugosity}) + 0.15(\text{WaterQuality})$.*
-
-| Rank | Station Name | Province | Reef Zone | Depth (m) | Thermal Refugia Score | Rugosity Score | SRPI Score | Priority Tier | Recommended Action |
-| :---: | :--- | :--- | :--- | :---: | :---: | :---: | :---: | :--- | :--- |
-| **1** | `Mesoamerican_Fore_01` | Caribbean | Fore Reef | 12.5 | 0.88 | 0.85 | **0.782** | Tier 1 (High Priority) | Active micro-fragment outplanting (*Acropora*) |
-| **2** | `GreatBarrier_Northern_13`| Indo-Pacific | Fore Reef | 11.0 | 0.84 | 0.92 | **0.765** | Tier 1 (High Priority) | Larval propagation & substrate stabilization |
-| **3** | `CoralTriangle_RajaAmpat_16`| Indo-Pacific | Fore Reef | 10.5 | 0.82 | 0.90 | **0.751** | Tier 1 (High Priority) | Thermal-hardened strain nursery deployment |
-| **4** | `RedSea_Aqaba_23` | Red Sea | Fore Reef | 15.5 | 0.95 | 0.74 | **0.738** | Tier 1 (High Priority) | Baseline biocapsule protection & broodstock |
-| **5** | `Florida_Keys_Uppers_11` | Caribbean | Fore Reef | 9.5 | 0.70 | 0.78 | **0.684** | Tier 2 (Secondary) | No-take MPA enforcement & nursery shading |
-| **6** | `Cozumel_South_07` | Caribbean | Fore Reef | 18.2 | 0.72 | 0.80 | **0.672** | Tier 2 (Secondary) | Herbivory protection & cruise runoff control |
-| **7** | `Belize_Barrier_05` | Caribbean | Fore Reef | 15.0 | 0.69 | 0.76 | **0.655** | Tier 2 (Secondary) | Macroalgae culling & herbivorous grazing |
-| **8** | `CoralTriangle_Komodo_18`| Indo-Pacific | Fore Reef | 16.0 | 0.75 | 0.70 | **0.648** | Tier 2 (Secondary) | Fishery patrols & dynamic tourism zones |
-| **9** | `Hawaii_OahuFore_29` | Pacific | Fore Reef | 11.2 | 0.71 | 0.68 | **0.620** | Tier 2 (Secondary) | Watershed sediment reduction |
-| **10**| `Mesoamerican_Lagoon_04` | Caribbean | Lagoon | 2.5 | 0.38 | 0.42 | **0.385** | Tier 3 (Monitoring) | Passive surveillance; avoid outplanting |
+| Scenario ID & Strategy | Starting Cover (2025) | Projected Cover 2035 (Mean / Median) | Projected Cover 2050 (Mean / Median) | 2050 95% Credible Interval | Net Calcification 2050 ($\text{kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$) | Macroalgae Cover 2050 (%) | Collapse Prob. ($<10\%$) & State |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **S1: Severe Stress (SSP5-8.5)** | 33.68% | 22.46% / 21.04% | **0.69% / 0.10%** | [0.1% – 6.2%] | **-1.80** [-1.85, -1.39] | 67.35% | 98.58% (Degraded/Macroalgal) |
+| **S2: Moderate Mitigation (SSP2-4.5)** | 33.68% | 38.30% / 37.56% | **18.55% / 13.54%** | [0.5% – 52.7%] | **+0.94** [-1.77, +6.38] | 34.40% | 42.84% (Transitional) |
+| **S3: Active Resilient Outplanting** | 33.68% | 65.98% / 66.95% | **48.92% / 49.91%** | [23.3% – 67.4%] | **+5.50** [+1.41, +9.15] | 1.75% | 0.46% (Coral-Dominated) |
+| **S4: Integrated MPA & Outplanting** | 33.68% | 73.25% / 73.70% | **55.20% / 55.87%** | [36.2% – 70.5%] | **+7.46** [+3.80, +11.01] | 0.10% | 0.00% (Coral-Dominated) |
 
 ---
 
-### Table 4: Synergistic Tipping Point Matrix (Critical DHW Threshold vs. Ocean pH)
-*Shows the reduction in critical thermal mortality threshold as seawater acidification intensifies.*
+### Table 3: Global Spatial Restoration Priority Index (Eq. 7 SRPI) Rankings (Top 10 Tier-1 Stations)
+*Biophysical Eq. (7) multi-criteria formula evaluated across all 30 stations (`08_GIS_and_Remote_Sensing/geospatial_outputs/spatial_restoration_priority_ranking.csv`); 10 of 30 stations ($33.33\%$) and $4,872$ of $15,000$ observations ($32.48\%$) achieve $\text{SRPI} \ge 0.70$.*
 
-| Atmospheric $p\text{CO}_2$ | Seawater pH (Total) | Aragonite $\Omega_{\text{arag}}$ | Critical DHW Threshold (°C-weeks) | Bleaching Severity at 8 DHW (%) | Net Framework Accretion State |
-| :---: | :---: | :---: | :---: | :---: | :--- |
-| **380 ppm (Pre-industrial)** | 8.16 | 4.10 | **9.2 °C-weeks** | 38.5% | Robust Accretion ($+8.2\text{ kg/m}^2\text{/yr}$) |
-| **425 ppm (Present Day)** | 8.08 | 3.65 | **8.4 °C-weeks** | 52.4% | Moderate Accretion ($+4.8\text{ kg/m}^2\text{/yr}$) |
-| **550 ppm (SSP2-4.5, 2050)** | 7.92 | 3.05 | **6.9 °C-weeks** | 74.2% | Marginal Balance ($+1.2\text{ kg/m}^2\text{/yr}$) |
-| **750 ppm (SSP5-8.5, 2050)** | 7.75 | 2.45 | **5.8 °C-weeks** | **94.8%** | **Net Dissolution ($-1.82\text{ kg/m}^2\text{/yr}$)** |
+| Rank | Station ID & Name | Province | Reef Zone | Depth (m) | Thermal Refugia | Urgency Score | Rugosity Score | Water Quality | Eq. 7 SRPI | Legacy Min-Max | Priority Tier |
+| :---: | :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **1** | `STN_06 Belize_Atoll_06` | Caribbean | Reef Crest | 5.0 | 0.913 | 0.519 | 0.718 | 0.910 | **0.765** | 0.575 | Tier 1 ($\ge 0.70$) |
+| **2** | `STN_26 Seychelles_Mahe_26` | Indian Ocean | Fore Reef | 10.8 | 0.880 | 0.480 | 0.806 | 0.907 | **0.765** | 0.603 | Tier 1 ($\ge 0.70$) |
+| **3** | `STN_28 Hawaii_Kaneohe_28` | Pacific | Lagoon | 3.5 | 0.953 | 0.561 | 0.756 | 0.640 | **0.759** | 0.509 | Tier 1 ($\ge 0.70$) |
+| **4** | `STN_01 Mesoamerican_Fore_01` | Caribbean | Fore Reef | 12.5 | 0.910 | 0.501 | 0.704 | 0.907 | **0.756** | 0.576 | Tier 1 ($\ge 0.70$) |
+| **5** | `STN_25 RedSea_Farasan_25` | Red Sea | Fore Reef | 12.0 | 0.981 | 0.174 | 0.849 | 0.901 | **0.734** | 0.669 | Tier 1 ($\ge 0.70$) |
+| **6** | `STN_11 Florida_Keys_Uppers_11` | Caribbean | Fore Reef | 9.5 | 0.937 | 0.539 | 0.521 | 0.904 | **0.729** | 0.531 | Tier 1 ($\ge 0.70$) |
+| **7** | `STN_30 Palau_RockIslands_30` | Pacific | Lagoon | 4.8 | 0.963 | 0.550 | 0.623 | 0.638 | **0.726** | 0.463 | Tier 1 ($\ge 0.70$) |
+| **8** | `STN_12 Florida_Keys_Lowers_12` | Caribbean | Reef Crest | 4.5 | 0.914 | 0.418 | 0.648 | 0.903 | **0.722** | 0.544 | Tier 1 ($\ge 0.70$) |
+| **9** | `STN_24 RedSea_Shallow_24` | Red Sea | Reef Crest | 4.0 | 0.947 | 0.430 | 0.585 | 0.904 | **0.721** | 0.519 | Tier 1 ($\ge 0.70$) |
+| **10**| `STN_21 Okinawa_Kerama_21` | Indo-Pacific | Fore Reef | 14.5 | 0.905 | 0.000 | 1.000 | 0.911 | **0.703** | 0.694 | Tier 1 ($\ge 0.70$) |
+
+---
+
+### Table 4: Partial Dependence & Generator Threshold Matrix (`results/inflection_points.json`)
+*Comparison of thermal response thresholds across carbonate saturation regimes ($\Omega_{\text{arag}}, pH$).*
+
+| Regime / Evaluation Mode | Seawater pH | Aragonite $\Omega_{\text{arag}}$ | Max-Slope Inflection DHW (°C-weeks) | Half-Maximal $\text{EC}_{50}$ DHW (°C-weeks) | 35% Cover Loss Crossing DHW (°C-weeks) | Predicted Cover Loss at 8.0 DHW (%) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Generator Ground Truth (Ambient)** | 8.10 | 3.85 | **10.15 °C-weeks** | **9.85 °C-weeks** | **9.20 °C-weeks** | 24.44% |
+| **Generator Ground Truth (Acidified)** | 7.80 | 2.20 | **8.60 °C-weeks** | **8.30 °C-weeks** | **7.20 °C-weeks** | **42.23%** |
+| **XGBoost Counterfactual PDP (Ambient)** | 8.10 | 3.85 | 7.30 °C-weeks | 10.70 °C-weeks | 10.60 °C-weeks | 31.50% |
+| **XGBoost Counterfactual PDP (Acidified)** | 7.80 | 2.20 | 7.30 °C-weeks | 10.80 °C-weeks | 10.35 °C-weeks | 33.52% |
+| **XGBoost Empirical Subset ($pH \le 7.98$)** | 7.975 | 2.832 | 7.30 °C-weeks | **7.75 °C-weeks** | **7.50 °C-weeks** | **44.60%** |
 
 ---
 

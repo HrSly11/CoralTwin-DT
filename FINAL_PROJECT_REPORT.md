@@ -90,15 +90,15 @@ CoralTwin-DT/ (Release v1.0.0)
 +------------------------------------+--------------------------------------------------------------------------+
 | Dimension                          | Quantitative Achievement & Verified Benchmark                            |
 +------------------------------------+--------------------------------------------------------------------------+
-| Machine Learning Accuracy          | 98.85% Accuracy (Macro-F1 = 0.7298; R² = 0.9995; RMSE = 0.346%)          |
-| AI Inference Latency               | 0.009 ms / sample (XGBoost) vs 0.481 ms (LSTM) - 53x speedup            |
-| Acidification Tipping Point        | Acidification (pH <= 7.85) drops critical DHW from 8.5 to 5.8 degC-weeks|
-| Decadal 2050 Trajectory (SSP5-8.5) | Collapse to 4.8% Live Coral Cover (Net dissolution: -1.82 kg CaCO3/m²/yr)|
-| Decadal 2050 Trajectory (Scenario 4| Synergistic Recovery to 46.2% Live Cover (+6.80 kg CaCO3/m²/yr accretion)|
-| Top Priority Restoration Station   | Mesoamerican_Fore_01 (SRPI = 0.782 - Tier 1 Active Outplanting Priority) |
-| FAIR Data Compliance               | N = 15,000 rows, 34 columns (41.2% Real Calibrated vs 58.8% Simulated)  |
+| Machine Learning Accuracy          | 98.85% Accuracy (Macro-F1 = 0.7187; R² = 0.9336; RMSE = 4.044%)          |
+| AI Inference Latency               | 0.3218 ms Batch-1 (0.0064 ms Batch-256) XGBoost vs 17.8013 ms RF         |
+| Carbonate Regime Threshold Shift   | Acidification (Omega 2.20 vs 3.85) shifts EC50 from 9.85 to 8.30 DHW     |
+| Decadal 2050 Trajectory (SSP5-8.5) | Collapse to 0.69% Mean Cover (Net dissolution: -1.80 kg CaCO3/m²/yr)     |
+| Decadal 2050 Trajectory (Scenario 4| Synergistic Recovery to 55.20% Mean Cover (+7.46 kg CaCO3/m²/yr)         |
+| Top Priority Restoration Stations  | STN_06 Belize_Atoll_06 & STN_26 Seychelles_Mahe_26 (Eq. 7 SRPI = 0.765)  |
+| FAIR Data & Provenance Audit       | N = 15,000 rows, 36 columns, 30 stations (100.0% Synthetic, SEED = 42)   |
 | Literature Integrity               | 20 Real peer-reviewed Q1 references (2007–2026) with active DOIs        |
-| Automated Master Pipeline          | 13 / 13 Stages execute deterministically in ~104 seconds (SEED = 42)     |
+| Automated Master Pipeline          | 17 / 17 Stages execute deterministically in ~96 seconds (SEED = 42)      |
 | Automated Unit Tests               | 6 / 6 Tests pass in 0.27 seconds with zero external test dependencies    |
 +------------------------------------+--------------------------------------------------------------------------+
 ```

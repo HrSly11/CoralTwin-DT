@@ -21,10 +21,10 @@ Tropical coral reefs are the "rainforests of the sea," protecting coastlines fro
 Until now, marine conservation has mostly been **reactive**: scientists surveyed dead reefs after a heatwave happened, and restoration teams planted nursery corals based on static maps or intuition—often in shallow lagoons where heat accumulated and killed the new corals.
 
 **CoralTwin-DT changes this paradigm through 4 breakthroughs:**
-1. **Predicts Bleaching 6 to 12 Weeks Ahead:** Using artificial intelligence (XGBoost) with $98.85\%$ accuracy, alerting park managers to deploy temporary shade cloths or pause tourism before heat peaks.
-2. **Reveals Hidden Acidification Dangers:** Demonstrates that acidic water ($pH \le 7.85$) lowers the thermal tolerance of corals, dropping the critical heat threshold from $8.5$ to $5.8^\circ\text{C-weeks}$.
-3. **Identifies "Ocean Micro-Refugia":** Combines 10-meter Sentinel-2 satellite water clarity with 5km NOAA heat data to map deep, well-flushed reef zones where corals naturally survive better.
-4. **Calculates the Best Restoration Investment (SRPI):** Provides open maps showing exactly where planting heat-hardened corals inside protected marine reserves will achieve **$46.2\%$ live coral cover by 2050**, compared to just **$4.8\%$** if no action is taken.
+1. **Emulates Bleaching Risk Under Spatial Block CV:** Using gradient-boosted decision trees (XGBoost) with $98.85\%$ classification accuracy (`Macro-F1 = 0.7187`, `R² = 0.9336`) across 30 synthetic benchmark stations.
+2. **Models Carbonate Regime Shifts:** Demonstrates in the synthetic generator that ocean acidification ($\Omega_{\text{arag}} = 2.20$ vs $3.85$) lowers the half-maximal cover-loss threshold ($\text{EC}_{50}$) from $9.85$ to $8.30^\circ\text{C-weeks}$ ($-1.55^\circ\text{C-weeks}$).
+3. **Identifies "Ocean Micro-Refugia":** Evaluates the biophysical Spatial Restoration Priority Index (Eq. 7 SRPI) across 30 stations ($N=15,000$), identifying 10 Tier-1 priority stations ($33.33\%$, $\text{SRPI} \ge 0.70$).
+4. **Simulates Coupled Restoration Trajectories (2025–2050):** RK4 numerical integration ($N=5,000$ Monte Carlo runs from a $33.68\%$ baseline) shows that combining thermally hardened outplants ($+2.0^\circ\text{C-weeks}$) with enforced MPA herbivory ($g=0.68$) sustains **$55.20\%$ mean live coral cover by 2050**, compared to **$0.69\%$** ($98.58\%$ collapse risk $<10\%$) under unmitigated SSP5-8.5 warming.
 
 ---
 
