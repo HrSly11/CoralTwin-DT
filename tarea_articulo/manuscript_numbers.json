@@ -1,0 +1,570 @@
+{
+  "metadata": {
+    "project": "CoralTwin-DT",
+    "audit_status": "Verified End-to-End Reproducible",
+    "seed": 42,
+    "evaluation_seeds": [17, 42, 73, 108, 256],
+    "script_source": "09_Results/build_manuscript_numbers.py",
+    "file_source": "results/manuscript_numbers.json"
+  },
+  "dataset_and_provenance": {
+    "script_source": "03_Data/audit_data_provenance.py",
+    "file_source": "09_Results/audit/data_provenance_summary.json",
+    "row_level_file_source": "09_Results/audit/data_provenance.csv",
+    "n_rows": 15000,
+    "n_columns": 36,
+    "n_stations": 30,
+    "records_per_station": 500,
+    "temporal_coverage": "2015-01-09 to 2024-06-21 (weekly sampling)",
+    "synthetic_percentage": 100.0,
+    "real_observation_percentage": 0.0,
+    "exact_rng_reproduction_verified": true,
+    "unverified_visual_inter_annotator_kappa_claim": {
+      "manuscript_claimed_kappa": 0.81,
+      "empirically_present_in_repo": false,
+      "audit_note": "No independent human visual benthic transect annotations exist in the repository; all 15,000 rows are deterministically generated from seed=42."
+    },
+    "summary": {
+      "audit_timestamp_utc": "2026-10-27T00:00:00Z",
+      "dataset_path": "03_Data/final_dataset.csv",
+      "harmonized_mirror_path": "03_Data/processed_data/coral_environmental_harmonized.csv",
+      "generator_script": "03_Data/build_final_dataset.py",
+      "rng_seed": 42,
+      "exact_rng_reproduction_verified": true,
+      "total_records": 15000,
+      "total_stations": 30,
+      "samples_per_station": 500,
+      "legacy_final_dataset_labels": {
+        "Real_Observation_Calibrated": {"count": 4077, "percentage": 27.18},
+        "Digital_Twin_Simulated": {"count": 10923, "percentage": 72.82}
+      },
+      "legacy_harmonized_12500_labels": {
+        "total_records": 12500,
+        "total_stations": 25,
+        "Real_Observation": {"count": 6120, "percentage": 48.96},
+        "Digital_Twin_Simulated": {"count": 6380, "percentage": 51.04}
+      },
+      "readme_41_2_pct_discrepancy_explanation": {"claimed_real_pct_in_legacy_readme": 41.2, "claimed_simulated_pct_in_legacy_readme": 58.8, "unconditioned_mean_real_ratio_25_stations": 0.406, "unconditioned_mean_real_ratio_25_stations_pct": 40.6, "unconditioned_mean_real_ratio_30_stations": 0.3967, "unconditioned_mean_real_ratio_30_stations_pct": 39.67, "temporal_gate_fraction_2015_2021": 0.7, "expected_gated_pct_30_stations": 27.77, "actual_legacy_final_dataset_real_pct": 27.18, "explanation": "The unconditioned mean of `real_ratio` across the 25 active stations is 0.4060 (40.60%) and across all 30 stations is 0.3967 (39.67%), whereas the legacy README claimed 41.2% real / 58.8% simulated. In `build_final_dataset.py`, the stochastic draw was gated by `year <= 2021` (7 of 10 years = 70% of timestamps) across 30 stations, yielding 27.77% expected and 4,077 / 15,000 = 27.18% actual rows labeled `Real_Observation_Calibrated` (while `coral_environmental_harmonized.csv` had 6,120 / 12,500 = 48.96% labeled `Real_Observation`). In truth, 0 rows (0.0%) come from external empirical datasets."},
+      "verified_provenance": {
+        "External_Empirical_Real": {"count": 0, "percentage": 0.0},
+        "Digital_Twin_Simulated": {"count": 15000, "percentage": 100.0}
+      },
+      "target_class_distributions": {
+        "Bleaching_Risk_3class": {
+          "Low": {"count": 14097, "percentage": 93.98},
+          "High": {"count": 717, "percentage": 4.78},
+          "Medium": {"count": 186, "percentage": 1.24}
+        },
+        "Bleaching_Alert_Level_5class": {
+          "No_Stress": {"count": 10508, "percentage": 70.05},
+          "Watch": {"count": 3375, "percentage": 22.5},
+          "Alert_Level_2": {"count": 717, "percentage": 4.78},
+          "Warning": {"count": 379, "percentage": 2.53},
+          "Alert_Level_1": {"count": 21, "percentage": 0.14}
+        }
+      }
+    }
+  },
+  "spatial_cross_validation": {
+    "script_source": "05_Methodology/spatial_cv.py",
+    "file_source": "results/folds_assignment.csv",
+    "diagram_file_source": "results/spatial_folds_diagram.png",
+    "n_folds": 5,
+    "stations_per_fold": 6,
+    "samples_per_fold": 3000,
+    "buffer_threshold_km": 25.0,
+    "nearest_neighbor_overall_min_km": 3.95,
+    "stations_with_neighbor_below_25km": 12,
+    "min_inter_fold_station_distance_km": 119.72,
+    "min_inter_fold_sample_distance_km": 115.33,
+    "buffer_violations_below_25km": 0,
+    "folds_summary": [
+      {
+        "Fold_ID": 1,
+        "N_Stations": 6,
+        "N_Observations": 3000,
+        "N_Grid_Cells": 480,
+        "Stations": ["Mesoamerican_Fore_01", "Mesoamerican_Crest_02", "Mesoamerican_Back_03", "Mesoamerican_Lagoon_04", "GreatBarrier_Northern_13", "RedSea_Aqaba_23"],
+        "Regions": ["Caribbean", "Indo-Pacific", "Red Sea"],
+        "Min_Train_Test_Station_Dist_km": 119.72,
+        "Buffer_25km_Compliant": true,
+        "Bleaching_Risk_Counts": {"Low": 2838, "Medium": 32, "High": 130},
+        "Mean_Coral_Cover_Loss_Pct": 8.85
+      },
+      {
+        "Fold_ID": 2,
+        "N_Stations": 6,
+        "N_Observations": 3000,
+        "N_Grid_Cells": 480,
+        "Stations": ["Cozumel_South_07", "Cozumel_Shallow_08", "GreatBarrier_Central_14", "GreatBarrier_Lagoon_15", "RedSea_Shallow_24", "Seychelles_Mahe_26"],
+        "Regions": ["Caribbean", "Indian Ocean", "Indo-Pacific", "Red Sea"],
+        "Min_Train_Test_Station_Dist_km": 234.86,
+        "Buffer_25km_Compliant": true,
+        "Bleaching_Risk_Counts": {"Low": 2816, "Medium": 34, "High": 150},
+        "Mean_Coral_Cover_Loss_Pct": 9.07
+      },
+      {
+        "Fold_ID": 3,
+        "N_Stations": 6,
+        "N_Observations": 3000,
+        "N_Grid_Cells": 480,
+        "Stations": ["Roatan_North_09", "Roatan_South_10", "CoralTriangle_RajaAmpat_16", "CoralTriangle_Misool_17", "RedSea_Farasan_25", "Maldives_AriAtoll_27"],
+        "Regions": ["Caribbean", "Indian Ocean", "Indo-Pacific", "Red Sea"],
+        "Min_Train_Test_Station_Dist_km": 144.25,
+        "Buffer_25km_Compliant": true,
+        "Bleaching_Risk_Counts": {"Low": 2798, "Medium": 37, "High": 165},
+        "Mean_Coral_Cover_Loss_Pct": 9.47
+      },
+      {
+        "Fold_ID": 4,
+        "N_Stations": 6,
+        "N_Observations": 3000,
+        "N_Grid_Cells": 480,
+        "Stations": ["Belize_Barrier_05", "Belize_Atoll_06", "CoralTriangle_Komodo_18", "CoralTriangle_Sulawesi_19", "Hawaii_Kaneohe_28", "Hawaii_OahuFore_29"],
+        "Regions": ["Caribbean", "Indo-Pacific", "Pacific"],
+        "Min_Train_Test_Station_Dist_km": 119.72,
+        "Buffer_25km_Compliant": true,
+        "Bleaching_Risk_Counts": {"Low": 2818, "Medium": 40, "High": 142},
+        "Mean_Coral_Cover_Loss_Pct": 9.1
+      },
+      {
+        "Fold_ID": 5,
+        "N_Stations": 6,
+        "N_Observations": 3000,
+        "N_Grid_Cells": 480,
+        "Stations": ["Florida_Keys_Uppers_11", "Florida_Keys_Lowers_12", "CoralTriangle_Bali_20", "Okinawa_Kerama_21", "Okinawa_Ishigaki_22", "Palau_RockIslands_30"],
+        "Regions": ["Caribbean", "Indo-Pacific", "Pacific"],
+        "Min_Train_Test_Station_Dist_km": 432.36,
+        "Buffer_25km_Compliant": true,
+        "Bleaching_Risk_Counts": {"Low": 2827, "Medium": 43, "High": 130},
+        "Mean_Coral_Cover_Loss_Pct": 8.81
+      }
+    ]
+  },
+  "machine_learning_benchmark": {
+    "script_source": "06_AI_and_Modeling/machine_learning/train_models.py",
+    "file_source": "results/model_benchmark_summary.csv",
+    "seed_variance_file_source": "results/seed_variance.csv",
+    "canonical_regime": "Regime_1_Clean_Emulation_10",
+    "clean_10_features": ["SST_degC", "SST_Anomaly_degC", "DHW_degC_weeks", "pH_total", "Aragonite_Saturation_Omega", "Turbidity_NTU", "PAR_umol_m2_s", "Salinity_PSU", "Dissolved_Oxygen_mg_L", "Depth_m"],
+    "models": {
+      "XGBoost": {"Classification_Accuracy": 0.9885, "Accuracy_Fold_SD": 0.0015, "Accuracy_Seed_SD": 0.0001, "Accuracy_CI95": "[0.9867, 0.9901]", "Balanced_Accuracy": 0.6962, "Macro_Precision": 0.9321, "Macro_Recall": 0.6962, "Macro_F1_Score": 0.7187, "Macro_F1_Fold_SD": 0.0237, "Macro_F1_Seed_SD": 0.0034, "Macro_F1_CI95": "[0.6966, 0.7423]", "Weighted_F1_Score": 0.9839, "Macro_PR_AUC": 0.7132, "Regression_R2": 0.9336, "R2_Fold_SD": 0.0058, "R2_Seed_SD": 0.0003, "R2_CI95": "[0.9292, 0.9374]", "Regression_RMSE": 4.044, "RMSE_Fold_SD": 0.067, "RMSE_Seed_SD": 0.01, "RMSE_CI95": "[3.996, 4.091]", "Regression_MAE": 3.293, "MAE_Fold_SD": 0.047, "Multiclass_Brier_Score": 0.0228, "ECE_10Bins": 0.0077, "Latency_Batch1_ms": 0.3218, "Latency_Batch256_ms": 0.0064, "Model_Size_MB": 2.833, "script_source": "06_AI_and_Modeling/machine_learning/train_models.py", "file_source": "results/model_benchmark_summary.csv", "cohen_kappa_3class_pooled_oof": 0.8892, "cohen_kappa_3class_fold_mean": 0.8882, "cohen_kappa_3class_fold_sd": 0.0192, "cohen_kappa_5class_with_dhw_tautological": 0.9959, "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8989, "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.898, "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0368},
+      "Random_Forest": {"Classification_Accuracy": 0.9888, "Accuracy_Fold_SD": 0.0016, "Accuracy_Seed_SD": 0.0, "Accuracy_CI95": "[0.9871, 0.9904]", "Balanced_Accuracy": 0.7016, "Macro_Precision": 0.9658, "Macro_Recall": 0.7016, "Macro_F1_Score": 0.7284, "Macro_F1_Fold_SD": 0.0217, "Macro_F1_Seed_SD": 0.0003, "Macro_F1_CI95": "[0.7045, 0.7521]", "Weighted_F1_Score": 0.9844, "Macro_PR_AUC": 0.7221, "Regression_R2": 0.9375, "R2_Fold_SD": 0.0064, "R2_Seed_SD": 0.0, "R2_CI95": "[0.9335, 0.9412]", "Regression_RMSE": 3.924, "RMSE_Fold_SD": 0.068, "RMSE_Seed_SD": 0.001, "RMSE_CI95": "[3.884, 3.964]", "Regression_MAE": 3.215, "MAE_Fold_SD": 0.052, "Multiclass_Brier_Score": 0.0223, "ECE_10Bins": 0.0038, "Latency_Batch1_ms": 17.8013, "Latency_Batch256_ms": 0.0798, "Model_Size_MB": 21.09, "script_source": "06_AI_and_Modeling/machine_learning/train_models.py", "file_source": "results/model_benchmark_summary.csv", "cohen_kappa_3class_pooled_oof": 0.8924, "cohen_kappa_3class_fold_mean": 0.8916, "cohen_kappa_3class_fold_sd": 0.0192, "cohen_kappa_5class_with_dhw_tautological": 0.9956, "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8979, "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8976, "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0274},
+      "Deep_MLP": {"Classification_Accuracy": 0.9879, "Accuracy_Fold_SD": 0.0017, "Accuracy_Seed_SD": 0.0001, "Accuracy_CI95": "[0.9862, 0.9896]", "Balanced_Accuracy": 0.6756, "Macro_Precision": 0.9931, "Macro_Recall": 0.6756, "Macro_F1_Score": 0.6807, "Macro_F1_Fold_SD": 0.0257, "Macro_F1_Seed_SD": 0.0051, "Macro_F1_CI95": "[0.6681, 0.6968]", "Weighted_F1_Score": 0.9823, "Macro_PR_AUC": 0.725, "Regression_R2": 0.9337, "R2_Fold_SD": 0.0067, "R2_Seed_SD": 0.0003, "R2_CI95": "[0.9292, 0.9375]", "Regression_RMSE": 4.041, "RMSE_Fold_SD": 0.078, "RMSE_Seed_SD": 0.01, "RMSE_CI95": "[3.997, 4.086]", "Regression_MAE": 3.278, "MAE_Fold_SD": 0.054, "Multiclass_Brier_Score": 0.0225, "ECE_10Bins": 0.0014, "Latency_Batch1_ms": 0.1967, "Latency_Batch256_ms": 0.0015, "Model_Size_MB": 0.112, "script_source": "06_AI_and_Modeling/machine_learning/train_models.py", "file_source": "results/model_benchmark_summary.csv", "cohen_kappa_3class_pooled_oof": 0.8834, "cohen_kappa_3class_fold_mean": 0.8826, "cohen_kappa_3class_fold_sd": 0.021, "cohen_kappa_5class_with_dhw_tautological": 0.9032, "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8535, "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8533, "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0162},
+      "Stacked_LSTM": {"Classification_Accuracy": 0.9881, "Accuracy_Fold_SD": 0.0015, "Accuracy_Seed_SD": 0.0001, "Accuracy_CI95": "[0.9864, 0.9898]", "Balanced_Accuracy": 0.6823, "Macro_Precision": 0.9954, "Macro_Recall": 0.6823, "Macro_F1_Score": 0.6949, "Macro_F1_Fold_SD": 0.025, "Macro_F1_Seed_SD": 0.0033, "Macro_F1_CI95": "[0.6775, 0.7157]", "Weighted_F1_Score": 0.9828, "Macro_PR_AUC": 0.7202, "Regression_R2": 0.9371, "R2_Fold_SD": 0.006, "R2_Seed_SD": 0.0002, "R2_CI95": "[0.9331, 0.9408]", "Regression_RMSE": 3.934, "RMSE_Fold_SD": 0.073, "RMSE_Seed_SD": 0.006, "RMSE_CI95": "[3.893, 3.977]", "Regression_MAE": 3.219, "MAE_Fold_SD": 0.053, "Multiclass_Brier_Score": 0.0224, "ECE_10Bins": 0.0009, "Latency_Batch1_ms": 0.4135, "Latency_Batch256_ms": 0.0131, "Model_Size_MB": 0.262, "script_source": "06_AI_and_Modeling/machine_learning/train_models.py", "file_source": "results/model_benchmark_summary.csv", "cohen_kappa_3class_pooled_oof": 0.8852, "cohen_kappa_3class_fold_mean": 0.8844, "cohen_kappa_3class_fold_sd": 0.019, "cohen_kappa_5class_with_dhw_tautological": 0.9276, "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8738, "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8739, "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0147}
+    },
+    "cohen_kappa_oof": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
+      "file_source": "results/oof_predictions_by_fold.csv",
+      "note": "Empirical out-of-fold classifier Cohen's kappa across 30-station spatial CV (distinct from the unverified 0.81 inter-annotator visual transect claim).",
+      "by_model": {
+        "XGBoost": {"cohen_kappa_3class_pooled_oof": 0.8892, "cohen_kappa_3class_fold_mean": 0.8882, "cohen_kappa_3class_fold_sd": 0.0192, "cohen_kappa_5class_with_dhw_tautological": 0.9959, "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8989, "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.898, "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0368},
+        "Random_Forest": {"cohen_kappa_3class_pooled_oof": 0.8924, "cohen_kappa_3class_fold_mean": 0.8916, "cohen_kappa_3class_fold_sd": 0.0192, "cohen_kappa_5class_with_dhw_tautological": 0.9956, "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8979, "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8976, "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0274},
+        "Deep_MLP": {"cohen_kappa_3class_pooled_oof": 0.8834, "cohen_kappa_3class_fold_mean": 0.8826, "cohen_kappa_3class_fold_sd": 0.021, "cohen_kappa_5class_with_dhw_tautological": 0.9032, "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8535, "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8533, "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0162},
+        "Stacked_LSTM": {"cohen_kappa_3class_pooled_oof": 0.8852, "cohen_kappa_3class_fold_mean": 0.8844, "cohen_kappa_3class_fold_sd": 0.019, "cohen_kappa_5class_with_dhw_tautological": 0.9276, "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8738, "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8739, "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0147}
+      }
+    },
+    "leakage_ablation": {
+      "script_source": "06_AI_and_Modeling/machine_learning/train_models.py",
+      "file_source": "results/leakage_ablation_metrics.csv",
+      "oof_file_source": "results/oof_predictions_by_fold.csv",
+      "regimes": [
+        {"Regime": "Regime_0_Leaked_16", "N_Features": 16, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;HotSpot_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;Kd_490_m_inv;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct;Macroalgae_Cover_Pct;Shannon_Diversity_H", "Model": "XGBoost", "Seed": 42, "Accuracy": 0.9883, "Accuracy_Fold_SD": 0.0021, "Balanced_Accuracy": 0.7076, "Macro_F1": 0.7335, "Macro_F1_Fold_SD": 0.0263, "R2": 0.9994, "R2_Fold_SD": 0.0001, "RMSE": 0.3953, "RMSE_Fold_SD": 0.0405, "MAE": 0.2973},
+        {"Regime": "Regime_0_Leaked_16", "N_Features": 16, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;HotSpot_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;Kd_490_m_inv;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct;Macroalgae_Cover_Pct;Shannon_Diversity_H", "Model": "Random_Forest", "Seed": 42, "Accuracy": 0.989, "Accuracy_Fold_SD": 0.0018, "Balanced_Accuracy": 0.7043, "Macro_F1": 0.7324, "Macro_F1_Fold_SD": 0.024, "R2": 0.9995, "R2_Fold_SD": 0.0001, "RMSE": 0.3341, "RMSE_Fold_SD": 0.0305, "MAE": 0.2617},
+        {"Regime": "Regime_0_Leaked_16", "N_Features": 16, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;HotSpot_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;Kd_490_m_inv;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct;Macroalgae_Cover_Pct;Shannon_Diversity_H", "Model": "Deep_MLP", "Seed": 42, "Accuracy": 0.9879, "Accuracy_Fold_SD": 0.0013, "Balanced_Accuracy": 0.6756, "Macro_F1": 0.6813, "Macro_F1_Fold_SD": 0.0111, "R2": 0.9973, "R2_Fold_SD": 0.0003, "RMSE": 0.8138, "RMSE_Fold_SD": 0.0558, "MAE": 0.6364},
+        {"Regime": "Regime_0_Leaked_16", "N_Features": 16, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;HotSpot_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;Kd_490_m_inv;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct;Macroalgae_Cover_Pct;Shannon_Diversity_H", "Model": "Stacked_LSTM", "Seed": 42, "Accuracy": 0.9884, "Accuracy_Fold_SD": 0.0018, "Balanced_Accuracy": 0.6882, "Macro_F1": 0.7039, "Macro_F1_Fold_SD": 0.0338, "R2": 0.9969, "R2_Fold_SD": 0.0002, "RMSE": 0.8738, "RMSE_Fold_SD": 0.0167, "MAE": 0.484},
+        {"Regime": "Regime_0b_Legacy_Leaked_10", "N_Features": 10, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct", "Model": "XGBoost", "Seed": 42, "Accuracy": 0.9881, "Accuracy_Fold_SD": 0.0013, "Balanced_Accuracy": 0.6978, "Macro_F1": 0.7197, "Macro_F1_Fold_SD": 0.022, "R2": 0.8305, "R2_Fold_SD": 0.0408, "RMSE": 6.4597, "RMSE_Fold_SD": 0.8072, "MAE": 5.4279},
+        {"Regime": "Regime_0b_Legacy_Leaked_10", "N_Features": 10, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct", "Model": "Random_Forest", "Seed": 42, "Accuracy": 0.9889, "Accuracy_Fold_SD": 0.0017, "Balanced_Accuracy": 0.7034, "Macro_F1": 0.7312, "Macro_F1_Fold_SD": 0.0218, "R2": 0.9202, "R2_Fold_SD": 0.0141, "RMSE": 4.4319, "RMSE_Fold_SD": 0.3095, "MAE": 3.6336},
+        {"Regime": "Regime_0b_Legacy_Leaked_10", "N_Features": 10, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct", "Model": "Deep_MLP", "Seed": 42, "Accuracy": 0.9879, "Accuracy_Fold_SD": 0.0016, "Balanced_Accuracy": 0.6738, "Macro_F1": 0.677, "Macro_F1_Fold_SD": 0.0205, "R2": 0.9287, "R2_Fold_SD": 0.0089, "RMSE": 4.19, "RMSE_Fold_SD": 0.2137, "MAE": 3.3859},
+        {"Regime": "Regime_0b_Legacy_Leaked_10", "N_Features": 10, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct", "Model": "Stacked_LSTM", "Seed": 42, "Accuracy": 0.9881, "Accuracy_Fold_SD": 0.0015, "Balanced_Accuracy": 0.6792, "Macro_F1": 0.6879, "Macro_F1_Fold_SD": 0.0172, "R2": 0.9554, "R2_Fold_SD": 0.0138, "RMSE": 3.313, "RMSE_Fold_SD": 0.5057, "MAE": 2.6276},
+        {"Regime": "Regime_1_Clean_Emulation_10", "N_Features": 10, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s", "Model": "XGBoost", "Seed": 42, "Accuracy": 0.9885, "Accuracy_Fold_SD": 0.0015, "Balanced_Accuracy": 0.6962, "Macro_F1": 0.7187, "Macro_F1_Fold_SD": 0.0237, "R2": 0.9336, "R2_Fold_SD": 0.0058, "RMSE": 4.0443, "RMSE_Fold_SD": 0.067, "MAE": 3.2927},
+        {"Regime": "Regime_1_Clean_Emulation_10", "N_Features": 10, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s", "Model": "Random_Forest", "Seed": 42, "Accuracy": 0.9888, "Accuracy_Fold_SD": 0.0016, "Balanced_Accuracy": 0.7016, "Macro_F1": 0.7284, "Macro_F1_Fold_SD": 0.0217, "R2": 0.9375, "R2_Fold_SD": 0.0064, "RMSE": 3.9236, "RMSE_Fold_SD": 0.0683, "MAE": 3.2149},
+        {"Regime": "Regime_1_Clean_Emulation_10", "N_Features": 10, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s", "Model": "Deep_MLP", "Seed": 42, "Accuracy": 0.9879, "Accuracy_Fold_SD": 0.0017, "Balanced_Accuracy": 0.6756, "Macro_F1": 0.6807, "Macro_F1_Fold_SD": 0.0257, "R2": 0.9337, "R2_Fold_SD": 0.0067, "RMSE": 4.0414, "RMSE_Fold_SD": 0.0781, "MAE": 3.2784},
+        {"Regime": "Regime_1_Clean_Emulation_10", "N_Features": 10, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s", "Model": "Stacked_LSTM", "Seed": 42, "Accuracy": 0.9881, "Accuracy_Fold_SD": 0.0015, "Balanced_Accuracy": 0.6823, "Macro_F1": 0.6949, "Macro_F1_Fold_SD": 0.025, "R2": 0.9371, "R2_Fold_SD": 0.006, "RMSE": 3.9339, "RMSE_Fold_SD": 0.073, "MAE": 3.2187},
+        {"Regime": "Regime_2_Ablated_No_Direct_Inputs_6", "N_Features": 6, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L", "Model": "XGBoost", "Seed": 42, "Accuracy": 0.9829, "Accuracy_Fold_SD": 0.0046, "Balanced_Accuracy": 0.6624, "Macro_F1": 0.6925, "Macro_F1_Fold_SD": 0.0259, "R2": 0.8487, "R2_Fold_SD": 0.0514, "RMSE": 6.1037, "RMSE_Fold_SD": 0.9235, "MAE": 3.8944},
+        {"Regime": "Regime_2_Ablated_No_Direct_Inputs_6", "N_Features": 6, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L", "Model": "Random_Forest", "Seed": 42, "Accuracy": 0.9817, "Accuracy_Fold_SD": 0.0039, "Balanced_Accuracy": 0.6567, "Macro_F1": 0.6929, "Macro_F1_Fold_SD": 0.0192, "R2": 0.8625, "R2_Fold_SD": 0.0537, "RMSE": 5.8179, "RMSE_Fold_SD": 1.0211, "MAE": 3.6861},
+        {"Regime": "Regime_2_Ablated_No_Direct_Inputs_6", "N_Features": 6, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L", "Model": "Deep_MLP", "Seed": 42, "Accuracy": 0.9781, "Accuracy_Fold_SD": 0.004, "Balanced_Accuracy": 0.6333, "Macro_F1": 0.6297, "Macro_F1_Fold_SD": 0.0128, "R2": 0.7653, "R2_Fold_SD": 0.0404, "RMSE": 7.6013, "RMSE_Fold_SD": 0.643, "MAE": 4.5708},
+        {"Regime": "Regime_2_Ablated_No_Direct_Inputs_6", "N_Features": 6, "Features_List": "Depth_m;SST_degC;SST_Anomaly_degC;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L", "Model": "Stacked_LSTM", "Seed": 42, "Accuracy": 0.9791, "Accuracy_Fold_SD": 0.0036, "Balanced_Accuracy": 0.6319, "Macro_F1": 0.6331, "Macro_F1_Fold_SD": 0.0095, "R2": 0.7884, "R2_Fold_SD": 0.0172, "RMSE": 7.2177, "RMSE_Fold_SD": 0.1149, "MAE": 4.1438},
+        {"Regime": "Regime_3_Ablated_Strict_No_Proxies_2", "N_Features": 2, "Features_List": "Depth_m;Salinity_PSU", "Model": "XGBoost", "Seed": 42, "Accuracy": 0.9398, "Accuracy_Fold_SD": 0.0049, "Balanced_Accuracy": 0.3333, "Macro_F1": 0.323, "Macro_F1_Fold_SD": 0.0009, "R2": -0.0269, "R2_Fold_SD": 0.0071, "RMSE": 15.9007, "RMSE_Fold_SD": 0.6571, "MAE": 7.8437},
+        {"Regime": "Regime_3_Ablated_Strict_No_Proxies_2", "N_Features": 2, "Features_List": "Depth_m;Salinity_PSU", "Model": "Random_Forest", "Seed": 42, "Accuracy": 0.9398, "Accuracy_Fold_SD": 0.0049, "Balanced_Accuracy": 0.3333, "Macro_F1": 0.323, "Macro_F1_Fold_SD": 0.0009, "R2": -0.0464, "R2_Fold_SD": 0.0633, "RMSE": 16.0503, "RMSE_Fold_SD": 0.8532, "MAE": 8.124},
+        {"Regime": "Regime_3_Ablated_Strict_No_Proxies_2", "N_Features": 2, "Features_List": "Depth_m;Salinity_PSU", "Model": "Deep_MLP", "Seed": 42, "Accuracy": 0.9398, "Accuracy_Fold_SD": 0.0049, "Balanced_Accuracy": 0.3333, "Macro_F1": 0.323, "Macro_F1_Fold_SD": 0.0009, "R2": -0.0052, "R2_Fold_SD": 0.007, "RMSE": 15.7316, "RMSE_Fold_SD": 0.7096, "MAE": 7.3107},
+        {"Regime": "Regime_3_Ablated_Strict_No_Proxies_2", "N_Features": 2, "Features_List": "Depth_m;Salinity_PSU", "Model": "Stacked_LSTM", "Seed": 42, "Accuracy": 0.9398, "Accuracy_Fold_SD": 0.0049, "Balanced_Accuracy": 0.3333, "Macro_F1": 0.323, "Macro_F1_Fold_SD": 0.0009, "R2": -0.0002, "R2_Fold_SD": 0.0007, "RMSE": 15.6927, "RMSE_Fold_SD": 0.6757, "MAE": 7.4506}
+      ]
+    },
+    "per_class_3class": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
+      "file_source": "results/per_class_report.csv",
+      "metrics": [
+        {"Model": "XGBoost", "Class_Name": "Low", "Support": 14097, "Precision": 0.9882, "Precision_Fold_SD": 0.0018, "Recall": 0.9999, "Recall_Fold_SD": 0.0002, "F1_Score": 0.994, "F1_Fold_SD": 0.0009, "F1_Boot_CI95_Low": 0.9931, "F1_Boot_CI95_High": 0.9949, "PR_AUC": 0.9969, "PR_AUC_Fold_SD": 0.0006},
+        {"Model": "XGBoost", "Class_Name": "Medium", "Support": 186, "Precision": 0.8095, "Precision_Fold_SD": 0.175, "Recall": 0.0914, "Recall_Fold_SD": 0.0448, "F1_Score": 0.1643, "F1_Fold_SD": 0.0716, "F1_Boot_CI95_Low": 0.0984, "F1_Boot_CI95_High": 0.238, "PR_AUC": 0.1426, "PR_AUC_Fold_SD": 0.0304},
+        {"Model": "XGBoost", "Class_Name": "High", "Support": 717, "Precision": 0.9986, "Precision_Fold_SD": 0.0034, "Recall": 0.9972, "Recall_Fold_SD": 0.006, "F1_Score": 0.9979, "F1_Fold_SD": 0.0031, "F1_Boot_CI95_Low": 0.9954, "F1_Boot_CI95_High": 1.0, "PR_AUC": 1.0, "PR_AUC_Fold_SD": 0.0001},
+        {"Model": "XGBoost", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.9321, "Precision_Fold_SD": null, "Recall": 0.6962, "Recall_Fold_SD": 0.6962, "F1_Score": 0.7187, "F1_Fold_SD": 0.0237, "F1_Boot_CI95_Low": 0.6966, "F1_Boot_CI95_High": 0.7423, "PR_AUC": 0.7132, "PR_AUC_Fold_SD": null},
+        {"Model": "Random_Forest", "Class_Name": "Low", "Support": 14097, "Precision": 0.9884, "Precision_Fold_SD": 0.0018, "Recall": 1.0, "Recall_Fold_SD": 0.0, "F1_Score": 0.9941, "F1_Fold_SD": 0.0009, "F1_Boot_CI95_Low": 0.9933, "F1_Boot_CI95_High": 0.9951, "PR_AUC": 0.9969, "PR_AUC_Fold_SD": 0.0006},
+        {"Model": "Random_Forest", "Class_Name": "Medium", "Support": 186, "Precision": 0.9091, "Precision_Fold_SD": 0.1118, "Recall": 0.1075, "Recall_Fold_SD": 0.0452, "F1_Score": 0.1923, "F1_Fold_SD": 0.0668, "F1_Boot_CI95_Low": 0.1205, "F1_Boot_CI95_High": 0.2692, "PR_AUC": 0.1692, "PR_AUC_Fold_SD": 0.0338},
+        {"Model": "Random_Forest", "Class_Name": "High", "Support": 717, "Precision": 1.0, "Precision_Fold_SD": 0.0, "Recall": 0.9972, "Recall_Fold_SD": 0.006, "F1_Score": 0.9986, "F1_Fold_SD": 0.003, "F1_Boot_CI95_Low": 0.9965, "F1_Boot_CI95_High": 1.0, "PR_AUC": 1.0, "PR_AUC_Fold_SD": 0.0},
+        {"Model": "Random_Forest", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.9658, "Precision_Fold_SD": null, "Recall": 0.7016, "Recall_Fold_SD": 0.7016, "F1_Score": 0.7284, "F1_Fold_SD": 0.0217, "F1_Boot_CI95_Low": 0.7045, "F1_Boot_CI95_High": 0.7521, "PR_AUC": 0.7221, "PR_AUC_Fold_SD": null},
+        {"Model": "Deep_MLP", "Class_Name": "Low", "Support": 14097, "Precision": 0.9877, "Precision_Fold_SD": 0.0022, "Recall": 1.0, "Recall_Fold_SD": 0.0, "F1_Score": 0.9938, "F1_Fold_SD": 0.0011, "F1_Boot_CI95_Low": 0.993, "F1_Boot_CI95_High": 0.9947, "PR_AUC": 0.9966, "PR_AUC_Fold_SD": 0.0011},
+        {"Model": "Deep_MLP", "Class_Name": "Medium", "Support": 186, "Precision": 1.0, "Precision_Fold_SD": 0.5477, "Recall": 0.0269, "Recall_Fold_SD": 0.0399, "F1_Score": 0.0524, "F1_Fold_SD": 0.0742, "F1_Boot_CI95_Low": 0.0198, "F1_Boot_CI95_High": 0.1008, "PR_AUC": 0.1783, "PR_AUC_Fold_SD": 0.0484},
+        {"Model": "Deep_MLP", "Class_Name": "High", "Support": 717, "Precision": 0.9917, "Precision_Fold_SD": 0.014, "Recall": 1.0, "Recall_Fold_SD": 0.0, "F1_Score": 0.9958, "F1_Fold_SD": 0.0071, "F1_Boot_CI95_Low": 0.9922, "F1_Boot_CI95_High": 0.9987, "PR_AUC": 1.0, "PR_AUC_Fold_SD": 0.0},
+        {"Model": "Deep_MLP", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.9931, "Precision_Fold_SD": null, "Recall": 0.6756, "Recall_Fold_SD": 0.6756, "F1_Score": 0.6807, "F1_Fold_SD": 0.0257, "F1_Boot_CI95_Low": 0.6681, "F1_Boot_CI95_High": 0.6968, "PR_AUC": 0.725, "PR_AUC_Fold_SD": null},
+        {"Model": "Stacked_LSTM", "Class_Name": "Low", "Support": 14097, "Precision": 0.9876, "Precision_Fold_SD": 0.0017, "Recall": 1.0, "Recall_Fold_SD": 0.0, "F1_Score": 0.9938, "F1_Fold_SD": 0.0009, "F1_Boot_CI95_Low": 0.9929, "F1_Boot_CI95_High": 0.9947, "PR_AUC": 0.9971, "PR_AUC_Fold_SD": 0.0007},
+        {"Model": "Stacked_LSTM", "Class_Name": "Medium", "Support": 186, "Precision": 1.0, "Precision_Fold_SD": 0.4472, "Recall": 0.0484, "Recall_Fold_SD": 0.0411, "F1_Score": 0.0923, "F1_Fold_SD": 0.074, "F1_Boot_CI95_Low": 0.0412, "F1_Boot_CI95_High": 0.1535, "PR_AUC": 0.1636, "PR_AUC_Fold_SD": 0.0337},
+        {"Model": "Stacked_LSTM", "Class_Name": "High", "Support": 717, "Precision": 0.9986, "Precision_Fold_SD": 0.0034, "Recall": 0.9986, "Recall_Fold_SD": 0.003, "F1_Score": 0.9986, "F1_Fold_SD": 0.002, "F1_Boot_CI95_Low": 0.9965, "F1_Boot_CI95_High": 1.0, "PR_AUC": 1.0, "PR_AUC_Fold_SD": 0.0},
+        {"Model": "Stacked_LSTM", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.9954, "Precision_Fold_SD": null, "Recall": 0.6823, "Recall_Fold_SD": 0.6823, "F1_Score": 0.6949, "F1_Fold_SD": 0.025, "F1_Boot_CI95_Low": 0.6775, "F1_Boot_CI95_High": 0.7157, "PR_AUC": 0.7202, "PR_AUC_Fold_SD": null}
+      ]
+    },
+    "per_class_5class": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
+      "file_source": "results/per_class_report_5class.csv",
+      "metrics": [
+        {"Feature_Config": "Clean_10_With_DHW", "Model": "XGBoost", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.9765, "Recall": 0.9676, "F1_Score": 0.972, "PR_AUC": 0.9981},
+        {"Feature_Config": "Clean_10_With_DHW", "Model": "Random_Forest", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.9735, "Recall": 0.9481, "F1_Score": 0.9598, "PR_AUC": 0.998},
+        {"Feature_Config": "Clean_10_With_DHW", "Model": "Deep_MLP", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.751, "Recall": 0.7038, "F1_Score": 0.7216, "PR_AUC": 0.9559},
+        {"Feature_Config": "Clean_10_With_DHW", "Model": "Stacked_LSTM", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.9516, "Recall": 0.8026, "F1_Score": 0.8476, "PR_AUC": 0.9671},
+        {"Feature_Config": "Clean_9_No_DHW", "Model": "XGBoost", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.8317, "Recall": 0.7737, "F1_Score": 0.7974, "PR_AUC": 0.9545},
+        {"Feature_Config": "Clean_9_No_DHW", "Model": "Random_Forest", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.8467, "Recall": 0.7607, "F1_Score": 0.7816, "PR_AUC": 0.9543},
+        {"Feature_Config": "Clean_9_No_DHW", "Model": "Deep_MLP", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.6131, "Recall": 0.5803, "F1_Score": 0.5608, "PR_AUC": 0.9329},
+        {"Feature_Config": "Clean_9_No_DHW", "Model": "Stacked_LSTM", "Class_Name": "OVERALL_MACRO_SUMMARY", "Support": 15000, "Precision": 0.646, "Recall": 0.6138, "F1_Score": 0.6189, "PR_AUC": 0.9426}
+      ]
+    },
+    "statistical_tests": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
+      "file_source": "results/statistical_tests.csv",
+      "bonferroni_alpha": 0.008333,
+      "comparisons": [
+        {"Comparison_Pair": "XGBoost vs Random_Forest", "Model_A": "XGBoost", "Model_B": "Random_Forest", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "Macro_F1", "Mean_Model_A": 0.72282, "Mean_Model_B": 0.72875, "Mean_Difference_A_minus_B": -0.00594, "Wilcoxon_W": 50.5, "p_value_two_sided": 0.002368283, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": -0.7053},
+        {"Comparison_Pair": "XGBoost vs Random_Forest", "Model_A": "XGBoost", "Model_B": "Random_Forest", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "RMSE", "Mean_Model_A": 4.03244, "Mean_Model_B": 3.92177, "Mean_Difference_A_minus_B": 0.11067, "Wilcoxon_W": 0.0, "p_value_two_sided": 5.960464e-08, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 3.0467},
+        {"Comparison_Pair": "XGBoost vs Random_Forest", "Model_A": "XGBoost", "Model_B": "Random_Forest", "Evaluation_Unit": "15000_Samples_OOF", "N_Paired_Units": 15000, "Metric": "Sample_Absolute_Error", "Mean_Model_A": 3.29265, "Mean_Model_B": 3.21487, "Mean_Difference_A_minus_B": 0.07778, "Wilcoxon_W": 52188815.0, "p_value_two_sided": 1.794849e-14, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 0.0862},
+        {"Comparison_Pair": "XGBoost vs Deep_MLP", "Model_A": "XGBoost", "Model_B": "Deep_MLP", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "Macro_F1", "Mean_Model_A": 0.72282, "Mean_Model_B": 0.67858, "Mean_Difference_A_minus_B": 0.04424, "Wilcoxon_W": 4.5, "p_value_two_sided": 2.08015e-05, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 1.6018},
+        {"Comparison_Pair": "XGBoost vs Deep_MLP", "Model_A": "XGBoost", "Model_B": "Deep_MLP", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "RMSE", "Mean_Model_A": 4.03244, "Mean_Model_B": 4.03017, "Mean_Difference_A_minus_B": 0.00227, "Wilcoxon_W": 149.0, "p_value_two_sided": 0.7309892, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": false, "Cohens_d": 0.048},
+        {"Comparison_Pair": "XGBoost vs Deep_MLP", "Model_A": "XGBoost", "Model_B": "Deep_MLP", "Evaluation_Unit": "15000_Samples_OOF", "N_Paired_Units": 15000, "Metric": "Sample_Absolute_Error", "Mean_Model_A": 3.29265, "Mean_Model_B": 3.27845, "Mean_Difference_A_minus_B": 0.0142, "Wilcoxon_W": 55125172.0, "p_value_two_sided": 0.03334034, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": false, "Cohens_d": 0.0108},
+        {"Comparison_Pair": "XGBoost vs Stacked_LSTM", "Model_A": "XGBoost", "Model_B": "Stacked_LSTM", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "Macro_F1", "Mean_Model_A": 0.72282, "Mean_Model_B": 0.6927, "Mean_Difference_A_minus_B": 0.03012, "Wilcoxon_W": 31.0, "p_value_two_sided": 0.0003942909, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 0.9862},
+        {"Comparison_Pair": "XGBoost vs Stacked_LSTM", "Model_A": "XGBoost", "Model_B": "Stacked_LSTM", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "RMSE", "Mean_Model_A": 4.03244, "Mean_Model_B": 3.92935, "Mean_Difference_A_minus_B": 0.10309, "Wilcoxon_W": 1.0, "p_value_two_sided": 1.192093e-07, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 2.3985},
+        {"Comparison_Pair": "XGBoost vs Stacked_LSTM", "Model_A": "XGBoost", "Model_B": "Stacked_LSTM", "Evaluation_Unit": "15000_Samples_OOF", "N_Paired_Units": 15000, "Metric": "Sample_Absolute_Error", "Mean_Model_A": 3.29265, "Mean_Model_B": 3.21865, "Mean_Difference_A_minus_B": 0.074, "Wilcoxon_W": 52767457.0, "p_value_two_sided": 4.914989e-11, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 0.0688},
+        {"Comparison_Pair": "Random_Forest vs Deep_MLP", "Model_A": "Random_Forest", "Model_B": "Deep_MLP", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "Macro_F1", "Mean_Model_A": 0.72875, "Mean_Model_B": 0.67858, "Mean_Difference_A_minus_B": 0.05017, "Wilcoxon_W": 0.0, "p_value_two_sided": 1.199247e-05, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 1.853},
+        {"Comparison_Pair": "Random_Forest vs Deep_MLP", "Model_A": "Random_Forest", "Model_B": "Deep_MLP", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "RMSE", "Mean_Model_A": 3.92177, "Mean_Model_B": 4.03017, "Mean_Difference_A_minus_B": -0.10841, "Wilcoxon_W": 0.0, "p_value_two_sided": 5.960464e-08, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": -2.7908},
+        {"Comparison_Pair": "Random_Forest vs Deep_MLP", "Model_A": "Random_Forest", "Model_B": "Deep_MLP", "Evaluation_Unit": "15000_Samples_OOF", "N_Paired_Units": 15000, "Metric": "Sample_Absolute_Error", "Mean_Model_A": 3.21487, "Mean_Model_B": 3.27845, "Mean_Difference_A_minus_B": -0.06358, "Wilcoxon_W": 54097646.0, "p_value_two_sided": 4.795315e-05, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": -0.0597},
+        {"Comparison_Pair": "Random_Forest vs Stacked_LSTM", "Model_A": "Random_Forest", "Model_B": "Stacked_LSTM", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "Macro_F1", "Mean_Model_A": 0.72875, "Mean_Model_B": 0.6927, "Mean_Difference_A_minus_B": 0.03605, "Wilcoxon_W": 0.0, "p_value_two_sided": 1.179714e-05, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 1.1778},
+        {"Comparison_Pair": "Random_Forest vs Stacked_LSTM", "Model_A": "Random_Forest", "Model_B": "Stacked_LSTM", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "RMSE", "Mean_Model_A": 3.92177, "Mean_Model_B": 3.92935, "Mean_Difference_A_minus_B": -0.00758, "Wilcoxon_W": 109.0, "p_value_two_sided": 0.1563382, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": false, "Cohens_d": -0.3326},
+        {"Comparison_Pair": "Random_Forest vs Stacked_LSTM", "Model_A": "Random_Forest", "Model_B": "Stacked_LSTM", "Evaluation_Unit": "15000_Samples_OOF", "N_Paired_Units": 15000, "Metric": "Sample_Absolute_Error", "Mean_Model_A": 3.21487, "Mean_Model_B": 3.21865, "Mean_Difference_A_minus_B": -0.00379, "Wilcoxon_W": 55822174.0, "p_value_two_sided": 0.41579, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": false, "Cohens_d": -0.0051},
+        {"Comparison_Pair": "Deep_MLP vs Stacked_LSTM", "Model_A": "Deep_MLP", "Model_B": "Stacked_LSTM", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "Macro_F1", "Mean_Model_A": 0.67858, "Mean_Model_B": 0.6927, "Mean_Difference_A_minus_B": -0.01412, "Wilcoxon_W": 32.5, "p_value_two_sided": 0.0004576272, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": -0.8909},
+        {"Comparison_Pair": "Deep_MLP vs Stacked_LSTM", "Model_A": "Deep_MLP", "Model_B": "Stacked_LSTM", "Evaluation_Unit": "25_Fold_x_Seed_Runs", "N_Paired_Units": 25, "Metric": "RMSE", "Mean_Model_A": 4.03017, "Mean_Model_B": 3.92935, "Mean_Difference_A_minus_B": 0.10082, "Wilcoxon_W": 0.0, "p_value_two_sided": 5.960464e-08, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 2.4048},
+        {"Comparison_Pair": "Deep_MLP vs Stacked_LSTM", "Model_A": "Deep_MLP", "Model_B": "Stacked_LSTM", "Evaluation_Unit": "15000_Samples_OOF", "N_Paired_Units": 15000, "Metric": "Sample_Absolute_Error", "Mean_Model_A": 3.27845, "Mean_Model_B": 3.21865, "Mean_Difference_A_minus_B": 0.0598, "Wilcoxon_W": 53703311.5, "p_value_two_sided": 1.517536e-06, "Bonferroni_Alpha": 0.008333, "Significant_Bonferroni": true, "Cohens_d": 0.059}
+      ]
+    },
+    "calibration": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
+      "file_source": "results/calibration/calibration_metrics.csv",
+      "metrics": [
+        {"Model": "XGBoost", "Multiclass_Brier_Score": 0.02279, "ECE_10Bins": 0.00772, "Brier_Low": 0.01125, "Brier_Medium": 0.01139, "Brier_High": 0.00015, "ECE_Low": 0.00792, "ECE_Medium": 0.00778, "ECE_High": 0.00018},
+        {"Model": "Random_Forest", "Multiclass_Brier_Score": 0.02225, "ECE_10Bins": 0.00382, "Brier_Low": 0.01104, "Brier_Medium": 0.01109, "Brier_High": 0.00013, "ECE_Low": 0.00354, "ECE_Medium": 0.00276, "ECE_High": 0.0015},
+        {"Model": "Deep_MLP", "Multiclass_Brier_Score": 0.02245, "ECE_10Bins": 0.00137, "Brier_Low": 0.01094, "Brier_Medium": 0.01132, "Brier_High": 0.00019, "ECE_Low": 0.00133, "ECE_Medium": 0.00118, "ECE_High": 0.00162},
+        {"Model": "Stacked_LSTM", "Multiclass_Brier_Score": 0.02242, "ECE_10Bins": 0.00086, "Brier_Low": 0.0111, "Brier_Medium": 0.01123, "Brier_High": 9e-05, "ECE_Low": 0.00118, "ECE_Medium": 0.00108, "ECE_High": 0.00035}
+      ]
+    },
+    "inference_latency_and_size": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
+      "file_source": "results/latency_protocol.json",
+      "protocol": {
+        "protocol_version": "2026-10-27",
+        "hardware_and_environment": {
+          "os": "Windows-10-10.0.26200-SP0",
+          "processor": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
+          "python_version": "3.11.0",
+          "cpu_threads_during_latency_test": 1,
+          "omp_num_threads": "1",
+          "torch_num_threads": 1,
+          "packages": {"numpy": "2.4.6", "pandas": "2.3.3", "scikit_learn": "1.9.0", "xgboost": "3.2.0", "torch": "2.14.1+cpu"}
+        },
+        "model_complexity_and_size": {
+          "XGBoost": {"n_trees_per_head": 350, "max_depth": 6, "serialized_size_mb": 2.8329, "training_time_single_fit_s": 1.113},
+          "Random_Forest": {"n_trees_per_head": 200, "max_depth": 12, "serialized_size_mb": 21.0901, "training_time_single_fit_s": 3.672},
+          "Deep_MLP": {"trainable_parameters_classifier": 12291, "trainable_parameters_regressor": 12225, "trainable_parameters_total": 24516, "serialized_size_mb": 0.1123, "training_time_single_fit_s": 6.152},
+          "Stacked_LSTM": {"seq_len": 8, "trainable_parameters_classifier": 33155, "trainable_parameters_regressor": 33089, "trainable_parameters_total": 66244, "serialized_size_mb": 0.2623, "training_time_single_fit_s": 14.143}
+        },
+        "latency_benchmarks": {
+          "XGBoost": {
+            "batch_1": {
+              "batch_size": 1,
+              "n_warmup": 50,
+              "n_repetitions": 500,
+              "inference_only_ms_per_sample": {"mean": 0.32181, "median": 0.3248, "std": 0.03379, "p95": 0.34966, "p99": 0.4609},
+              "with_preprocessing_ms_per_sample": {"mean": 0.32933, "median": 0.3253, "std": 0.02191, "p95": 0.3495, "p99": 0.45692}
+            },
+            "batch_256": {
+              "batch_size": 256,
+              "n_warmup": 50,
+              "n_repetitions": 500,
+              "inference_only_ms_per_sample": {"mean": 0.00643, "median": 0.00624, "std": 0.00073, "p95": 0.00896, "p99": 0.00909},
+              "with_preprocessing_ms_per_sample": {"mean": 0.007, "median": 0.00626, "std": 0.00149, "p95": 0.00907, "p99": 0.00965}
+            },
+            "batch_3000": {
+              "batch_size": 3000,
+              "n_warmup": 50,
+              "n_repetitions": 100,
+              "inference_only_ms_per_sample": {"mean": 0.00553, "median": 0.00545, "std": 0.00066, "p95": 0.00682, "p99": 0.00708},
+              "with_preprocessing_ms_per_sample": {"mean": 0.00538, "median": 0.00522, "std": 0.00048, "p95": 0.00625, "p99": 0.00668}
+            }
+          },
+          "Random_Forest": {
+            "batch_1": {
+              "batch_size": 1,
+              "n_warmup": 25,
+              "n_repetitions": 100,
+              "inference_only_ms_per_sample": {"mean": 17.8013, "median": 17.9615, "std": 1.77393, "p95": 20.14836, "p99": 20.96901},
+              "with_preprocessing_ms_per_sample": {"mean": 17.77701, "median": 17.3905, "std": 1.58989, "p95": 20.31448, "p99": 20.5609}
+            },
+            "batch_256": {
+              "batch_size": 256,
+              "n_warmup": 25,
+              "n_repetitions": 100,
+              "inference_only_ms_per_sample": {"mean": 0.07981, "median": 0.07243, "std": 0.01764, "p95": 0.10671, "p99": 0.10935},
+              "with_preprocessing_ms_per_sample": {"mean": 0.08257, "median": 0.07661, "std": 0.01846, "p95": 0.1137, "p99": 0.11557}
+            },
+            "batch_3000": {
+              "batch_size": 3000,
+              "n_warmup": 25,
+              "n_repetitions": 100,
+              "inference_only_ms_per_sample": {"mean": 0.01865, "median": 0.01859, "std": 0.00063, "p95": 0.01975, "p99": 0.01989},
+              "with_preprocessing_ms_per_sample": {"mean": 0.01891, "median": 0.01885, "std": 0.00073, "p95": 0.02019, "p99": 0.02094}
+            }
+          },
+          "Deep_MLP": {
+            "batch_1": {
+              "batch_size": 1,
+              "n_warmup": 50,
+              "n_repetitions": 500,
+              "inference_only_ms_per_sample": {"mean": 0.19672, "median": 0.1969, "std": 0.01138, "p95": 0.2114, "p99": 0.22874},
+              "with_preprocessing_ms_per_sample": {"mean": 0.3779, "median": 0.37655, "std": 0.01277, "p95": 0.39542, "p99": 0.4261}
+            },
+            "batch_256": {
+              "batch_size": 256,
+              "n_warmup": 50,
+              "n_repetitions": 500,
+              "inference_only_ms_per_sample": {"mean": 0.0015, "median": 0.00156, "std": 0.00022, "p95": 0.00175, "p99": 0.00201},
+              "with_preprocessing_ms_per_sample": {"mean": 0.00203, "median": 0.00197, "std": 0.00039, "p95": 0.00252, "p99": 0.00255}
+            },
+            "batch_3000": {
+              "batch_size": 3000,
+              "n_warmup": 50,
+              "n_repetitions": 100,
+              "inference_only_ms_per_sample": {"mean": 0.00042, "median": 0.00042, "std": 1e-05, "p95": 0.00043, "p99": 0.00048},
+              "with_preprocessing_ms_per_sample": {"mean": 0.00049, "median": 0.00049, "std": 1e-05, "p95": 0.00051, "p99": 0.00052}
+            }
+          },
+          "Stacked_LSTM": {
+            "batch_1": {
+              "batch_size": 1,
+              "n_warmup": 50,
+              "n_repetitions": 500,
+              "inference_only_ms_per_sample": {"mean": 0.4135, "median": 0.4219, "std": 0.03658, "p95": 0.43994, "p99": 0.47591},
+              "with_preprocessing_ms_per_sample": {"mean": 0.60527, "median": 0.6055, "std": 0.07927, "p95": 0.67275, "p99": 0.78504}
+            },
+            "batch_256": {
+              "batch_size": 256,
+              "n_warmup": 50,
+              "n_repetitions": 500,
+              "inference_only_ms_per_sample": {"mean": 0.01306, "median": 0.01265, "std": 0.00148, "p95": 0.01622, "p99": 0.01703},
+              "with_preprocessing_ms_per_sample": {"mean": 0.01353, "median": 0.01321, "std": 0.00137, "p95": 0.01698, "p99": 0.01752}
+            },
+            "batch_3000": {
+              "batch_size": 3000,
+              "n_warmup": 50,
+              "n_repetitions": 100,
+              "inference_only_ms_per_sample": {"mean": 0.01276, "median": 0.01266, "std": 0.00061, "p95": 0.01373, "p99": 0.01509},
+              "with_preprocessing_ms_per_sample": {"mean": 0.0127, "median": 0.01258, "std": 0.00044, "p95": 0.0134, "p99": 0.01422}
+            }
+          }
+        }
+      }
+    }
+  },
+  "explainability_and_tipping_points": {
+    "script_source": "06_AI_and_Modeling/explainability/SHAP_analysis/shap_explain.py",
+    "file_source": "results/shap_global_importance.csv",
+    "clean_10_feature_treeshap": [
+      {"Feature": "DHW_degC_weeks", "Mean_Abs_SHAP": 3.8127, "Normalized_Importance_Pct": 53.71, "Std_SHAP": 11.7148, "Bootstrap_CI95_Low_Pct": 51.37, "Bootstrap_CI95_High_Pct": 55.98},
+      {"Feature": "PAR_umol_m2_s", "Mean_Abs_SHAP": 0.8057, "Normalized_Importance_Pct": 11.35, "Std_SHAP": 0.521, "Bootstrap_CI95_Low_Pct": 10.5, "Bootstrap_CI95_High_Pct": 12.28},
+      {"Feature": "SST_Anomaly_degC", "Mean_Abs_SHAP": 0.6587, "Normalized_Importance_Pct": 9.28, "Std_SHAP": 1.5071, "Bootstrap_CI95_Low_Pct": 8.99, "Bootstrap_CI95_High_Pct": 9.59},
+      {"Feature": "Aragonite_Saturation_Omega", "Mean_Abs_SHAP": 0.6256, "Normalized_Importance_Pct": 8.81, "Std_SHAP": 0.4926, "Bootstrap_CI95_Low_Pct": 8.23, "Bootstrap_CI95_High_Pct": 9.45},
+      {"Feature": "SST_degC", "Mean_Abs_SHAP": 0.3684, "Normalized_Importance_Pct": 5.19, "Std_SHAP": 0.7583, "Bootstrap_CI95_Low_Pct": 4.97, "Bootstrap_CI95_High_Pct": 5.39},
+      {"Feature": "Salinity_PSU", "Mean_Abs_SHAP": 0.1887, "Normalized_Importance_Pct": 2.66, "Std_SHAP": 0.2589, "Bootstrap_CI95_Low_Pct": 2.47, "Bootstrap_CI95_High_Pct": 2.88},
+      {"Feature": "Depth_m", "Mean_Abs_SHAP": 0.1794, "Normalized_Importance_Pct": 2.53, "Std_SHAP": 0.1768, "Bootstrap_CI95_Low_Pct": 2.32, "Bootstrap_CI95_High_Pct": 2.74},
+      {"Feature": "pH_total", "Mean_Abs_SHAP": 0.1683, "Normalized_Importance_Pct": 2.37, "Std_SHAP": 0.1957, "Bootstrap_CI95_Low_Pct": 2.19, "Bootstrap_CI95_High_Pct": 2.57},
+      {"Feature": "Dissolved_Oxygen_mg_L", "Mean_Abs_SHAP": 0.1526, "Normalized_Importance_Pct": 2.15, "Std_SHAP": 0.1678, "Bootstrap_CI95_Low_Pct": 1.99, "Bootstrap_CI95_High_Pct": 2.33},
+      {"Feature": "Turbidity_NTU", "Mean_Abs_SHAP": 0.1387, "Normalized_Importance_Pct": 1.95, "Std_SHAP": 0.1712, "Bootstrap_CI95_Low_Pct": 1.79, "Bootstrap_CI95_High_Pct": 2.13}
+    ],
+    "leakage_comparison": {
+      "script_source": "06_AI_and_Modeling/explainability/SHAP_analysis/shap_explain.py",
+      "file_source": "09_Results/audit/shap_leakage_comparison.csv",
+      "table": [
+        {"Feature": "DHW_degC_weeks", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 53.71, "Legacy_Leaked_10_SHAP_Pct": 48.9, "Leaked_16_SHAP_Pct": 15.42},
+        {"Feature": "PAR_umol_m2_s", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 11.35, "Legacy_Leaked_10_SHAP_Pct": 4.26, "Leaked_16_SHAP_Pct": 0.48},
+        {"Feature": "SST_Anomaly_degC", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 9.28, "Legacy_Leaked_10_SHAP_Pct": 4.73, "Leaked_16_SHAP_Pct": 0.4},
+        {"Feature": "Aragonite_Saturation_Omega", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 8.81, "Legacy_Leaked_10_SHAP_Pct": 1.64, "Leaked_16_SHAP_Pct": 0.19},
+        {"Feature": "SST_degC", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 5.19, "Legacy_Leaked_10_SHAP_Pct": 7.24, "Leaked_16_SHAP_Pct": 0.25},
+        {"Feature": "Salinity_PSU", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 2.66, "Legacy_Leaked_10_SHAP_Pct": 0.0, "Leaked_16_SHAP_Pct": 0.09},
+        {"Feature": "Depth_m", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 2.53, "Legacy_Leaked_10_SHAP_Pct": 6.39, "Leaked_16_SHAP_Pct": 0.16},
+        {"Feature": "pH_total", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 2.37, "Legacy_Leaked_10_SHAP_Pct": 0.64, "Leaked_16_SHAP_Pct": 0.08},
+        {"Feature": "Dissolved_Oxygen_mg_L", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 2.15, "Legacy_Leaked_10_SHAP_Pct": 0.0, "Leaked_16_SHAP_Pct": 0.07},
+        {"Feature": "Turbidity_NTU", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 1.95, "Legacy_Leaked_10_SHAP_Pct": 0.54, "Leaked_16_SHAP_Pct": 0.05},
+        {"Feature": "Structural_Rugosity", "Causal_Status": "Post_Target_Leaked_Variable", "Clean_10_SHAP_Pct": 0.0, "Legacy_Leaked_10_SHAP_Pct": 18.15, "Leaked_16_SHAP_Pct": 0.64},
+        {"Feature": "Live_Coral_Cover_Pct", "Causal_Status": "Post_Target_Leaked_Variable", "Clean_10_SHAP_Pct": 0.0, "Legacy_Leaked_10_SHAP_Pct": 7.51, "Leaked_16_SHAP_Pct": 0.34},
+        {"Feature": "HotSpot_degC", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 0.0, "Legacy_Leaked_10_SHAP_Pct": 0.0, "Leaked_16_SHAP_Pct": 1.12},
+        {"Feature": "Kd_490_m_inv", "Causal_Status": "Pre_Target_Environmental_Driver", "Clean_10_SHAP_Pct": 0.0, "Legacy_Leaked_10_SHAP_Pct": 0.0, "Leaked_16_SHAP_Pct": 0.04},
+        {"Feature": "Macroalgae_Cover_Pct", "Causal_Status": "Post_Target_Leaked_Variable", "Clean_10_SHAP_Pct": 0.0, "Legacy_Leaked_10_SHAP_Pct": 0.0, "Leaked_16_SHAP_Pct": 0.06},
+        {"Feature": "Shannon_Diversity_H", "Causal_Status": "Post_Target_Leaked_Variable", "Clean_10_SHAP_Pct": 0.0, "Legacy_Leaked_10_SHAP_Pct": 0.0, "Leaked_16_SHAP_Pct": 80.61}
+      ]
+    },
+    "partial_dependence_inflection_points": {
+      "script_source": "06_AI_and_Modeling/explainability/SHAP_analysis/shap_explain.py",
+      "file_source": "results/inflection_points.json",
+      "curves_file_source": "results/partial_dependence_dhw_ph.csv",
+      "details": {
+        "scientific_disclaimer": "Partial dependence response thresholds of a statistical emulator trained on synthetic data; they reflect the coupled rules encoded in build_final_dataset.py and do NOT constitute empirical causal effects.",
+        "grid_specification": {"variable": "DHW_degC_weeks", "min": 0.0, "max": 20.0, "step": 0.05, "n_points": 401, "gaussian_smoothing_sigma_steps": 8, "gaussian_smoothing_sigma_dhw": 0.4},
+        "xgboost_counterfactual_carbonate_regimes": {
+          "ambient_pH810_Omega385": {"smoothed_max_derivative_dhw_degC_weeks": 7.3, "predicted_loss_at_max_derivative_pct": 9.57, "max_slope_pct_per_dhw": 21.786, "ec50_half_maximal_dhw_degC_weeks": 10.7, "ec50_step_raw_dhw_degC_weeks": 10.65, "ec50_predicted_loss_pct": 36.0, "dhw_crossing_20pct_loss_degC_weeks": 7.35, "dhw_crossing_35pct_loss_degC_weeks": 10.6, "loss_at_dhw_0_pct": 4.88, "loss_at_dhw_8_pct": 31.5, "loss_at_dhw_20_pct": 67.5},
+          "acidified_pH780_Omega220": {"smoothed_max_derivative_dhw_degC_weeks": 7.3, "predicted_loss_at_max_derivative_pct": 16.36, "max_slope_pct_per_dhw": 17.051, "ec50_half_maximal_dhw_degC_weeks": 10.8, "ec50_step_raw_dhw_degC_weeks": 10.65, "ec50_predicted_loss_pct": 38.75, "dhw_crossing_20pct_loss_degC_weeks": 7.05, "dhw_crossing_35pct_loss_degC_weeks": 10.35, "loss_at_dhw_0_pct": 9.92, "loss_at_dhw_8_pct": 33.52, "loss_at_dhw_20_pct": 67.63},
+          "threshold_shift_acidified_minus_ambient": {"max_derivative_dhw_shift": 0.0, "ec50_dhw_shift": 0.1, "crossing_35pct_loss_dhw_shift": -0.25}
+        },
+        "xgboost_empirical_pH_subsets": {
+          "ambient_subset_pH_ge_808": {"n_samples": 1147, "mean_pH": 8.106, "mean_Omega_arag": 3.763, "smoothed_max_derivative_dhw_degC_weeks": 7.3, "predicted_loss_at_max_derivative_pct": 8.71, "max_slope_pct_per_dhw": 21.965, "ec50_half_maximal_dhw_degC_weeks": 10.8, "ec50_step_raw_dhw_degC_weeks": 10.65, "ec50_predicted_loss_pct": 36.48, "dhw_crossing_20pct_loss_degC_weeks": 7.35, "dhw_crossing_35pct_loss_degC_weeks": 10.7, "loss_at_dhw_0_pct": 4.89, "loss_at_dhw_8_pct": 30.82, "loss_at_dhw_20_pct": 68.2},
+          "low_pH_subset_pH_le_798": {"n_samples": 5, "mean_pH": 7.975, "mean_Omega_arag": 2.832, "smoothed_max_derivative_dhw_degC_weeks": 7.3, "predicted_loss_at_max_derivative_pct": 15.93, "max_slope_pct_per_dhw": 28.481, "ec50_half_maximal_dhw_degC_weeks": 7.75, "ec50_step_raw_dhw_degC_weeks": 7.35, "ec50_predicted_loss_pct": 40.48, "dhw_crossing_20pct_loss_degC_weeks": 6.9, "dhw_crossing_35pct_loss_degC_weeks": 7.5, "loss_at_dhw_0_pct": 11.13, "loss_at_dhw_8_pct": 44.6, "loss_at_dhw_20_pct": 69.97},
+          "Note_on_pH_alone_vs_Omega": "In build_final_dataset.py (lines 171-180), Bleaching_Stress_Index depends directly on Aragonite_Saturation_Omega (weight 0.24) and has zero direct weight on pH_total once Omega is fixed. Within the 2015-2024 historical dataset, pH_total spans [7.939, 8.211], so natural Omega variation is modest; under projected ocean acidification (pH=7.80, Omega=2.20), the coupled carbonate penalty shifts the 35% loss threshold and EC50 downward by ~1.4 to 1.8 degC-weeks."
+        },
+        "analytical_generator_ground_truth": {
+          "ambient_Omega385": {"smoothed_max_derivative_dhw_degC_weeks": 10.15, "predicted_loss_at_max_derivative_pct": 45.37, "max_slope_pct_per_dhw": 10.765, "ec50_half_maximal_dhw_degC_weeks": 9.85, "ec50_step_raw_dhw_degC_weeks": 9.85, "ec50_predicted_loss_pct": 42.15, "dhw_crossing_20pct_loss_degC_weeks": 7.4, "dhw_crossing_35pct_loss_degC_weeks": 9.2, "loss_at_dhw_0_pct": 4.33, "loss_at_dhw_8_pct": 24.44, "loss_at_dhw_20_pct": 79.97},
+          "acidified_Omega220": {"smoothed_max_derivative_dhw_degC_weeks": 8.6, "predicted_loss_at_max_derivative_pct": 47.8, "max_slope_pct_per_dhw": 9.259, "ec50_half_maximal_dhw_degC_weeks": 8.3, "ec50_step_raw_dhw_degC_weeks": 8.3, "ec50_predicted_loss_pct": 45.02, "dhw_crossing_20pct_loss_degC_weeks": 4.85, "dhw_crossing_35pct_loss_degC_weeks": 7.2, "loss_at_dhw_0_pct": 10.15, "loss_at_dhw_8_pct": 42.23, "loss_at_dhw_20_pct": 79.99},
+          "threshold_shift_acidified_minus_ambient": {"max_derivative_dhw_shift": -1.55, "ec50_dhw_shift": -1.55, "crossing_35pct_loss_dhw_shift": -2.0}
+        }
+      }
+    }
+  },
+  "decadal_scenarios_2025_2050": {
+    "script_source": "07_Scenarios_and_Simulations/simulation_engine.py",
+    "file_source": "results/scenario_2050_summary.csv",
+    "table2_file_source": "09_Results/tables/Table2_decadal_scenario_projections.csv",
+    "integration_method": "RK4 (dt = 0.05 yr, 500 steps, N = 5,000 Monte Carlo runs)",
+    "empirical_baseline_2025_coral_cover_pct": 33.68,
+    "empirical_baseline_2025_macroalgae_cover_pct": 31.41,
+    "scenarios": {
+      "S1_SSP585_Unmitigated": {"Scenario": "1 Severe Thermal Stress SSP585", "Baseline_Cover_2025_Pct": 33.68, "Cover_2035_Mean_Pct": 22.46, "Cover_2035_Median_Pct": 21.04, "Cover_2050_Mean_Pct": 0.69, "Cover_2050_SD_Pct": 2.45, "Cover_2050_Median_Pct": 0.1, "Cover_2050_95_CI": "[0.1 - 6.2]", "Macroalgae_2050_Mean_Pct": 67.35, "Macroalgae_2050_95_CI": "[33.6 - 80.7]", "Net_Calcification_2050": -1.8, "Net_Calcification_2050_95_CI": "[-1.85 - -1.39]", "Collapse_Probability_Below_10Pct": 98.58, "Ecological_State_2050": "Degraded/Macroalgal"},
+      "S2_SSP245_Moderate": {"Scenario": "2 Moderate Mitigation SSP245", "Baseline_Cover_2025_Pct": 33.68, "Cover_2035_Mean_Pct": 38.3, "Cover_2035_Median_Pct": 37.56, "Cover_2050_Mean_Pct": 18.55, "Cover_2050_SD_Pct": 16.11, "Cover_2050_Median_Pct": 13.54, "Cover_2050_95_CI": "[0.5 - 52.7]", "Macroalgae_2050_Mean_Pct": 34.4, "Macroalgae_2050_95_CI": "[0.1 - 74.2]", "Net_Calcification_2050": 0.94, "Net_Calcification_2050_95_CI": "[-1.77 - 6.38]", "Collapse_Probability_Below_10Pct": 42.84, "Ecological_State_2050": "Transitional"},
+      "S3_Active_Restoration": {"Scenario": "3 Active Coral Restoration", "Baseline_Cover_2025_Pct": 33.68, "Cover_2035_Mean_Pct": 65.98, "Cover_2035_Median_Pct": 66.95, "Cover_2050_Mean_Pct": 48.92, "Cover_2050_SD_Pct": 11.21, "Cover_2050_Median_Pct": 49.91, "Cover_2050_95_CI": "[23.3 - 67.4]", "Macroalgae_2050_Mean_Pct": 1.75, "Macroalgae_2050_95_CI": "[0.1 - 23.0]", "Net_Calcification_2050": 5.5, "Net_Calcification_2050_95_CI": "[1.41 - 9.15]", "Collapse_Probability_Below_10Pct": 0.46, "Ecological_State_2050": "Coral-Dominated"},
+      "S4_Integrated_Intervention": {"Scenario": "4 MPA Integrated Protection", "Baseline_Cover_2025_Pct": 33.68, "Cover_2035_Mean_Pct": 73.25, "Cover_2035_Median_Pct": 73.7, "Cover_2050_Mean_Pct": 55.2, "Cover_2050_SD_Pct": 8.88, "Cover_2050_Median_Pct": 55.87, "Cover_2050_95_CI": "[36.2 - 70.5]", "Macroalgae_2050_Mean_Pct": 0.1, "Macroalgae_2050_95_CI": "[0.1 - 0.1]", "Net_Calcification_2050": 7.46, "Net_Calcification_2050_95_CI": "[3.80 - 11.01]", "Collapse_Probability_Below_10Pct": 0.0, "Ecological_State_2050": "Coral-Dominated"}
+    },
+    "ode_parameters": {
+      "script_source": "07_Scenarios_and_Simulations/simulation_engine.py",
+      "file_source": "results/scenario_ode_parameters.json",
+      "details": {
+        "integration_method": "RK4 (4th-order Runge-Kutta)",
+        "dt_years": 0.05,
+        "n_steps": 500,
+        "horizon_years": [2025, 2050],
+        "n_monte_carlo_runs_per_scenario": 5000,
+        "parameter_perturbation_gaussian_rel_sd": 0.15,
+        "seed": 42,
+        "empirical_baseline_2025": {"Live_Coral_Cover_Pct": 33.68, "Macroalgae_Cover_Pct": 31.41},
+        "manuscript_claimed_baseline_2025": {"Live_Coral_Cover_Pct": 28.5, "Macroalgae_Cover_Pct": 22.0},
+        "base_ode_parameters": {"r": 0.45, "d0": 0.05, "alpha": 0.012, "beta": 0.75, "a": 0.85, "gamma": 0.22},
+        "scenario_configs": [
+          {"id": "Scenario_1_Severe_Thermal_Stress_SSP585", "code": "S1_SSP585_Unmitigated", "label": "1. Severe Thermal Stress (SSP5-8.5)", "dhw_0": 5.0, "dhw_slope": 0.36, "thermal_hardening": 0.0, "omega_0": 3.65, "omega_slope": -0.052, "g_mpa": 0.25, "phi_resto": 0.0},
+          {"id": "Scenario_2_Moderate_Mitigation_SSP245", "code": "S2_SSP245_Moderate", "label": "2. Moderate Mitigation (SSP2-4.5)", "dhw_0": 5.0, "dhw_slope": 0.18, "thermal_hardening": 0.0, "omega_0": 3.65, "omega_slope": -0.022, "g_mpa": 0.3, "phi_resto": 0.0},
+          {"id": "Scenario_3_Active_Coral_Restoration", "code": "S3_Active_Restoration", "label": "3. Active Resilient Outplanting", "dhw_0": 5.0, "dhw_slope": 0.2, "thermal_hardening": 2.0, "omega_0": 3.65, "omega_slope": -0.028, "g_mpa": 0.35, "phi_resto": 0.025},
+          {"id": "Scenario_4_MPA_Integrated_Protection", "code": "S4_Integrated_Intervention", "label": "4. Integrated MPA & Outplanting", "dhw_0": 5.0, "dhw_slope": 0.18, "thermal_hardening": 2.0, "omega_0": 3.65, "omega_slope": -0.022, "g_mpa": 0.68, "phi_resto": 0.03}
+        ]
+      }
+    },
+    "model_comparison_audit": {
+      "script_source": "07_Scenarios_and_Simulations/simulation_engine.py",
+      "file_source": "09_Results/audit/scenario_model_comparison.csv",
+      "rows": [
+        {"Scenario_Code": "S1_SSP585_Unmitigated", "RK4_Eq5_6_Empirical_Baseline33_68_Mean_2050_Pct": 0.69, "RK4_Eq5_6_Empirical_Baseline33_68_CI95": "[0.1 - 6.2]", "RK4_Eq5_6_Empirical_Net_Accretion_2050": -1.8, "RK4_Eq5_6_Manuscript_Baseline28_50_Mean_2050_Pct": 0.7, "RK4_Eq5_6_Manuscript_Baseline28_50_CI95": "[0.1 - 6.2]", "RK4_Eq5_6_Manuscript_Net_Accretion_2050": -1.79, "Legacy_Euler_Script_Table2_2050_Pct": 7.58, "Legacy_Euler_Script_Table2_CI95": "[5.0 - 11.2]", "Legacy_Euler_Script_Net_Accretion_2050": -1.03, "Manuscript_Table4_Claimed_2050_Pct": 4.8, "Manuscript_Table4_Claimed_CI95": "[2.1 - 8.4]", "Manuscript_Table4_Claimed_Net_Accretion_2050": -2.35},
+        {"Scenario_Code": "S2_SSP245_Moderate", "RK4_Eq5_6_Empirical_Baseline33_68_Mean_2050_Pct": 18.55, "RK4_Eq5_6_Empirical_Baseline33_68_CI95": "[0.5 - 52.7]", "RK4_Eq5_6_Empirical_Net_Accretion_2050": 0.94, "RK4_Eq5_6_Manuscript_Baseline28_50_Mean_2050_Pct": 18.42, "RK4_Eq5_6_Manuscript_Baseline28_50_CI95": "[0.5 - 52.7]", "RK4_Eq5_6_Manuscript_Net_Accretion_2050": 1.43, "Legacy_Euler_Script_Table2_2050_Pct": 30.55, "Legacy_Euler_Script_Table2_CI95": "[25.3 - 35.6]", "Legacy_Euler_Script_Net_Accretion_2050": 3.94, "Manuscript_Table4_Claimed_2050_Pct": 21.4, "Manuscript_Table4_Claimed_CI95": "[16.2 - 26.8]", "Manuscript_Table4_Claimed_Net_Accretion_2050": 1.15},
+        {"Scenario_Code": "S3_Active_Restoration", "RK4_Eq5_6_Empirical_Baseline33_68_Mean_2050_Pct": 48.92, "RK4_Eq5_6_Empirical_Baseline33_68_CI95": "[23.3 - 67.4]", "RK4_Eq5_6_Empirical_Net_Accretion_2050": 5.5, "RK4_Eq5_6_Manuscript_Baseline28_50_Mean_2050_Pct": 48.89, "RK4_Eq5_6_Manuscript_Baseline28_50_CI95": "[23.0 - 67.4]", "RK4_Eq5_6_Manuscript_Net_Accretion_2050": 6.84, "Legacy_Euler_Script_Table2_2050_Pct": 77.3, "Legacy_Euler_Script_Table2_CI95": "[67.9 - 85.0]", "Legacy_Euler_Script_Net_Accretion_2050": 2.83, "Manuscript_Table4_Claimed_2050_Pct": 38.7, "Manuscript_Table4_Claimed_CI95": "[31.5 - 45.9]", "Manuscript_Table4_Claimed_Net_Accretion_2050": 3.8},
+        {"Scenario_Code": "S4_Integrated_Intervention", "RK4_Eq5_6_Empirical_Baseline33_68_Mean_2050_Pct": 55.2, "RK4_Eq5_6_Empirical_Baseline33_68_CI95": "[36.2 - 70.5]", "RK4_Eq5_6_Empirical_Net_Accretion_2050": 7.46, "RK4_Eq5_6_Manuscript_Baseline28_50_Mean_2050_Pct": 55.2, "RK4_Eq5_6_Manuscript_Baseline28_50_CI95": "[36.2 - 70.5]", "RK4_Eq5_6_Manuscript_Net_Accretion_2050": 9.16, "Legacy_Euler_Script_Table2_2050_Pct": 73.18, "Legacy_Euler_Script_Table2_CI95": "[66.8 - 79.4]", "Legacy_Euler_Script_Net_Accretion_2050": 3.31, "Manuscript_Table4_Claimed_2050_Pct": 46.2, "Manuscript_Table4_Claimed_CI95": "[39.4 - 53.1]", "Manuscript_Table4_Claimed_Net_Accretion_2050": 5.45}
+      ]
+    }
+  },
+  "spatial_restoration_priority_srpi": {
+    "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
+    "file_source": "results/srpi_sensitivity.csv",
+    "sensitivity_analysis": [
+      {"Formulation": "Biophysical_Eq7_30_Stations", "Unit_of_Analysis": "Station (N=30)", "Total_Units": 30, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.60", "Threshold_Value": 0.6, "Tier_1_Count": 18, "Tier_1_Pct": 60.0, "SRPI_Min": 0.353, "SRPI_Mean": 0.598, "SRPI_Max": 0.765},
+      {"Formulation": "Biophysical_Eq7_15000_Observations", "Unit_of_Analysis": "Observation_Grid_Record (N=15000)", "Total_Units": 15000, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.60", "Threshold_Value": 0.6, "Tier_1_Count": 8701, "Tier_1_Pct": 58.01, "SRPI_Min": 0.255, "SRPI_Mean": 0.598, "SRPI_Max": 0.805},
+      {"Formulation": "Relative_MinMax_30_Stations", "Unit_of_Analysis": "Station (N=30)", "Total_Units": 30, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.60", "Threshold_Value": 0.6, "Tier_1_Count": 7, "Tier_1_Pct": 23.33, "SRPI_Min": 0.291, "SRPI_Mean": 0.512, "SRPI_Max": 0.694},
+      {"Formulation": "Biophysical_Eq7_30_Stations", "Unit_of_Analysis": "Station (N=30)", "Total_Units": 30, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.70", "Threshold_Value": 0.7, "Tier_1_Count": 10, "Tier_1_Pct": 33.33, "SRPI_Min": 0.353, "SRPI_Mean": 0.598, "SRPI_Max": 0.765},
+      {"Formulation": "Biophysical_Eq7_15000_Observations", "Unit_of_Analysis": "Observation_Grid_Record (N=15000)", "Total_Units": 15000, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.70", "Threshold_Value": 0.7, "Tier_1_Count": 4872, "Tier_1_Pct": 32.48, "SRPI_Min": 0.255, "SRPI_Mean": 0.598, "SRPI_Max": 0.805},
+      {"Formulation": "Relative_MinMax_30_Stations", "Unit_of_Analysis": "Station (N=30)", "Total_Units": 30, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.70", "Threshold_Value": 0.7, "Tier_1_Count": 0, "Tier_1_Pct": 0.0, "SRPI_Min": 0.291, "SRPI_Mean": 0.512, "SRPI_Max": 0.694},
+      {"Formulation": "Biophysical_Eq7_30_Stations", "Unit_of_Analysis": "Station (N=30)", "Total_Units": 30, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.80", "Threshold_Value": 0.8, "Tier_1_Count": 0, "Tier_1_Pct": 0.0, "SRPI_Min": 0.353, "SRPI_Mean": 0.598, "SRPI_Max": 0.765},
+      {"Formulation": "Biophysical_Eq7_15000_Observations", "Unit_of_Analysis": "Observation_Grid_Record (N=15000)", "Total_Units": 15000, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.80", "Threshold_Value": 0.8, "Tier_1_Count": 17, "Tier_1_Pct": 0.11, "SRPI_Min": 0.255, "SRPI_Mean": 0.598, "SRPI_Max": 0.805},
+      {"Formulation": "Relative_MinMax_30_Stations", "Unit_of_Analysis": "Station (N=30)", "Total_Units": 30, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.80", "Threshold_Value": 0.8, "Tier_1_Count": 0, "Tier_1_Pct": 0.0, "SRPI_Min": 0.291, "SRPI_Mean": 0.512, "SRPI_Max": 0.694},
+      {"Formulation": "Relative_MinMax_30_Stations", "Unit_of_Analysis": "Station (N=30)", "Total_Units": 30, "Threshold_Method": "Quantile_qcut_Top25Pct", "Threshold_Value": 0.593, "Tier_1_Count": 8, "Tier_1_Pct": 26.67, "SRPI_Min": 0.291, "SRPI_Mean": 0.512, "SRPI_Max": 0.694},
+      {"Formulation": "Relative_MinMax_Legacy_25_Stations", "Unit_of_Analysis": "Station_Legacy (N=25)", "Total_Units": 25, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.60", "Threshold_Value": 0.6, "Tier_1_Count": 5, "Tier_1_Pct": 20.0, "SRPI_Min": 0.277, "SRPI_Mean": 0.479, "SRPI_Max": 0.682},
+      {"Formulation": "Relative_MinMax_Legacy_25_Stations", "Unit_of_Analysis": "Station_Legacy (N=25)", "Total_Units": 25, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.70", "Threshold_Value": 0.7, "Tier_1_Count": 0, "Tier_1_Pct": 0.0, "SRPI_Min": 0.277, "SRPI_Mean": 0.479, "SRPI_Max": 0.682},
+      {"Formulation": "Relative_MinMax_Legacy_25_Stations", "Unit_of_Analysis": "Station_Legacy (N=25)", "Total_Units": 25, "Threshold_Method": "Fixed_Threshold_SRPI_ge_0.80", "Threshold_Value": 0.8, "Tier_1_Count": 0, "Tier_1_Pct": 0.0, "SRPI_Min": 0.277, "SRPI_Mean": 0.479, "SRPI_Max": 0.682},
+      {"Formulation": "Relative_MinMax_Legacy_25_Stations", "Unit_of_Analysis": "Station_Legacy (N=25)", "Total_Units": 25, "Threshold_Method": "Quantile_qcut_Top25Pct", "Threshold_Value": 0.553, "Tier_1_Count": 6, "Tier_1_Pct": 24.0, "SRPI_Min": 0.277, "SRPI_Mean": 0.479, "SRPI_Max": 0.682}
+    ],
+    "top_10_tier1_stations_eq7": {
+      "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
+      "file_source": "09_Results/tables/Table3_spatial_restoration_priority.csv",
+      "stations": [
+        {"Station_ID": "STN_06", "Station_Name": "Belize_Atoll_06", "Region": "Caribbean", "Reef_Zone": "Reef Crest", "Spatial_Restoration_Priority_Index_SRPI": 0.765, "SRPI_MinMax_Legacy": 0.575, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_26", "Station_Name": "Seychelles_Mahe_26", "Region": "Indian Ocean", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.765, "SRPI_MinMax_Legacy": 0.603, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_28", "Station_Name": "Hawaii_Kaneohe_28", "Region": "Pacific", "Reef_Zone": "Lagoon", "Spatial_Restoration_Priority_Index_SRPI": 0.759, "SRPI_MinMax_Legacy": 0.509, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_01", "Station_Name": "Mesoamerican_Fore_01", "Region": "Caribbean", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.756, "SRPI_MinMax_Legacy": 0.576, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_25", "Station_Name": "RedSea_Farasan_25", "Region": "Red Sea", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.734, "SRPI_MinMax_Legacy": 0.669, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_11", "Station_Name": "Florida_Keys_Uppers_11", "Region": "Caribbean", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.729, "SRPI_MinMax_Legacy": 0.531, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_30", "Station_Name": "Palau_RockIslands_30", "Region": "Pacific", "Reef_Zone": "Lagoon", "Spatial_Restoration_Priority_Index_SRPI": 0.726, "SRPI_MinMax_Legacy": 0.463, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_12", "Station_Name": "Florida_Keys_Lowers_12", "Region": "Caribbean", "Reef_Zone": "Reef Crest", "Spatial_Restoration_Priority_Index_SRPI": 0.722, "SRPI_MinMax_Legacy": 0.544, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_24", "Station_Name": "RedSea_Shallow_24", "Region": "Red Sea", "Reef_Zone": "Reef Crest", "Spatial_Restoration_Priority_Index_SRPI": 0.721, "SRPI_MinMax_Legacy": 0.519, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_21", "Station_Name": "Okinawa_Kerama_21", "Region": "Indo-Pacific", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.703, "SRPI_MinMax_Legacy": 0.694, "Priority_Tier": "Tier_1_High_Priority_Restoration"}
+      ]
+    },
+    "all_30_stations_eq7": {
+      "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
+      "file_source": "09_Results/tables/Table3_spatial_restoration_priority.csv",
+      "stations": [
+        {"Station_ID": "STN_06", "Station_Name": "Belize_Atoll_06", "Region": "Caribbean", "Reef_Zone": "Reef Crest", "Spatial_Restoration_Priority_Index_SRPI": 0.765, "SRPI_MinMax_Legacy": 0.575, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_26", "Station_Name": "Seychelles_Mahe_26", "Region": "Indian Ocean", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.765, "SRPI_MinMax_Legacy": 0.603, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_28", "Station_Name": "Hawaii_Kaneohe_28", "Region": "Pacific", "Reef_Zone": "Lagoon", "Spatial_Restoration_Priority_Index_SRPI": 0.759, "SRPI_MinMax_Legacy": 0.509, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_01", "Station_Name": "Mesoamerican_Fore_01", "Region": "Caribbean", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.756, "SRPI_MinMax_Legacy": 0.576, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_25", "Station_Name": "RedSea_Farasan_25", "Region": "Red Sea", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.734, "SRPI_MinMax_Legacy": 0.669, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_11", "Station_Name": "Florida_Keys_Uppers_11", "Region": "Caribbean", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.729, "SRPI_MinMax_Legacy": 0.531, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_30", "Station_Name": "Palau_RockIslands_30", "Region": "Pacific", "Reef_Zone": "Lagoon", "Spatial_Restoration_Priority_Index_SRPI": 0.726, "SRPI_MinMax_Legacy": 0.463, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_12", "Station_Name": "Florida_Keys_Lowers_12", "Region": "Caribbean", "Reef_Zone": "Reef Crest", "Spatial_Restoration_Priority_Index_SRPI": 0.722, "SRPI_MinMax_Legacy": 0.544, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_24", "Station_Name": "RedSea_Shallow_24", "Region": "Red Sea", "Reef_Zone": "Reef Crest", "Spatial_Restoration_Priority_Index_SRPI": 0.721, "SRPI_MinMax_Legacy": 0.519, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_21", "Station_Name": "Okinawa_Kerama_21", "Region": "Indo-Pacific", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.703, "SRPI_MinMax_Legacy": 0.694, "Priority_Tier": "Tier_1_High_Priority_Restoration"},
+        {"Station_ID": "STN_23", "Station_Name": "RedSea_Aqaba_23", "Region": "Red Sea", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.685, "SRPI_MinMax_Legacy": 0.598, "Priority_Tier": "Tier_2_Secondary_Conservation"},
+        {"Station_ID": "STN_22", "Station_Name": "Okinawa_Ishigaki_22", "Region": "Indo-Pacific", "Reef_Zone": "Lagoon", "Spatial_Restoration_Priority_Index_SRPI": 0.678, "SRPI_MinMax_Legacy": 0.417, "Priority_Tier": "Tier_2_Secondary_Conservation"},
+        {"Station_ID": "STN_02", "Station_Name": "Mesoamerican_Crest_02", "Region": "Caribbean", "Reef_Zone": "Reef Crest", "Spatial_Restoration_Priority_Index_SRPI": 0.657, "SRPI_MinMax_Legacy": 0.489, "Priority_Tier": "Tier_2_Secondary_Conservation"},
+        {"Station_ID": "STN_07", "Station_Name": "Cozumel_South_07", "Region": "Caribbean", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.642, "SRPI_MinMax_Legacy": 0.467, "Priority_Tier": "Tier_2_Secondary_Conservation"},
+        {"Station_ID": "STN_29", "Station_Name": "Hawaii_OahuFore_29", "Region": "Pacific", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.639, "SRPI_MinMax_Legacy": 0.468, "Priority_Tier": "Tier_2_Secondary_Conservation"},
+        {"Station_ID": "STN_10", "Station_Name": "Roatan_South_10", "Region": "Caribbean", "Reef_Zone": "Back Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.619, "SRPI_MinMax_Legacy": 0.348, "Priority_Tier": "Tier_2_Secondary_Conservation"},
+        {"Station_ID": "STN_13", "Station_Name": "GreatBarrier_Northern_13", "Region": "Indo-Pacific", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.617, "SRPI_MinMax_Legacy": 0.662, "Priority_Tier": "Tier_2_Secondary_Conservation"},
+        {"Station_ID": "STN_04", "Station_Name": "Mesoamerican_Lagoon_04", "Region": "Caribbean", "Reef_Zone": "Lagoon", "Spatial_Restoration_Priority_Index_SRPI": 0.609, "SRPI_MinMax_Legacy": 0.335, "Priority_Tier": "Tier_2_Secondary_Conservation"},
+        {"Station_ID": "STN_16", "Station_Name": "CoralTriangle_RajaAmpat_16", "Region": "Indo-Pacific", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.583, "SRPI_MinMax_Legacy": 0.651, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_14", "Station_Name": "GreatBarrier_Central_14", "Region": "Indo-Pacific", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.562, "SRPI_MinMax_Legacy": 0.577, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_20", "Station_Name": "CoralTriangle_Bali_20", "Region": "Indo-Pacific", "Reef_Zone": "Reef Crest", "Spatial_Restoration_Priority_Index_SRPI": 0.53, "SRPI_MinMax_Legacy": 0.636, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_18", "Station_Name": "CoralTriangle_Komodo_18", "Region": "Indo-Pacific", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.477, "SRPI_MinMax_Legacy": 0.512, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_17", "Station_Name": "CoralTriangle_Misool_17", "Region": "Indo-Pacific", "Reef_Zone": "Reef Crest", "Spatial_Restoration_Priority_Index_SRPI": 0.45, "SRPI_MinMax_Legacy": 0.534, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_19", "Station_Name": "CoralTriangle_Sulawesi_19", "Region": "Indo-Pacific", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.444, "SRPI_MinMax_Legacy": 0.616, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_05", "Station_Name": "Belize_Barrier_05", "Region": "Caribbean", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.423, "SRPI_MinMax_Legacy": 0.461, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_08", "Station_Name": "Cozumel_Shallow_08", "Region": "Caribbean", "Reef_Zone": "Lagoon", "Spatial_Restoration_Priority_Index_SRPI": 0.418, "SRPI_MinMax_Legacy": 0.3, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_09", "Station_Name": "Roatan_North_09", "Region": "Caribbean", "Reef_Zone": "Fore Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.415, "SRPI_MinMax_Legacy": 0.448, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_03", "Station_Name": "Mesoamerican_Back_03", "Region": "Caribbean", "Reef_Zone": "Back Reef", "Spatial_Restoration_Priority_Index_SRPI": 0.403, "SRPI_MinMax_Legacy": 0.291, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_27", "Station_Name": "Maldives_AriAtoll_27", "Region": "Indian Ocean", "Reef_Zone": "Reef Crest", "Spatial_Restoration_Priority_Index_SRPI": 0.356, "SRPI_MinMax_Legacy": 0.471, "Priority_Tier": "Tier_3_Low_Monitoring"},
+        {"Station_ID": "STN_15", "Station_Name": "GreatBarrier_Lagoon_15", "Region": "Indo-Pacific", "Reef_Zone": "Lagoon", "Spatial_Restoration_Priority_Index_SRPI": 0.353, "SRPI_MinMax_Legacy": 0.381, "Priority_Tier": "Tier_3_Low_Monitoring"}
+      ]
+    }
+  },
+  "reproducibility_and_execution": {
+    "script_source": "run_all.py",
+    "file_source": "results/pipeline_execution_log.json",
+    "total_stages": 17,
+    "successful_stages": 17,
+    "total_runtime_seconds": 95.99,
+    "all_stages_passed": true
+  }
+}
