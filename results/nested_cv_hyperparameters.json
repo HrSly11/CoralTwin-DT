@@ -1,0 +1,637 @@
+{
+  "protocol": "5-Fold Outer Spatial Block CV (25km buffer) with 3-Fold Inner GroupKFold by Spatial_Cluster_ID",
+  "canonical_feature_set": [
+    "Depth_m",
+    "SST_degC",
+    "SST_Anomaly_degC",
+    "DHW_degC_weeks",
+    "pH_total",
+    "Salinity_PSU",
+    "Dissolved_Oxygen_mg_L",
+    "Aragonite_Saturation_Omega",
+    "Turbidity_NTU",
+    "PAR_umol_m2_s"
+  ],
+  "outer_folds": [
+    {
+      "outer_fold_id": 1,
+      "inner_cv_scheme": "3-Fold GroupKFold by Spatial_Cluster_ID",
+      "xgboost_candidates": [
+        {
+          "params": {
+            "n_estimators": 200,
+            "max_depth": 4,
+            "learning_rate": 0.08,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 3,
+            "gamma": 0.1
+          },
+          "inner_cv_rmse_mean": 3.9905,
+          "inner_cv_macro_f1_mean": 0.7089
+        },
+        {
+          "params": {
+            "n_estimators": 350,
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 3,
+            "gamma": 0.1
+          },
+          "inner_cv_rmse_mean": 4.0773,
+          "inner_cv_macro_f1_mean": 0.7156
+        },
+        {
+          "params": {
+            "n_estimators": 350,
+            "max_depth": 8,
+            "learning_rate": 0.03,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 5,
+            "gamma": 0.2
+          },
+          "inner_cv_rmse_mean": 4.0411,
+          "inner_cv_macro_f1_mean": 0.71
+        }
+      ],
+      "selected_xgboost_params": {
+        "n_estimators": 350,
+        "max_depth": 6,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "min_child_weight": 3,
+        "gamma": 0.1
+      },
+      "random_forest_candidates": [
+        {
+          "params": {
+            "n_estimators": 150,
+            "max_depth": 8,
+            "min_samples_split": 4,
+            "min_samples_leaf": 2
+          },
+          "inner_cv_rmse_mean": 3.8965,
+          "inner_cv_macro_f1_mean": 0.7267
+        },
+        {
+          "params": {
+            "n_estimators": 200,
+            "max_depth": 12,
+            "min_samples_split": 4,
+            "min_samples_leaf": 2
+          },
+          "inner_cv_rmse_mean": 3.9156,
+          "inner_cv_macro_f1_mean": 0.7267
+        },
+        {
+          "params": {
+            "n_estimators": 250,
+            "max_depth": 16,
+            "min_samples_split": 2,
+            "min_samples_leaf": 1
+          },
+          "inner_cv_rmse_mean": 3.9389,
+          "inner_cv_macro_f1_mean": 0.7267
+        }
+      ],
+      "selected_random_forest_params": {
+        "n_estimators": 200,
+        "max_depth": 12,
+        "min_samples_split": 4,
+        "min_samples_leaf": 2
+      },
+      "selected_deep_mlp_params": {
+        "layers": [
+          10,
+          128,
+          64,
+          32
+        ],
+        "normalization": "BatchNorm1d",
+        "activation": "ReLU",
+        "dropout": 0.2,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "batch_size": 256,
+        "max_epochs": 30,
+        "early_stopping_patience": 5
+      },
+      "selected_stacked_lstm_params": {
+        "seq_len": 8,
+        "lstm_hidden_sizes": [
+          64,
+          32
+        ],
+        "dense_head": 32,
+        "dropout": 0.2,
+        "optimizer": "AdamW",
+        "lr": 0.003,
+        "weight_decay": 0.0001,
+        "batch_size": 256,
+        "max_epochs": 25,
+        "early_stopping_patience": 5
+      }
+    },
+    {
+      "outer_fold_id": 2,
+      "inner_cv_scheme": "3-Fold GroupKFold by Spatial_Cluster_ID",
+      "xgboost_candidates": [
+        {
+          "params": {
+            "n_estimators": 200,
+            "max_depth": 4,
+            "learning_rate": 0.08,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 3,
+            "gamma": 0.1
+          },
+          "inner_cv_rmse_mean": 4.0849,
+          "inner_cv_macro_f1_mean": 0.7244
+        },
+        {
+          "params": {
+            "n_estimators": 350,
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 3,
+            "gamma": 0.1
+          },
+          "inner_cv_rmse_mean": 4.2145,
+          "inner_cv_macro_f1_mean": 0.721
+        },
+        {
+          "params": {
+            "n_estimators": 350,
+            "max_depth": 8,
+            "learning_rate": 0.03,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 5,
+            "gamma": 0.2
+          },
+          "inner_cv_rmse_mean": 4.1543,
+          "inner_cv_macro_f1_mean": 0.7254
+        }
+      ],
+      "selected_xgboost_params": {
+        "n_estimators": 350,
+        "max_depth": 6,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "min_child_weight": 3,
+        "gamma": 0.1
+      },
+      "random_forest_candidates": [
+        {
+          "params": {
+            "n_estimators": 150,
+            "max_depth": 8,
+            "min_samples_split": 4,
+            "min_samples_leaf": 2
+          },
+          "inner_cv_rmse_mean": 3.9481,
+          "inner_cv_macro_f1_mean": 0.7223
+        },
+        {
+          "params": {
+            "n_estimators": 200,
+            "max_depth": 12,
+            "min_samples_split": 4,
+            "min_samples_leaf": 2
+          },
+          "inner_cv_rmse_mean": 3.9685,
+          "inner_cv_macro_f1_mean": 0.7223
+        },
+        {
+          "params": {
+            "n_estimators": 250,
+            "max_depth": 16,
+            "min_samples_split": 2,
+            "min_samples_leaf": 1
+          },
+          "inner_cv_rmse_mean": 3.9901,
+          "inner_cv_macro_f1_mean": 0.7223
+        }
+      ],
+      "selected_random_forest_params": {
+        "n_estimators": 200,
+        "max_depth": 12,
+        "min_samples_split": 4,
+        "min_samples_leaf": 2
+      },
+      "selected_deep_mlp_params": {
+        "layers": [
+          10,
+          128,
+          64,
+          32
+        ],
+        "normalization": "BatchNorm1d",
+        "activation": "ReLU",
+        "dropout": 0.2,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "batch_size": 256,
+        "max_epochs": 30,
+        "early_stopping_patience": 5
+      },
+      "selected_stacked_lstm_params": {
+        "seq_len": 8,
+        "lstm_hidden_sizes": [
+          64,
+          32
+        ],
+        "dense_head": 32,
+        "dropout": 0.2,
+        "optimizer": "AdamW",
+        "lr": 0.003,
+        "weight_decay": 0.0001,
+        "batch_size": 256,
+        "max_epochs": 25,
+        "early_stopping_patience": 5
+      }
+    },
+    {
+      "outer_fold_id": 3,
+      "inner_cv_scheme": "3-Fold GroupKFold by Spatial_Cluster_ID",
+      "xgboost_candidates": [
+        {
+          "params": {
+            "n_estimators": 200,
+            "max_depth": 4,
+            "learning_rate": 0.08,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 3,
+            "gamma": 0.1
+          },
+          "inner_cv_rmse_mean": 4.0243,
+          "inner_cv_macro_f1_mean": 0.7231
+        },
+        {
+          "params": {
+            "n_estimators": 350,
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 3,
+            "gamma": 0.1
+          },
+          "inner_cv_rmse_mean": 4.0957,
+          "inner_cv_macro_f1_mean": 0.72
+        },
+        {
+          "params": {
+            "n_estimators": 350,
+            "max_depth": 8,
+            "learning_rate": 0.03,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 5,
+            "gamma": 0.2
+          },
+          "inner_cv_rmse_mean": 4.0703,
+          "inner_cv_macro_f1_mean": 0.72
+        }
+      ],
+      "selected_xgboost_params": {
+        "n_estimators": 350,
+        "max_depth": 6,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "min_child_weight": 3,
+        "gamma": 0.1
+      },
+      "random_forest_candidates": [
+        {
+          "params": {
+            "n_estimators": 150,
+            "max_depth": 8,
+            "min_samples_split": 4,
+            "min_samples_leaf": 2
+          },
+          "inner_cv_rmse_mean": 3.914,
+          "inner_cv_macro_f1_mean": 0.7226
+        },
+        {
+          "params": {
+            "n_estimators": 200,
+            "max_depth": 12,
+            "min_samples_split": 4,
+            "min_samples_leaf": 2
+          },
+          "inner_cv_rmse_mean": 3.9311,
+          "inner_cv_macro_f1_mean": 0.7226
+        },
+        {
+          "params": {
+            "n_estimators": 250,
+            "max_depth": 16,
+            "min_samples_split": 2,
+            "min_samples_leaf": 1
+          },
+          "inner_cv_rmse_mean": 3.953,
+          "inner_cv_macro_f1_mean": 0.7269
+        }
+      ],
+      "selected_random_forest_params": {
+        "n_estimators": 200,
+        "max_depth": 12,
+        "min_samples_split": 4,
+        "min_samples_leaf": 2
+      },
+      "selected_deep_mlp_params": {
+        "layers": [
+          10,
+          128,
+          64,
+          32
+        ],
+        "normalization": "BatchNorm1d",
+        "activation": "ReLU",
+        "dropout": 0.2,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "batch_size": 256,
+        "max_epochs": 30,
+        "early_stopping_patience": 5
+      },
+      "selected_stacked_lstm_params": {
+        "seq_len": 8,
+        "lstm_hidden_sizes": [
+          64,
+          32
+        ],
+        "dense_head": 32,
+        "dropout": 0.2,
+        "optimizer": "AdamW",
+        "lr": 0.003,
+        "weight_decay": 0.0001,
+        "batch_size": 256,
+        "max_epochs": 25,
+        "early_stopping_patience": 5
+      }
+    },
+    {
+      "outer_fold_id": 4,
+      "inner_cv_scheme": "3-Fold GroupKFold by Spatial_Cluster_ID",
+      "xgboost_candidates": [
+        {
+          "params": {
+            "n_estimators": 200,
+            "max_depth": 4,
+            "learning_rate": 0.08,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 3,
+            "gamma": 0.1
+          },
+          "inner_cv_rmse_mean": 4.0596,
+          "inner_cv_macro_f1_mean": 0.713
+        },
+        {
+          "params": {
+            "n_estimators": 350,
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 3,
+            "gamma": 0.1
+          },
+          "inner_cv_rmse_mean": 4.1275,
+          "inner_cv_macro_f1_mean": 0.7165
+        },
+        {
+          "params": {
+            "n_estimators": 350,
+            "max_depth": 8,
+            "learning_rate": 0.03,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 5,
+            "gamma": 0.2
+          },
+          "inner_cv_rmse_mean": 4.0886,
+          "inner_cv_macro_f1_mean": 0.7125
+        }
+      ],
+      "selected_xgboost_params": {
+        "n_estimators": 350,
+        "max_depth": 6,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "min_child_weight": 3,
+        "gamma": 0.1
+      },
+      "random_forest_candidates": [
+        {
+          "params": {
+            "n_estimators": 150,
+            "max_depth": 8,
+            "min_samples_split": 4,
+            "min_samples_leaf": 2
+          },
+          "inner_cv_rmse_mean": 3.9263,
+          "inner_cv_macro_f1_mean": 0.7327
+        },
+        {
+          "params": {
+            "n_estimators": 200,
+            "max_depth": 12,
+            "min_samples_split": 4,
+            "min_samples_leaf": 2
+          },
+          "inner_cv_rmse_mean": 3.9413,
+          "inner_cv_macro_f1_mean": 0.7327
+        },
+        {
+          "params": {
+            "n_estimators": 250,
+            "max_depth": 16,
+            "min_samples_split": 2,
+            "min_samples_leaf": 1
+          },
+          "inner_cv_rmse_mean": 3.9602,
+          "inner_cv_macro_f1_mean": 0.7327
+        }
+      ],
+      "selected_random_forest_params": {
+        "n_estimators": 200,
+        "max_depth": 12,
+        "min_samples_split": 4,
+        "min_samples_leaf": 2
+      },
+      "selected_deep_mlp_params": {
+        "layers": [
+          10,
+          128,
+          64,
+          32
+        ],
+        "normalization": "BatchNorm1d",
+        "activation": "ReLU",
+        "dropout": 0.2,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "batch_size": 256,
+        "max_epochs": 30,
+        "early_stopping_patience": 5
+      },
+      "selected_stacked_lstm_params": {
+        "seq_len": 8,
+        "lstm_hidden_sizes": [
+          64,
+          32
+        ],
+        "dense_head": 32,
+        "dropout": 0.2,
+        "optimizer": "AdamW",
+        "lr": 0.003,
+        "weight_decay": 0.0001,
+        "batch_size": 256,
+        "max_epochs": 25,
+        "early_stopping_patience": 5
+      }
+    },
+    {
+      "outer_fold_id": 5,
+      "inner_cv_scheme": "3-Fold GroupKFold by Spatial_Cluster_ID",
+      "xgboost_candidates": [
+        {
+          "params": {
+            "n_estimators": 200,
+            "max_depth": 4,
+            "learning_rate": 0.08,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 3,
+            "gamma": 0.1
+          },
+          "inner_cv_rmse_mean": 4.0306,
+          "inner_cv_macro_f1_mean": 0.7285
+        },
+        {
+          "params": {
+            "n_estimators": 350,
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 3,
+            "gamma": 0.1
+          },
+          "inner_cv_rmse_mean": 4.1429,
+          "inner_cv_macro_f1_mean": 0.7315
+        },
+        {
+          "params": {
+            "n_estimators": 350,
+            "max_depth": 8,
+            "learning_rate": 0.03,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "min_child_weight": 5,
+            "gamma": 0.2
+          },
+          "inner_cv_rmse_mean": 4.0987,
+          "inner_cv_macro_f1_mean": 0.7315
+        }
+      ],
+      "selected_xgboost_params": {
+        "n_estimators": 350,
+        "max_depth": 6,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "min_child_weight": 3,
+        "gamma": 0.1
+      },
+      "random_forest_candidates": [
+        {
+          "params": {
+            "n_estimators": 150,
+            "max_depth": 8,
+            "min_samples_split": 4,
+            "min_samples_leaf": 2
+          },
+          "inner_cv_rmse_mean": 3.9155,
+          "inner_cv_macro_f1_mean": 0.7282
+        },
+        {
+          "params": {
+            "n_estimators": 200,
+            "max_depth": 12,
+            "min_samples_split": 4,
+            "min_samples_leaf": 2
+          },
+          "inner_cv_rmse_mean": 3.937,
+          "inner_cv_macro_f1_mean": 0.7282
+        },
+        {
+          "params": {
+            "n_estimators": 250,
+            "max_depth": 16,
+            "min_samples_split": 2,
+            "min_samples_leaf": 1
+          },
+          "inner_cv_rmse_mean": 3.9618,
+          "inner_cv_macro_f1_mean": 0.7334
+        }
+      ],
+      "selected_random_forest_params": {
+        "n_estimators": 200,
+        "max_depth": 12,
+        "min_samples_split": 4,
+        "min_samples_leaf": 2
+      },
+      "selected_deep_mlp_params": {
+        "layers": [
+          10,
+          128,
+          64,
+          32
+        ],
+        "normalization": "BatchNorm1d",
+        "activation": "ReLU",
+        "dropout": 0.2,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "batch_size": 256,
+        "max_epochs": 30,
+        "early_stopping_patience": 5
+      },
+      "selected_stacked_lstm_params": {
+        "seq_len": 8,
+        "lstm_hidden_sizes": [
+          64,
+          32
+        ],
+        "dense_head": 32,
+        "dropout": 0.2,
+        "optimizer": "AdamW",
+        "lr": 0.003,
+        "weight_decay": 0.0001,
+        "batch_size": 256,
+        "max_epochs": 25,
+        "early_stopping_patience": 5
+      }
+    }
+  ]
+}

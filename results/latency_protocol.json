@@ -1,0 +1,285 @@
+{
+  "protocol_version": "2026-10-27",
+  "hardware_and_environment": {
+    "os": "Windows-10-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
+    "python_version": "3.11.0",
+    "cpu_threads_during_latency_test": 1,
+    "omp_num_threads": "1",
+    "torch_num_threads": 1,
+    "packages": {
+      "numpy": "2.4.6",
+      "pandas": "2.3.3",
+      "scikit_learn": "1.9.0",
+      "xgboost": "3.2.0",
+      "torch": "2.14.1+cpu"
+    }
+  },
+  "model_complexity_and_size": {
+    "XGBoost": {
+      "n_trees_per_head": 350,
+      "max_depth": 6,
+      "serialized_size_mb": 2.8329,
+      "training_time_single_fit_s": 1.113
+    },
+    "Random_Forest": {
+      "n_trees_per_head": 200,
+      "max_depth": 12,
+      "serialized_size_mb": 21.0901,
+      "training_time_single_fit_s": 3.672
+    },
+    "Deep_MLP": {
+      "trainable_parameters_classifier": 12291,
+      "trainable_parameters_regressor": 12225,
+      "trainable_parameters_total": 24516,
+      "serialized_size_mb": 0.1123,
+      "training_time_single_fit_s": 6.152
+    },
+    "Stacked_LSTM": {
+      "seq_len": 8,
+      "trainable_parameters_classifier": 33155,
+      "trainable_parameters_regressor": 33089,
+      "trainable_parameters_total": 66244,
+      "serialized_size_mb": 0.2623,
+      "training_time_single_fit_s": 14.143
+    }
+  },
+  "latency_benchmarks": {
+    "XGBoost": {
+      "batch_1": {
+        "batch_size": 1,
+        "n_warmup": 50,
+        "n_repetitions": 500,
+        "inference_only_ms_per_sample": {
+          "mean": 0.32181,
+          "median": 0.3248,
+          "std": 0.03379,
+          "p95": 0.34966,
+          "p99": 0.4609
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.32933,
+          "median": 0.3253,
+          "std": 0.02191,
+          "p95": 0.3495,
+          "p99": 0.45692
+        }
+      },
+      "batch_256": {
+        "batch_size": 256,
+        "n_warmup": 50,
+        "n_repetitions": 500,
+        "inference_only_ms_per_sample": {
+          "mean": 0.00643,
+          "median": 0.00624,
+          "std": 0.00073,
+          "p95": 0.00896,
+          "p99": 0.00909
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.007,
+          "median": 0.00626,
+          "std": 0.00149,
+          "p95": 0.00907,
+          "p99": 0.00965
+        }
+      },
+      "batch_3000": {
+        "batch_size": 3000,
+        "n_warmup": 50,
+        "n_repetitions": 100,
+        "inference_only_ms_per_sample": {
+          "mean": 0.00553,
+          "median": 0.00545,
+          "std": 0.00066,
+          "p95": 0.00682,
+          "p99": 0.00708
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.00538,
+          "median": 0.00522,
+          "std": 0.00048,
+          "p95": 0.00625,
+          "p99": 0.00668
+        }
+      }
+    },
+    "Random_Forest": {
+      "batch_1": {
+        "batch_size": 1,
+        "n_warmup": 25,
+        "n_repetitions": 100,
+        "inference_only_ms_per_sample": {
+          "mean": 17.8013,
+          "median": 17.9615,
+          "std": 1.77393,
+          "p95": 20.14836,
+          "p99": 20.96901
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 17.77701,
+          "median": 17.3905,
+          "std": 1.58989,
+          "p95": 20.31448,
+          "p99": 20.5609
+        }
+      },
+      "batch_256": {
+        "batch_size": 256,
+        "n_warmup": 25,
+        "n_repetitions": 100,
+        "inference_only_ms_per_sample": {
+          "mean": 0.07981,
+          "median": 0.07243,
+          "std": 0.01764,
+          "p95": 0.10671,
+          "p99": 0.10935
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.08257,
+          "median": 0.07661,
+          "std": 0.01846,
+          "p95": 0.1137,
+          "p99": 0.11557
+        }
+      },
+      "batch_3000": {
+        "batch_size": 3000,
+        "n_warmup": 25,
+        "n_repetitions": 100,
+        "inference_only_ms_per_sample": {
+          "mean": 0.01865,
+          "median": 0.01859,
+          "std": 0.00063,
+          "p95": 0.01975,
+          "p99": 0.01989
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.01891,
+          "median": 0.01885,
+          "std": 0.00073,
+          "p95": 0.02019,
+          "p99": 0.02094
+        }
+      }
+    },
+    "Deep_MLP": {
+      "batch_1": {
+        "batch_size": 1,
+        "n_warmup": 50,
+        "n_repetitions": 500,
+        "inference_only_ms_per_sample": {
+          "mean": 0.19672,
+          "median": 0.1969,
+          "std": 0.01138,
+          "p95": 0.2114,
+          "p99": 0.22874
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.3779,
+          "median": 0.37655,
+          "std": 0.01277,
+          "p95": 0.39542,
+          "p99": 0.4261
+        }
+      },
+      "batch_256": {
+        "batch_size": 256,
+        "n_warmup": 50,
+        "n_repetitions": 500,
+        "inference_only_ms_per_sample": {
+          "mean": 0.0015,
+          "median": 0.00156,
+          "std": 0.00022,
+          "p95": 0.00175,
+          "p99": 0.00201
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.00203,
+          "median": 0.00197,
+          "std": 0.00039,
+          "p95": 0.00252,
+          "p99": 0.00255
+        }
+      },
+      "batch_3000": {
+        "batch_size": 3000,
+        "n_warmup": 50,
+        "n_repetitions": 100,
+        "inference_only_ms_per_sample": {
+          "mean": 0.00042,
+          "median": 0.00042,
+          "std": 1e-05,
+          "p95": 0.00043,
+          "p99": 0.00048
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.00049,
+          "median": 0.00049,
+          "std": 1e-05,
+          "p95": 0.00051,
+          "p99": 0.00052
+        }
+      }
+    },
+    "Stacked_LSTM": {
+      "batch_1": {
+        "batch_size": 1,
+        "n_warmup": 50,
+        "n_repetitions": 500,
+        "inference_only_ms_per_sample": {
+          "mean": 0.4135,
+          "median": 0.4219,
+          "std": 0.03658,
+          "p95": 0.43994,
+          "p99": 0.47591
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.60527,
+          "median": 0.6055,
+          "std": 0.07927,
+          "p95": 0.67275,
+          "p99": 0.78504
+        }
+      },
+      "batch_256": {
+        "batch_size": 256,
+        "n_warmup": 50,
+        "n_repetitions": 500,
+        "inference_only_ms_per_sample": {
+          "mean": 0.01306,
+          "median": 0.01265,
+          "std": 0.00148,
+          "p95": 0.01622,
+          "p99": 0.01703
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.01353,
+          "median": 0.01321,
+          "std": 0.00137,
+          "p95": 0.01698,
+          "p99": 0.01752
+        }
+      },
+      "batch_3000": {
+        "batch_size": 3000,
+        "n_warmup": 50,
+        "n_repetitions": 100,
+        "inference_only_ms_per_sample": {
+          "mean": 0.01276,
+          "median": 0.01266,
+          "std": 0.00061,
+          "p95": 0.01373,
+          "p99": 0.01509
+        },
+        "with_preprocessing_ms_per_sample": {
+          "mean": 0.0127,
+          "median": 0.01258,
+          "std": 0.00044,
+          "p95": 0.0134,
+          "p99": 0.01422
+        }
+      }
+    }
+  }
+}

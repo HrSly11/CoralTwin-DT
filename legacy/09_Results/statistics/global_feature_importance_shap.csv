@@ -1,0 +1,11 @@
+Feature,Mean_Absolute_SHAP_Value,Relative_Importance_Pct
+DHW_degC_weeks,5.4161,46.97
+Structural_Rugosity,2.3567,20.44
+Live_Coral_Cover_Pct,0.8564,7.43
+SST_degC,0.771,6.69
+Depth_m,0.7524,6.53
+SST_Anomaly_degC,0.6361,5.52
+PAR_umol_m2_s,0.5012,4.35
+Aragonite_Saturation_Omega,0.0948,0.82
+Turbidity_NTU,0.0782,0.68
+pH_total,0.0673,0.58

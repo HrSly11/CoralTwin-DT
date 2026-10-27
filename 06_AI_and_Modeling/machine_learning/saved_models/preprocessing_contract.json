@@ -1,23 +1,38 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "feature_order": [
     "Depth_m",
     "SST_degC",
     "SST_Anomaly_degC",
     "DHW_degC_weeks",
     "pH_total",
+    "Salinity_PSU",
+    "Dissolved_Oxygen_mg_L",
     "Aragonite_Saturation_Omega",
     "Turbidity_NTU",
-    "PAR_umol_m2_s",
+    "PAR_umol_m2_s"
+  ],
+  "excluded_post_target_columns": [
+    "Shannon_Diversity_H",
     "Structural_Rugosity",
-    "Live_Coral_Cover_Pct"
+    "Live_Coral_Cover_Pct",
+    "Macroalgae_Cover_Pct",
+    "Turf_Algae_Cover_Pct",
+    "Colony_Density_m2",
+    "Bleaching_Severity_Pct"
   ],
   "models": {
-    "classifier": {
+    "XGBoost": {
       "input_space": "raw"
     },
-    "regressor": {
+    "Random_Forest": {
       "input_space": "raw"
+    },
+    "Deep_MLP": {
+      "input_space": "standardized_train_fold"
+    },
+    "Stacked_LSTM": {
+      "input_space": "standardized_train_fold_seq8"
     }
   }
 }

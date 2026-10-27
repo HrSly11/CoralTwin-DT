@@ -1,69 +1,44 @@
-# Comprehensive Machine Learning Benchmark Report: Random Forest vs. XGBoost vs. LSTM
+# Unified Machine Learning & Deep Learning Benchmark Report
 
-**Project:** CoralTwin-DT (Cyber-Physical Environmental Digital Twin)
-**Lead Evaluator:** Environmental Machine Learning Engineering Board
-**Target Goal:** Multi-Stressor Coral Bleaching Risk Classification & Continuous Coral Degradation Regression
-**Evaluation Dataset:** `03_Data/final_dataset.csv` (N = 15,000 spatio-temporal records across 30 global reef stations)
-**Validation Strategy:** 5-Fold Spatially Stratified Cross-Validation + Temporal Sequence Windowing (L = 6)
-**Scientific Attribution:** *Resultado obtenido mediante prototipo computacional del gemelo digital.*
+**Dataset:** `03_Data/final_dataset.csv` ($N = 15,000$ synthetic observations across 30 stations; 100.0% simulated)
+**Validation Protocol:** 5-Fold Spatially Clustered & Biogeographically Stratified Cross-Validation (`>25 km` Haversine buffer, min out-of-fold distance `119.72 km`) across 5 random seeds (`17, 42, 73, 108, 256`)
+**Canonical Predictor Set (`Regime_1_Clean_Emulation_10`):** `Depth_m`, `SST_degC`, `SST_Anomaly_degC`, `DHW_degC_weeks`, `pH_total`, `Salinity_PSU`, `Dissolved_Oxygen_mg_L`, `Aragonite_Saturation_Omega`, `Turbidity_NTU`, `PAR_umol_m2_s` (all post-target benthic variables excluded)
 
 ---
 
-## 1. Executive Summary & Benchmark Matrix
+## 1. Canonical 4-Model Spatial-CV Benchmark Summary (`Regime_1_Clean_Emulation_10`)
 
-```
-+---------------------------------------------------------------------------------------------------------------+
-|                                      AI MODEL BENCHMARK COMPARISON MATRIX                                     |
-+------------------+-----------------------+----------+----------+----------+----------+----------+-------------+
-| Model            | Architecture Type     | Accuracy | Macro-F1 | R2 Score | RMSE (%) | MAE (%)  | Latency(ms) |
-+------------------+-----------------------+----------+----------+----------+----------+----------+-------------+
-| Random Forest    | Bagged Decision Trees | 98.89%   | 0.7320   | 0.9996   | 0.323%   | 0.254%   | 0.3494 ms   |
-| XGBoost (Winner) | Gradient Boosted Trees| 98.85%   | 0.7298   | 0.9995   | 0.346%   | 0.263%   | 0.0094 ms   |
-| LSTM (Recurrent) | Stacked Bidirectional | 94.68%   | 0.3242   | 0.0310   | 14.578%   | 7.030%   | 0.4812 ms   |
-+------------------+-----------------------+----------+----------+----------+----------+----------+-------------+
-```
+| Model_Architecture   |   Classification_Accuracy |   Accuracy_Fold_SD |   Accuracy_Seed_SD | Accuracy_CI95    |   Balanced_Accuracy |   Macro_Precision |   Macro_Recall |   Macro_F1_Score |   Macro_F1_Fold_SD |   Macro_F1_Seed_SD | Macro_F1_CI95    |   Weighted_F1_Score |   Macro_PR_AUC |   Regression_R2 |   R2_Fold_SD |   R2_Seed_SD | R2_CI95          |   Regression_RMSE |   RMSE_Fold_SD |   RMSE_Seed_SD | RMSE_CI95      |   Regression_MAE |   MAE_Fold_SD |   Multiclass_Brier_Score |   ECE_10Bins |   Latency_Batch1_ms |   Latency_Batch256_ms |   Model_Size_MB |
+|:---------------------|--------------------------:|-------------------:|-------------------:|:-----------------|--------------------:|------------------:|---------------:|-----------------:|-------------------:|-------------------:|:-----------------|--------------------:|---------------:|----------------:|-------------:|-------------:|:-----------------|------------------:|---------------:|---------------:|:---------------|-----------------:|--------------:|-------------------------:|-------------:|--------------------:|----------------------:|----------------:|
+| XGBoost              |                    0.9885 |             0.0015 |             0.0001 | [0.9867, 0.9901] |              0.6962 |            0.9321 |         0.6962 |           0.7187 |             0.0237 |             0.0034 | [0.6966, 0.7423] |              0.9839 |         0.7132 |          0.9336 |       0.0058 |       0.0003 | [0.9292, 0.9374] |             4.044 |          0.067 |          0.01  | [3.996, 4.091] |            3.293 |         0.047 |                   0.0228 |       0.0077 |              0.3218 |                0.0064 |           2.833 |
+| Random_Forest        |                    0.9888 |             0.0016 |             0      | [0.9871, 0.9904] |              0.7016 |            0.9658 |         0.7016 |           0.7284 |             0.0217 |             0.0003 | [0.7045, 0.7521] |              0.9844 |         0.7221 |          0.9375 |       0.0064 |       0      | [0.9335, 0.9412] |             3.924 |          0.068 |          0.001 | [3.884, 3.964] |            3.215 |         0.052 |                   0.0223 |       0.0038 |             17.8013 |                0.0798 |          21.09  |
+| Deep_MLP             |                    0.9879 |             0.0017 |             0.0001 | [0.9862, 0.9896] |              0.6756 |            0.9931 |         0.6756 |           0.6807 |             0.0257 |             0.0051 | [0.6681, 0.6968] |              0.9823 |         0.725  |          0.9337 |       0.0067 |       0.0003 | [0.9292, 0.9375] |             4.041 |          0.078 |          0.01  | [3.997, 4.086] |            3.278 |         0.054 |                   0.0225 |       0.0014 |              0.1967 |                0.0015 |           0.112 |
+| Stacked_LSTM         |                    0.9881 |             0.0015 |             0.0001 | [0.9864, 0.9898] |              0.6823 |            0.9954 |         0.6823 |           0.6949 |             0.025  |             0.0033 | [0.6775, 0.7157] |              0.9828 |         0.7202 |          0.9371 |       0.006  |       0.0002 | [0.9331, 0.9408] |             3.934 |          0.073 |          0.006 | [3.893, 3.977] |            3.219 |         0.053 |                   0.0224 |       0.0009 |              0.4135 |                0.0131 |           0.262 |
 
 ---
 
-## 2. Detailed Technical Comparison by Architecture
+## 2. Reverse Target Leakage & Feature Ablation Summary (`Task B Part 2`)
 
-### 2.1 Random Forest (Breiman Ensemble)
-- **Strengths:** Highly robust against localized in-situ sensor noise, non-parametric, zero feature scaling required, resistant to catastrophic overfitting.
-- **Limitations:** Discrete decision thresholds create step-like approximations near subtle thermodynamic tipping points; heavier memory footprint (>45 MB serialized).
-- **Performance:** Accuracy = 98.89%, Macro-F1 = 0.7320, R2 = 0.9996, RMSE = 0.323%.
+| Regime                               |   N_Features | Features_List                                                                                                                                                                                                                                                   | Model         |   Seed |   Accuracy |   Accuracy_Fold_SD |   Balanced_Accuracy |   Macro_F1 |   Macro_F1_Fold_SD |      R2 |   R2_Fold_SD |    RMSE |   RMSE_Fold_SD |    MAE |
+|:-------------------------------------|-------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|-------:|-----------:|-------------------:|--------------------:|-----------:|-------------------:|--------:|-------------:|--------:|---------------:|-------:|
+| Regime_0_Leaked_16                   |           16 | Depth_m;SST_degC;SST_Anomaly_degC;HotSpot_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;Kd_490_m_inv;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct;Macroalgae_Cover_Pct;Shannon_Diversity_H | XGBoost       |     42 |     0.9883 |             0.0021 |              0.7076 |     0.7335 |             0.0263 |  0.9994 |       0.0001 |  0.3953 |         0.0405 | 0.2973 |
+| Regime_0_Leaked_16                   |           16 | Depth_m;SST_degC;SST_Anomaly_degC;HotSpot_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;Kd_490_m_inv;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct;Macroalgae_Cover_Pct;Shannon_Diversity_H | Random_Forest |     42 |     0.989  |             0.0018 |              0.7043 |     0.7324 |             0.024  |  0.9995 |       0.0001 |  0.3341 |         0.0305 | 0.2617 |
+| Regime_0_Leaked_16                   |           16 | Depth_m;SST_degC;SST_Anomaly_degC;HotSpot_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;Kd_490_m_inv;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct;Macroalgae_Cover_Pct;Shannon_Diversity_H | Deep_MLP      |     42 |     0.9879 |             0.0013 |              0.6756 |     0.6813 |             0.0111 |  0.9973 |       0.0003 |  0.8138 |         0.0558 | 0.6364 |
+| Regime_0_Leaked_16                   |           16 | Depth_m;SST_degC;SST_Anomaly_degC;HotSpot_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;Kd_490_m_inv;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct;Macroalgae_Cover_Pct;Shannon_Diversity_H | Stacked_LSTM  |     42 |     0.9884 |             0.0018 |              0.6882 |     0.7039 |             0.0338 |  0.9969 |       0.0002 |  0.8738 |         0.0167 | 0.484  |
+| Regime_0b_Legacy_Leaked_10           |           10 | Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct                                                                                                       | XGBoost       |     42 |     0.9881 |             0.0013 |              0.6978 |     0.7197 |             0.022  |  0.8305 |       0.0408 |  6.4597 |         0.8072 | 5.4279 |
+| Regime_0b_Legacy_Leaked_10           |           10 | Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct                                                                                                       | Random_Forest |     42 |     0.9889 |             0.0017 |              0.7034 |     0.7312 |             0.0218 |  0.9202 |       0.0141 |  4.4319 |         0.3095 | 3.6336 |
+| Regime_0b_Legacy_Leaked_10           |           10 | Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct                                                                                                       | Deep_MLP      |     42 |     0.9879 |             0.0016 |              0.6738 |     0.677  |             0.0205 |  0.9287 |       0.0089 |  4.19   |         0.2137 | 3.3859 |
+| Regime_0b_Legacy_Leaked_10           |           10 | Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s;Structural_Rugosity;Live_Coral_Cover_Pct                                                                                                       | Stacked_LSTM  |     42 |     0.9881 |             0.0015 |              0.6792 |     0.6879 |             0.0172 |  0.9554 |       0.0138 |  3.313  |         0.5057 | 2.6276 |
+| Regime_1_Clean_Emulation_10          |           10 | Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s                                                                                                             | XGBoost       |     42 |     0.9885 |             0.0015 |              0.6962 |     0.7187 |             0.0237 |  0.9336 |       0.0058 |  4.0443 |         0.067  | 3.2927 |
+| Regime_1_Clean_Emulation_10          |           10 | Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s                                                                                                             | Random_Forest |     42 |     0.9888 |             0.0016 |              0.7016 |     0.7284 |             0.0217 |  0.9375 |       0.0064 |  3.9236 |         0.0683 | 3.2149 |
+| Regime_1_Clean_Emulation_10          |           10 | Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s                                                                                                             | Deep_MLP      |     42 |     0.9879 |             0.0017 |              0.6756 |     0.6807 |             0.0257 |  0.9337 |       0.0067 |  4.0414 |         0.0781 | 3.2784 |
+| Regime_1_Clean_Emulation_10          |           10 | Depth_m;SST_degC;SST_Anomaly_degC;DHW_degC_weeks;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L;Aragonite_Saturation_Omega;Turbidity_NTU;PAR_umol_m2_s                                                                                                             | Stacked_LSTM  |     42 |     0.9881 |             0.0015 |              0.6823 |     0.6949 |             0.025  |  0.9371 |       0.006  |  3.9339 |         0.073  | 3.2187 |
+| Regime_2_Ablated_No_Direct_Inputs_6  |            6 | Depth_m;SST_degC;SST_Anomaly_degC;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L                                                                                                                                                                                   | XGBoost       |     42 |     0.9829 |             0.0046 |              0.6624 |     0.6925 |             0.0259 |  0.8487 |       0.0514 |  6.1037 |         0.9235 | 3.8944 |
+| Regime_2_Ablated_No_Direct_Inputs_6  |            6 | Depth_m;SST_degC;SST_Anomaly_degC;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L                                                                                                                                                                                   | Random_Forest |     42 |     0.9817 |             0.0039 |              0.6567 |     0.6929 |             0.0192 |  0.8625 |       0.0537 |  5.8179 |         1.0211 | 3.6861 |
+| Regime_2_Ablated_No_Direct_Inputs_6  |            6 | Depth_m;SST_degC;SST_Anomaly_degC;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L                                                                                                                                                                                   | Deep_MLP      |     42 |     0.9781 |             0.004  |              0.6333 |     0.6297 |             0.0128 |  0.7653 |       0.0404 |  7.6013 |         0.643  | 4.5708 |
+| Regime_2_Ablated_No_Direct_Inputs_6  |            6 | Depth_m;SST_degC;SST_Anomaly_degC;pH_total;Salinity_PSU;Dissolved_Oxygen_mg_L                                                                                                                                                                                   | Stacked_LSTM  |     42 |     0.9791 |             0.0036 |              0.6319 |     0.6331 |             0.0095 |  0.7884 |       0.0172 |  7.2177 |         0.1149 | 4.1438 |
+| Regime_3_Ablated_Strict_No_Proxies_2 |            2 | Depth_m;Salinity_PSU                                                                                                                                                                                                                                            | XGBoost       |     42 |     0.9398 |             0.0049 |              0.3333 |     0.323  |             0.0009 | -0.0269 |       0.0071 | 15.9007 |         0.6571 | 7.8437 |
+| Regime_3_Ablated_Strict_No_Proxies_2 |            2 | Depth_m;Salinity_PSU                                                                                                                                                                                                                                            | Random_Forest |     42 |     0.9398 |             0.0049 |              0.3333 |     0.323  |             0.0009 | -0.0464 |       0.0633 | 16.0503 |         0.8532 | 8.124  |
+| Regime_3_Ablated_Strict_No_Proxies_2 |            2 | Depth_m;Salinity_PSU                                                                                                                                                                                                                                            | Deep_MLP      |     42 |     0.9398 |             0.0049 |              0.3333 |     0.323  |             0.0009 | -0.0052 |       0.007  | 15.7316 |         0.7096 | 7.3107 |
+| Regime_3_Ablated_Strict_No_Proxies_2 |            2 | Depth_m;Salinity_PSU                                                                                                                                                                                                                                            | Stacked_LSTM  |     42 |     0.9398 |             0.0049 |              0.3333 |     0.323  |             0.0009 | -0.0002 |       0.0007 | 15.6927 |         0.6757 | 7.4506 |
 
-### 2.2 XGBoost (Extreme Gradient Boosting - Selected Operational Model)
-- **Strengths:** Exact second-order Taylor expansion loss minimization, built-in L1/L2 regularization, exceptional ability to model complex non-linear tipping points (DHW x Aragonite Saturation), native integration with TreeSHAP game-theoretic explainability, ultra-low inference latency.
-- **Limitations:** Requires careful hyperparameter tuning of learning rate and subsampling ratio.
-- **Performance:** **Accuracy = 98.85%**, **Macro-F1 = 0.7298**, **R2 = 0.9995**, **RMSE = 0.346%**.
-
-### 2.3 LSTM (Long Short-Term Memory Recurrent Neural Network)
-- **Strengths:** Explicitly captures temporal memory and rolling heatwave momentum over multi-week lookback sequences (L = 6 time steps).
-- **Limitations:** Requires significantly higher computational resources for training, higher inference latency, sensitive to temporal sequence gaps, black-box nature hinders direct tree-based TreeSHAP attribution.
-- **Performance:** Accuracy = 94.68%, Macro-F1 = 0.3242, R2 = 0.0310, RMSE = 14.578%.
-
----
-
-## 3. Multi-Criteria Trade-Off & Final Model Selection
-
-```
-+-------------------------------------------------------------------------------+
-|                      MULTI-CRITERIA DECISION MATRIX                           |
-+-------------------------+---------------+---------------+---------------------+
-| Decision Criterion      | Random Forest | XGBoost       | LSTM (Recurrent)    |
-+-------------------------+---------------+---------------+---------------------+
-| Predictive Skill (F1/R2)| High          | OUTSTANDING   | High                |
-| Non-Linear Tipping Fits | Moderate      | EXCELLENT     | High                |
-| Inference Latency       | Fast (0.02ms) | FASTEST(0.01ms)| Moderate (0.28ms)  |
-| Explainability (XAI)    | TreeSHAP      | Full TreeSHAP | Gradient/Integrated |
-| Memory & Deployment     | Heavy (45MB)  | LIGHT (3MB)   | Moderate (12MB)     |
-+-------------------------+---------------+---------------+---------------------+
-```
-
-### Final Selection Rationale:
-**XGBoost** is selected as the **Primary Production Engine** for CoralTwin-DT because it delivers:
-1. The highest overall cross-validated accuracy (98.85%) and R2 (0.9995).
-2. Seamless integration with the **TreeSHAP** biophysical explainability module to extract exact marginal feature attributions.
-3. Sub-millisecond inference latency, essential for high-throughput spatial GIS grid processing (500m x 500m rasters).
-
-**LSTM** is retained in the repository as the **Specialized Temporal Module** for multi-month sequence trajectory forecasting when continuous historical buoy streams are available.
