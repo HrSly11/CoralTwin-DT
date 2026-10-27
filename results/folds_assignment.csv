@@ -1,0 +1,31 @@
+Station_ID,Station_Name,Region,Reef_Zone,Latitude,Longitude,Spatial_Cluster_ID,Fold_ID,N_Observations,N_Grid_Cells,Nearest_Station_Overall,Nearest_Dist_Overall_km,Nearest_Train_Station_In_CV,Min_Train_Test_Dist_km,Buffer_25km_Compliant,Low_Count,Medium_Count,High_Count,No_Stress_Count,Watch_Count,Warning_Count,Alert_Level_1_Count,Alert_Level_2_Count,Mean_Coral_Cover_Loss_Pct
+STN_01,Mesoamerican_Fore_01,Caribbean,Fore Reef,18.25,-87.8,CLUST_01_Mesoamerican,1,500,80,Mesoamerican_Crest_02,3.95,Belize_Atoll_06,119.72,True,472,6,22,347,123,8,0,22,8.89
+STN_02,Mesoamerican_Crest_02,Caribbean,Reef Crest,18.28,-87.82,CLUST_01_Mesoamerican,1,500,80,Mesoamerican_Fore_01,3.95,Belize_Atoll_06,123.45,True,472,6,22,328,139,11,0,22,9.35
+STN_03,Mesoamerican_Back_03,Caribbean,Back Reef,18.31,-87.85,CLUST_01_Mesoamerican,1,500,80,Mesoamerican_Crest_02,4.6,Belize_Atoll_06,127.45,True,468,5,27,349,111,12,1,27,9.27
+STN_04,Mesoamerican_Lagoon_04,Caribbean,Lagoon,18.35,-87.88,CLUST_01_Mesoamerican,1,500,80,Mesoamerican_Back_03,5.46,Belize_Atoll_06,132.56,True,472,5,23,338,129,9,1,23,9.27
+STN_05,Belize_Barrier_05,Caribbean,Fore Reef,17.15,-87.9,CLUST_02_Belize_Barrier,4,500,80,Belize_Atoll_06,37.6,Mesoamerican_Fore_01,122.77,True,465,7,28,333,128,11,0,28,9.9
+STN_06,Belize_Atoll_06,Caribbean,Reef Crest,17.2,-87.55,CLUST_03_Belize_Atoll,4,500,80,Belize_Barrier_05,37.6,Mesoamerican_Fore_01,119.72,True,468,9,23,346,117,14,0,23,9.13
+STN_07,Cozumel_South_07,Caribbean,Fore Reef,20.3,-87.02,CLUST_04_Cozumel,2,500,80,Cozumel_Shallow_08,6.95,Mesoamerican_Lagoon_04,234.86,True,471,6,23,329,138,10,0,23,9.07
+STN_08,Cozumel_Shallow_08,Caribbean,Lagoon,20.35,-86.98,CLUST_04_Cozumel,2,500,80,Cozumel_South_07,6.95,Mesoamerican_Lagoon_04,241.6,True,468,5,27,351,107,15,0,27,9.53
+STN_09,Roatan_North_09,Caribbean,Fore Reef,16.38,-86.5,CLUST_05_Roatan,3,500,80,Roatan_South_10,8.54,Belize_Atoll_06,144.25,True,452,7,41,334,111,14,0,41,11.8
+STN_10,Roatan_South_10,Caribbean,Back Reef,16.32,-86.55,CLUST_05_Roatan,3,500,80,Roatan_North_09,8.54,Belize_Atoll_06,144.61,True,470,8,22,349,116,13,0,22,8.63
+STN_11,Florida_Keys_Uppers_11,Caribbean,Fore Reef,25.02,-80.4,CLUST_06_Florida_Uppers,5,500,80,Florida_Keys_Lowers_12,118.18,Cozumel_Shallow_08,851.41,True,475,6,19,349,126,6,0,19,8.69
+STN_12,Florida_Keys_Lowers_12,Caribbean,Reef Crest,24.55,-81.45,CLUST_07_Florida_Lowers,5,500,80,Florida_Keys_Uppers_11,118.18,Cozumel_Shallow_08,735.41,True,464,12,24,321,137,18,0,24,9.37
+STN_13,GreatBarrier_Northern_13,Indo-Pacific,Fore Reef,-14.5,145.45,CLUST_09_GBR_North,1,500,80,GreatBarrier_Central_14,456.85,GreatBarrier_Central_14,456.85,True,471,5,24,323,137,14,2,24,9.53
+STN_14,GreatBarrier_Central_14,Indo-Pacific,Fore Reef,-18.25,147.2,CLUST_10_GBR_Central,2,500,80,GreatBarrier_Lagoon_15,7.67,GreatBarrier_Northern_13,456.85,True,468,8,24,327,124,22,3,24,9.21
+STN_15,GreatBarrier_Lagoon_15,Indo-Pacific,Lagoon,-18.3,147.15,CLUST_10_GBR_Central,2,500,80,GreatBarrier_Central_14,7.67,GreatBarrier_Northern_13,459.79,True,458,7,35,331,112,20,2,35,10.02
+STN_16,CoralTriangle_RajaAmpat_16,Indo-Pacific,Fore Reef,-0.55,130.5,CLUST_11_RajaAmpat,3,500,80,CoralTriangle_Misool_17,160.46,CoralTriangle_Sulawesi_19,684.51,True,467,7,26,344,111,17,2,26,9.31
+STN_17,CoralTriangle_Misool_17,Indo-Pacific,Reef Crest,-1.95,130.15,CLUST_12_Misool,3,500,80,CoralTriangle_RajaAmpat_16,160.46,CoralTriangle_Sulawesi_19,721.57,True,462,6,32,305,143,18,2,32,10.42
+STN_18,CoralTriangle_Komodo_18,Indo-Pacific,Fore Reef,-8.6,119.55,CLUST_13_Komodo,4,500,80,CoralTriangle_Bali_20,432.36,CoralTriangle_Bali_20,432.36,True,468,5,27,332,120,21,0,27,9.37
+STN_19,CoralTriangle_Sulawesi_19,Indo-Pacific,Fore Reef,1.65,124.75,CLUST_14_Sulawesi,4,500,80,CoralTriangle_RajaAmpat_16,684.51,CoralTriangle_RajaAmpat_16,684.51,True,459,9,32,317,129,19,3,32,10.15
+STN_20,CoralTriangle_Bali_20,Indo-Pacific,Reef Crest,-8.12,115.65,CLUST_15_Bali,5,500,80,CoralTriangle_Komodo_18,432.36,CoralTriangle_Komodo_18,432.36,True,462,9,29,299,153,19,0,29,10.03
+STN_21,Okinawa_Kerama_21,Indo-Pacific,Fore Reef,26.2,127.35,CLUST_16_Okinawa_Kerama,5,500,80,Okinawa_Ishigaki_22,381.87,CoralTriangle_Sulawesi_19,2743.96,True,471,9,20,330,132,15,3,20,8.58
+STN_22,Okinawa_Ishigaki_22,Indo-Pacific,Lagoon,24.35,124.15,CLUST_17_Okinawa_Ishigaki,5,500,80,Okinawa_Kerama_21,381.87,CoralTriangle_Sulawesi_19,2524.95,True,472,6,22,327,131,20,0,22,8.31
+STN_23,RedSea_Aqaba_23,Red Sea,Fore Reef,29.45,34.95,CLUST_18_RedSea_Aqaba,1,500,80,RedSea_Shallow_24,272.37,RedSea_Shallow_24,272.37,True,483,5,12,448,36,4,0,12,6.8
+STN_24,RedSea_Shallow_24,Red Sea,Reef Crest,27.2,33.85,CLUST_19_RedSea_Shallow,2,500,80,RedSea_Aqaba_23,272.37,RedSea_Aqaba_23,272.37,True,482,1,17,438,40,5,0,17,7.1
+STN_25,RedSea_Farasan_25,Red Sea,Fore Reef,16.7,41.95,CLUST_20_RedSea_Farasan,3,500,80,RedSea_Shallow_24,1434.56,RedSea_Shallow_24,1434.56,True,487,4,9,459,28,4,0,9,6.09
+STN_26,Seychelles_Mahe_26,Indian Ocean,Fore Reef,-4.68,55.45,CLUST_21_Seychelles,2,500,80,Maldives_AriAtoll_27,2153.12,Maldives_AriAtoll_27,2153.12,True,469,7,24,338,121,16,1,24,9.47
+STN_27,Maldives_AriAtoll_27,Indian Ocean,Reef Crest,3.85,72.85,CLUST_22_Maldives,3,500,80,Seychelles_Mahe_26,2153.12,Seychelles_Mahe_26,2153.12,True,460,5,35,327,128,9,1,35,10.6
+STN_28,Hawaii_Kaneohe_28,Pacific,Lagoon,21.45,-157.8,CLUST_23_Hawaii_Oahu,4,500,80,Hawaii_OahuFore_29,19.63,Mesoamerican_Lagoon_04,7257.09,True,481,5,14,402,78,6,0,14,7.73
+STN_29,Hawaii_OahuFore_29,Pacific,Fore Reef,21.3,-157.7,CLUST_23_Hawaii_Oahu,4,500,80,Hawaii_Kaneohe_28,19.63,Mesoamerican_Lagoon_04,7250.13,True,477,5,18,382,94,6,0,18,8.34
+STN_30,Palau_RockIslands_30,Pacific,Lagoon,7.3,134.45,CLUST_24_Palau,5,500,80,CoralTriangle_RajaAmpat_16,976.66,CoralTriangle_RajaAmpat_16,976.66,True,483,1,16,405,76,3,0,16,7.87
