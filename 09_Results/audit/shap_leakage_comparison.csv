@@ -1,0 +1,17 @@
+Feature,Causal_Status,Clean_10_SHAP_Pct,Legacy_Leaked_10_SHAP_Pct,Leaked_16_SHAP_Pct
+DHW_degC_weeks,Pre_Target_Environmental_Driver,53.71,48.9,15.42
+PAR_umol_m2_s,Pre_Target_Environmental_Driver,11.35,4.26,0.48
+SST_Anomaly_degC,Pre_Target_Environmental_Driver,9.28,4.73,0.4
+Aragonite_Saturation_Omega,Pre_Target_Environmental_Driver,8.81,1.64,0.19
+SST_degC,Pre_Target_Environmental_Driver,5.19,7.24,0.25
+Salinity_PSU,Pre_Target_Environmental_Driver,2.66,0.0,0.09
+Depth_m,Pre_Target_Environmental_Driver,2.53,6.39,0.16
+pH_total,Pre_Target_Environmental_Driver,2.37,0.64,0.08
+Dissolved_Oxygen_mg_L,Pre_Target_Environmental_Driver,2.15,0.0,0.07
+Turbidity_NTU,Pre_Target_Environmental_Driver,1.95,0.54,0.05
+Structural_Rugosity,Post_Target_Leaked_Variable,0.0,18.15,0.64
+Live_Coral_Cover_Pct,Post_Target_Leaked_Variable,0.0,7.51,0.34
+HotSpot_degC,Pre_Target_Environmental_Driver,0.0,0.0,1.12
+Kd_490_m_inv,Pre_Target_Environmental_Driver,0.0,0.0,0.04
+Macroalgae_Cover_Pct,Post_Target_Leaked_Variable,0.0,0.0,0.06
+Shannon_Diversity_H,Post_Target_Leaked_Variable,0.0,0.0,80.61

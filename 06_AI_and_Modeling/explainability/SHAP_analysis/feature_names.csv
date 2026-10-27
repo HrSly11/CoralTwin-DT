@@ -4,8 +4,8 @@ SST_degC
 SST_Anomaly_degC
 DHW_degC_weeks
 pH_total
+Salinity_PSU
+Dissolved_Oxygen_mg_L
 Aragonite_Saturation_Omega
 Turbidity_NTU
 PAR_umol_m2_s
-Structural_Rugosity
-Live_Coral_Cover_Pct

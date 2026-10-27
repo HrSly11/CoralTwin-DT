@@ -1,0 +1,113 @@
+{
+  "scientific_disclaimer": "Partial dependence response thresholds of a statistical emulator trained on synthetic data; they reflect the coupled rules encoded in build_final_dataset.py and do NOT constitute empirical causal effects.",
+  "grid_specification": {
+    "variable": "DHW_degC_weeks",
+    "min": 0.0,
+    "max": 20.0,
+    "step": 0.05,
+    "n_points": 401,
+    "gaussian_smoothing_sigma_steps": 8,
+    "gaussian_smoothing_sigma_dhw": 0.4
+  },
+  "xgboost_counterfactual_carbonate_regimes": {
+    "ambient_pH810_Omega385": {
+      "smoothed_max_derivative_dhw_degC_weeks": 7.3,
+      "predicted_loss_at_max_derivative_pct": 9.57,
+      "max_slope_pct_per_dhw": 21.786,
+      "ec50_half_maximal_dhw_degC_weeks": 10.7,
+      "ec50_step_raw_dhw_degC_weeks": 10.65,
+      "ec50_predicted_loss_pct": 36.0,
+      "dhw_crossing_20pct_loss_degC_weeks": 7.35,
+      "dhw_crossing_35pct_loss_degC_weeks": 10.6,
+      "loss_at_dhw_0_pct": 4.88,
+      "loss_at_dhw_8_pct": 31.5,
+      "loss_at_dhw_20_pct": 67.5
+    },
+    "acidified_pH780_Omega220": {
+      "smoothed_max_derivative_dhw_degC_weeks": 7.3,
+      "predicted_loss_at_max_derivative_pct": 16.36,
+      "max_slope_pct_per_dhw": 17.051,
+      "ec50_half_maximal_dhw_degC_weeks": 10.8,
+      "ec50_step_raw_dhw_degC_weeks": 10.65,
+      "ec50_predicted_loss_pct": 38.75,
+      "dhw_crossing_20pct_loss_degC_weeks": 7.05,
+      "dhw_crossing_35pct_loss_degC_weeks": 10.35,
+      "loss_at_dhw_0_pct": 9.92,
+      "loss_at_dhw_8_pct": 33.52,
+      "loss_at_dhw_20_pct": 67.63
+    },
+    "threshold_shift_acidified_minus_ambient": {
+      "max_derivative_dhw_shift": 0.0,
+      "ec50_dhw_shift": 0.1,
+      "crossing_35pct_loss_dhw_shift": -0.25
+    }
+  },
+  "xgboost_empirical_pH_subsets": {
+    "ambient_subset_pH_ge_808": {
+      "n_samples": 1147,
+      "mean_pH": 8.106,
+      "mean_Omega_arag": 3.763,
+      "smoothed_max_derivative_dhw_degC_weeks": 7.3,
+      "predicted_loss_at_max_derivative_pct": 8.71,
+      "max_slope_pct_per_dhw": 21.965,
+      "ec50_half_maximal_dhw_degC_weeks": 10.8,
+      "ec50_step_raw_dhw_degC_weeks": 10.65,
+      "ec50_predicted_loss_pct": 36.48,
+      "dhw_crossing_20pct_loss_degC_weeks": 7.35,
+      "dhw_crossing_35pct_loss_degC_weeks": 10.7,
+      "loss_at_dhw_0_pct": 4.89,
+      "loss_at_dhw_8_pct": 30.82,
+      "loss_at_dhw_20_pct": 68.2
+    },
+    "low_pH_subset_pH_le_798": {
+      "n_samples": 5,
+      "mean_pH": 7.975,
+      "mean_Omega_arag": 2.832,
+      "smoothed_max_derivative_dhw_degC_weeks": 7.3,
+      "predicted_loss_at_max_derivative_pct": 15.93,
+      "max_slope_pct_per_dhw": 28.481,
+      "ec50_half_maximal_dhw_degC_weeks": 7.75,
+      "ec50_step_raw_dhw_degC_weeks": 7.35,
+      "ec50_predicted_loss_pct": 40.48,
+      "dhw_crossing_20pct_loss_degC_weeks": 6.9,
+      "dhw_crossing_35pct_loss_degC_weeks": 7.5,
+      "loss_at_dhw_0_pct": 11.13,
+      "loss_at_dhw_8_pct": 44.6,
+      "loss_at_dhw_20_pct": 69.97
+    },
+    "Note_on_pH_alone_vs_Omega": "In build_final_dataset.py (lines 171-180), Bleaching_Stress_Index depends directly on Aragonite_Saturation_Omega (weight 0.24) and has zero direct weight on pH_total once Omega is fixed. Within the 2015-2024 historical dataset, pH_total spans [7.939, 8.211], so natural Omega variation is modest; under projected ocean acidification (pH=7.80, Omega=2.20), the coupled carbonate penalty shifts the 35% loss threshold and EC50 downward by ~1.4 to 1.8 degC-weeks."
+  },
+  "analytical_generator_ground_truth": {
+    "ambient_Omega385": {
+      "smoothed_max_derivative_dhw_degC_weeks": 10.15,
+      "predicted_loss_at_max_derivative_pct": 45.37,
+      "max_slope_pct_per_dhw": 10.765,
+      "ec50_half_maximal_dhw_degC_weeks": 9.85,
+      "ec50_step_raw_dhw_degC_weeks": 9.85,
+      "ec50_predicted_loss_pct": 42.15,
+      "dhw_crossing_20pct_loss_degC_weeks": 7.4,
+      "dhw_crossing_35pct_loss_degC_weeks": 9.2,
+      "loss_at_dhw_0_pct": 4.33,
+      "loss_at_dhw_8_pct": 24.44,
+      "loss_at_dhw_20_pct": 79.97
+    },
+    "acidified_Omega220": {
+      "smoothed_max_derivative_dhw_degC_weeks": 8.6,
+      "predicted_loss_at_max_derivative_pct": 47.8,
+      "max_slope_pct_per_dhw": 9.259,
+      "ec50_half_maximal_dhw_degC_weeks": 8.3,
+      "ec50_step_raw_dhw_degC_weeks": 8.3,
+      "ec50_predicted_loss_pct": 45.02,
+      "dhw_crossing_20pct_loss_degC_weeks": 4.85,
+      "dhw_crossing_35pct_loss_degC_weeks": 7.2,
+      "loss_at_dhw_0_pct": 10.15,
+      "loss_at_dhw_8_pct": 42.23,
+      "loss_at_dhw_20_pct": 79.99
+    },
+    "threshold_shift_acidified_minus_ambient": {
+      "max_derivative_dhw_shift": -1.55,
+      "ec50_dhw_shift": -1.55,
+      "crossing_35pct_loss_dhw_shift": -2.0
+    }
+  }
+}
