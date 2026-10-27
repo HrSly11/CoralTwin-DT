@@ -61,7 +61,7 @@ pip install -r 12_Reproducibility/requirements.txt
 ---
 
 ### Step 3: Master Automated Pipeline Execution
-To execute all 13 pipeline stages automatically in sequence, run:
+To execute all 17 pipeline stages automatically in sequence, run:
 ```bash
 python run_all.py
 ```
@@ -71,21 +71,25 @@ python run_all.py
 ======================================================================
 CoralTwin-DT: Master Reproduction Pipeline
 ======================================================================
-[1/13] Generating synthetic datasets... [OK] (8.5s)
-[2/13] Running exploratory data analysis... [OK] (4.2s)
-[3/13] Training AI models (XGBoost, RF, MLP)... [OK] (16.8s)
-[4/13] Evaluating models & computing cross-validation metrics... [OK] (6.5s)
-[5/13] Benchmarking AI architectures (RF vs XGB vs LSTM)... [OK] (24.5s)
-[6/13] Running TreeSHAP game-theoretic explainability... [OK] (11.2s)
-[7/13] Simulating decadal forward scenarios (2025-2050)... [OK] (7.8s)
-[8/13] Executing GIS spatial restoration priority pipeline... [OK] (3.4s)
-[9/13] Rendering publication-quality 300 DPI figures... [OK] (8.1s)
-[10/13] Generating advanced digital twin architecture diagrams... [OK] (2.5s)
-[11/13] Generating scientific presentation & poster... [OK] (4.8s)
-[12/13] Compiling executive summary and technical report PDFs... [OK] (3.2s)
-[13/13] Building Scopus Q1 manuscript docs (DOCX/PDF)... [OK] (2.5s)
+[1/17] Generating unified 30-station synthetic datasets (N=15,000)... [OK]
+[2/17] Auditing row-level data provenance... [OK]
+[3/17] Building 5-fold spatial block cross-validation splits (>25 km buffer)... [OK]
+[4/17] Running exploratory data analysis... [OK]
+[5/17] Training AI models (XGBoost, RF, Deep MLP, Stacked LSTM) across 5 seeds x 5 folds... [OK]
+[6/17] Evaluating models, calibration, & paired Wilcoxon statistical tests... [OK]
+[7/17] Synchronizing multi-architecture benchmark report... [OK]
+[8/17] Running clean 10-feature interventional TreeSHAP & 2D PDP inflection analysis... [OK]
+[9/17] Simulating decadal RK4 coupled ODE scenarios (2025-2050, N=5,000 MC)... [OK]
+[10/17] Executing 30-station Eq. 7 SRPI spatial priority & sensitivity pipeline... [OK]
+[11/17] Compiling master manuscript numbers JSON (results/manuscript_numbers.json)... [OK]
+[12/17] Rendering publication-quality 600 DPI figures from computed artifacts... [OK]
+[13/17] Generating digital twin architecture diagrams... [OK]
+[14/17] Generating scientific presentation & poster... [OK]
+[15/17] Compiling executive summary and technical report PDFs... [OK]
+[16/17] Building manuscript PDF (preserving all .docx files untouched)... [OK]
+[17/17] Running automated biophysical unit tests... [OK]
 ======================================================================
-All 13/13 pipelines executed successfully in 104.0s.
+All 17/17 pipelines executed successfully in ~96.0s.
 Scientific Attribution: Resultado obtenido mediante prototipo computacional del gemelo digital.
 ======================================================================
 ```
@@ -94,17 +98,17 @@ Scientific Attribution: Resultado obtenido mediante prototipo computacional del 
 
 ## 3. Metric Validation & Tolerance Bounds
 
-When validating the replication output, ensure that computed metrics fall within the established statistical tolerance bounds:
+When validating the replication output, ensure that computed metrics match the audited values in `results/manuscript_numbers.json`:
 
 | Metric / Parameter | File to Inspect | Expected Target | Permissible Tolerance |
 | :--- | :--- | :---: | :---: |
-| **XGBoost Accuracy** | `06_AI_and_Modeling/model_comparison_report.md` | $98.85\%$ | $\pm 0.50\%$ |
-| **XGBoost Regression $R^2$** | `06_AI_and_Modeling/model_comparison_report.md` | $0.9995$ | $\pm 0.005$ |
-| **XGBoost Regression RMSE** | `06_AI_and_Modeling/model_comparison_report.md` | $0.346\%$ | $\pm 0.05\%$ |
-| **TreeSHAP Top Feature** | `09_Results/statistics/global_feature_importance_shap.csv` | $DHW$ ($47.0\%$) | Rank #1 feature |
-| **2050 Unmitigated Cover** | `09_Results/tables/Table2_decadal_scenario_projections.csv` | $4.8\%$ | $[2.0\% - 8.5\%]$ |
-| **2050 Restored Cover** | `09_Results/tables/Table2_decadal_scenario_projections.csv` | $46.2\%$ | $[40.0\% - 53.0\%]$ |
-| **SRPI Top Station** | `08_GIS_and_Remote_Sensing/geospatial_outputs/spatial_restoration_priority_ranking.csv` | `Mesoamerican_Fore_01` | Rank #1 ($\text{SRPI} \approx 0.78$) |
+| **XGBoost Accuracy (Clean 10)** | `results/model_benchmark_summary.csv` | $98.85\%$ | $[98.67\% - 99.01\%]$ |
+| **XGBoost Regression $R^2$ (Clean 10)** | `results/model_benchmark_summary.csv` | $0.9336$ | $[0.9292 - 0.9374]$ |
+| **XGBoost Regression RMSE (Clean 10)** | `results/model_benchmark_summary.csv` | $4.044\%$ | $[3.996\% - 4.091\%]$ |
+| **TreeSHAP Top Feature (Clean 10)** | `results/shap_global_importance.csv` | `DHW_degC_weeks` ($53.71\%$) | $[51.37\% - 55.98\%]$ |
+| **2050 Unmitigated Cover (S1 RK4)** | `results/scenario_2050_summary.csv` | $0.69\%$ mean ($0.10\%$ med) | $[0.1\% - 6.2\%]$ |
+| **2050 Integrated Cover (S4 RK4)** | `results/scenario_2050_summary.csv` | $55.20\%$ mean ($55.87\%$ med) | $[36.2\% - 70.5\%]$ |
+| **Eq. 7 SRPI Tier-1 Stations** | `results/srpi_sensitivity.csv` | $10/30$ ($33.33\%$, top `STN_06` $= 0.765$) | Exact match |
 
 ---
 

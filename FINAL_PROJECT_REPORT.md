@@ -35,7 +35,7 @@ By harmonizing daily satellite remote sensing (NOAA Coral Reef Watch 5km), high-
 ## 2. Current Project State (Estado Actual)
 
 - **Overall Health:** **100% Complete, Fully Verified & Production-Ready**.
-- **Automated Pipeline Execution:** All 13 stages in `run_all.py` execute deterministically in **~104 seconds** (`SEED = 42`).
+- **Automated Pipeline Execution:** All 17 stages in `run_all.py` execute deterministically in **~96 seconds** (`SEED = 42`).
 - **Unit Test Suite:** 6/6 tests passing in **0.27 seconds** (`tests/test_biophysics.py`).
 - **Release Version:** Formally tagged and annotated as **`v1.0.0`**.
 - **Audit Scores:**
@@ -79,7 +79,7 @@ CoralTwin-DT/ (Release v1.0.0)
 ├── PUBLIC_SUMMARY.md               # Plain-language executive public summary
 ├── FINAL_PROJECT_AUDIT.md          # Comprehensive doctoral audit sign-off
 ├── README.md                       # Master repository overview and quick-start guide
-└── run_all.py                      # Master automated 13-stage orchestration pipeline
+└── run_all.py                      # Master automated 17-stage orchestration pipeline
 ```
 
 ---

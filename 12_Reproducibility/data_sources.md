@@ -69,9 +69,8 @@
                │
                ▼ (Bilinear Interpolation & Coordinate Reprojection to WGS84 EPSG:4326)
 [ UNIFIED 500M BENTHIC TENSOR ]
-  └─ 03_Data/final_dataset.csv (N = 15,000 records, 34 ISO-19115 attributes)
+  └─ 03_Data/final_dataset.csv (N = 15,000 records, 36 ISO-19115 attributes across 30 stations)
 ```
 
-- **Real Observation Calibrated Records (41.2%):** Directly sampled and calibrated from historical NOAA CRW, GCRMN, and Sentinel-2 overpasses across 30 global reef stations (2015–2021).
-- **Digital Twin Simulated Records (58.8%):** Numerically extrapolated using the coupled biophysical model to provide dense daily spatial time-series, non-linear stress tipping responses, and forward decadal scenario stress tests.
+- **Digital Twin Simulated Records (100.0%, `SEED = 42`):** As verified by `03_Data/audit_data_provenance.py` (`09_Results/audit/data_provenance_summary.json`), all $15,000$ observations across the 30 global reef stations (`STN_01`–`STN_30`) are deterministically generated in `03_Data/build_final_dataset.py` using literature-calibrated biogeochemical bounds derived from NOAA CRW, Copernicus Sentinel-2, Allen Coral Atlas, and GCRMN publications (`0.0%` raw empirical records).
 - **Scientific Attribution:** Certified under `"Resultado obtenido mediante prototipo computacional del gemelo digital"`.

@@ -1,15 +1,18 @@
 """
 CoralTwin-DT: Master Manuscript Numbers Compiler
 ================================================
-Aggregates every audited metric, confidence interval, p-value, latency,
-SHAP importance, partial dependence inflection point, ODE scenario projection,
-and SRPI sensitivity result into `results/manuscript_numbers.json`, recording
-both `script_source` and `file_source` for 100% traceability.
+Aggregates every audited metric, confidence interval, p-value, Cohen's kappa,
+latency, SHAP importance, partial dependence inflection point, ODE scenario
+projection, and SRPI sensitivity result into `results/manuscript_numbers.json`,
+recording both `script_source` and `file_source` on every root and nested entry
+for 100% traceability.
 """
 
 import os
 import json
+import numpy as np
 import pandas as pd
+from sklearn.metrics import cohen_kappa_score
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
@@ -27,9 +30,12 @@ def build_manuscript_numbers():
     folds_path = os.path.join(RESULTS_DIR, "folds_assignment.csv")
     folds_df = pd.read_csv(folds_path)
 
-    # 3. Model Benchmark Summary & Leakage Ablation
+    # 3. Model Benchmark Summary, OOF Cohen's Kappa & Leakage Ablation
     bench_path = os.path.join(RESULTS_DIR, "model_benchmark_summary.csv")
     bench_df = pd.read_csv(bench_path)
+
+    oof_path = os.path.join(RESULTS_DIR, "oof_predictions_by_fold.csv")
+    oof_df = pd.read_csv(oof_path)
 
     ablation_path = os.path.join(RESULTS_DIR, "leakage_ablation_metrics.csv")
     ablation_df = pd.read_csv(ablation_path)
@@ -50,6 +56,39 @@ def build_manuscript_numbers():
     with open(lat_path, "r", encoding="utf-8") as f:
         lat_json = json.load(f)
 
+    # Compute out-of-fold Cohen's kappa for all 4 models (3-class and 5-class)
+    models_dict = bench_df.set_index("Model_Architecture").to_dict(orient="index")
+    kappa_summary = {}
+    for model_name in ["XGBoost", "Random_Forest", "Deep_MLP", "Stacked_LSTM"]:
+        c3_col = f"{model_name}_Regime1_Clean10_Class3_Pred"
+        c5_taut_col = f"{model_name}_Clean10_Class5_Pred"
+        c5_clean9_col = f"{model_name}_Clean9NoDHW_Class5_Pred"
+
+        k_c3_pooled = float(cohen_kappa_score(oof_df["y_true_class_3"], oof_df[c3_col]))
+        k_c5_taut_pooled = float(cohen_kappa_score(oof_df["y_true_class_5"], oof_df[c5_taut_col]))
+        k_c5_clean9_pooled = float(cohen_kappa_score(oof_df["y_true_class_5"], oof_df[c5_clean9_col]))
+
+        fold_k_c3 = []
+        fold_k_c5_clean9 = []
+        for _, f_grp in oof_df.groupby("Fold_ID"):
+            fold_k_c3.append(float(cohen_kappa_score(f_grp["y_true_class_3"], f_grp[c3_col])))
+            fold_k_c5_clean9.append(float(cohen_kappa_score(f_grp["y_true_class_5"], f_grp[c5_clean9_col])))
+
+        kappa_entry = {
+            "cohen_kappa_3class_pooled_oof": round(k_c3_pooled, 4),
+            "cohen_kappa_3class_fold_mean": round(float(np.mean(fold_k_c3)), 4),
+            "cohen_kappa_3class_fold_sd": round(float(np.std(fold_k_c3, ddof=1)), 4),
+            "cohen_kappa_5class_with_dhw_tautological": round(k_c5_taut_pooled, 4),
+            "cohen_kappa_5class_clean9_no_dhw_pooled_oof": round(k_c5_clean9_pooled, 4),
+            "cohen_kappa_5class_clean9_no_dhw_fold_mean": round(float(np.mean(fold_k_c5_clean9)), 4),
+            "cohen_kappa_5class_clean9_no_dhw_fold_sd": round(float(np.std(fold_k_c5_clean9, ddof=1)), 4),
+        }
+        kappa_summary[model_name] = kappa_entry
+        if model_name in models_dict:
+            models_dict[model_name]["script_source"] = "06_AI_and_Modeling/machine_learning/train_models.py"
+            models_dict[model_name]["file_source"] = "results/model_benchmark_summary.csv"
+            models_dict[model_name].update(kappa_entry)
+
     # 4. TreeSHAP & Inflection Points
     shap_path = os.path.join(RESULTS_DIR, "shap_global_importance.csv")
     shap_df = pd.read_csv(shap_path)
@@ -65,6 +104,10 @@ def build_manuscript_numbers():
     scen_path = os.path.join(RESULTS_DIR, "scenario_2050_summary.csv")
     scen_df = pd.read_csv(scen_path)
 
+    scen_ode_param_path = os.path.join(RESULTS_DIR, "scenario_ode_parameters.json")
+    with open(scen_ode_param_path, "r", encoding="utf-8") as f:
+        scen_ode_params = json.load(f)
+
     scen_comp_path = os.path.join(PROJECT_ROOT, "09_Results", "audit", "scenario_model_comparison.csv")
     scen_comp_df = pd.read_csv(scen_comp_path)
 
@@ -72,8 +115,19 @@ def build_manuscript_numbers():
     srpi_sens_path = os.path.join(RESULTS_DIR, "srpi_sensitivity.csv")
     srpi_sens_df = pd.read_csv(srpi_sens_path)
 
-    srpi_rank_path = os.path.join(PROJECT_ROOT, "08_GIS_and_Remote_Sensing", "geospatial_outputs", "spatial_restoration_priority_ranking.csv")
+    srpi_rank_path = os.path.join(PROJECT_ROOT, "09_Results", "tables", "Table3_spatial_restoration_priority.csv")
     srpi_rank_df = pd.read_csv(srpi_rank_path)
+
+    srpi_cols = [
+        "Station_ID",
+        "Station_Name",
+        "Region",
+        "Reef_Zone",
+        "Depth_m",
+        "Spatial_Restoration_Priority_Index_SRPI",
+        "SRPI_MinMax_Legacy",
+        "Priority_Tier",
+    ]
 
     payload = {
         "metadata": {
@@ -82,6 +136,7 @@ def build_manuscript_numbers():
             "seed": 42,
             "evaluation_seeds": [17, 42, 73, 108, 256],
             "script_source": "09_Results/build_manuscript_numbers.py",
+            "file_source": "results/manuscript_numbers.json",
         },
         "dataset_and_provenance": {
             "script_source": "03_Data/audit_data_provenance.py",
@@ -94,6 +149,11 @@ def build_manuscript_numbers():
             "synthetic_percentage": 100.0,
             "real_observation_percentage": 0.0,
             "exact_rng_reproduction_verified": True,
+            "unverified_visual_inter_annotator_kappa_claim": {
+                "manuscript_claimed_kappa": 0.81,
+                "empirically_present_in_repo": False,
+                "audit_note": "No independent human visual benthic transect annotations exist in the repository; all 15,000 rows are deterministically generated from seed=42.",
+            },
             "summary": prov_summary,
         },
         "spatial_cross_validation": {
@@ -124,28 +184,41 @@ def build_manuscript_numbers():
                 "Dissolved_Oxygen_mg_L",
                 "Depth_m",
             ],
-            "models": bench_df.set_index("Model_Architecture").to_dict(orient="index"),
+            "models": models_dict,
+            "cohen_kappa_oof": {
+                "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
+                "file_source": "results/oof_predictions_by_fold.csv",
+                "note": "Empirical out-of-fold classifier Cohen's kappa across 30-station spatial CV (distinct from the unverified 0.81 inter-annotator visual transect claim).",
+                "by_model": kappa_summary,
+            },
             "leakage_ablation": {
+                "script_source": "06_AI_and_Modeling/machine_learning/train_models.py",
                 "file_source": "results/leakage_ablation_metrics.csv",
+                "audit_file_source": "09_Results/audit/leakage_ablation_results.csv",
                 "regimes": ablation_df.to_dict(orient="records"),
             },
             "per_class_3class": {
+                "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
                 "file_source": "results/per_class_report.csv",
                 "metrics": per_class_df.to_dict(orient="records"),
             },
             "per_class_5class": {
+                "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
                 "file_source": "results/per_class_report_5class.csv",
                 "metrics": per_class5_df.to_dict(orient="records"),
             },
             "statistical_tests": {
+                "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
                 "file_source": "results/statistical_tests.csv",
                 "comparisons": stat_df.to_dict(orient="records"),
             },
             "calibration": {
+                "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
                 "file_source": "results/calibration/calibration_metrics.csv",
                 "metrics": cal_df.to_dict(orient="records"),
             },
             "inference_latency_and_size": {
+                "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
                 "file_source": "results/latency_protocol.json",
                 "protocol": lat_json,
             },
@@ -155,10 +228,12 @@ def build_manuscript_numbers():
             "file_source": "results/shap_global_importance.csv",
             "clean_10_feature_treeshap": shap_df.to_dict(orient="records"),
             "leakage_comparison": {
+                "script_source": "06_AI_and_Modeling/explainability/SHAP_analysis/shap_explain.py",
                 "file_source": "09_Results/audit/shap_leakage_comparison.csv",
                 "table": shap_leak_df.to_dict(orient="records"),
             },
             "partial_dependence_inflection_points": {
+                "script_source": "06_AI_and_Modeling/explainability/SHAP_analysis/shap_explain.py",
                 "file_source": "results/inflection_points.json",
                 "details": inflect_json,
             },
@@ -170,7 +245,13 @@ def build_manuscript_numbers():
             "empirical_baseline_2025_coral_cover_pct": 33.68,
             "empirical_baseline_2025_macroalgae_cover_pct": 31.41,
             "scenarios": scen_df.set_index("Scenario_Code").to_dict(orient="index"),
+            "ode_parameters": {
+                "script_source": "07_Scenarios_and_Simulations/simulation_engine.py",
+                "file_source": "results/scenario_ode_parameters.json",
+                "details": scen_ode_params,
+            },
             "model_comparison_audit": {
+                "script_source": "07_Scenarios_and_Simulations/simulation_engine.py",
                 "file_source": "09_Results/audit/scenario_model_comparison.csv",
                 "rows": scen_comp_df.to_dict(orient="records"),
             },
@@ -179,9 +260,16 @@ def build_manuscript_numbers():
             "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
             "file_source": "results/srpi_sensitivity.csv",
             "sensitivity_analysis": srpi_sens_df.to_dict(orient="records"),
-            "top_10_tier1_stations_eq7": srpi_rank_df.head(10)[
-                ["Station_ID", "Station_Name", "Region", "Reef_Zone", "Depth_m", "Spatial_Restoration_Priority_Index_SRPI", "SRPI_MinMax_Legacy", "Priority_Tier"]
-            ].to_dict(orient="records"),
+            "top_10_tier1_stations_eq7": {
+                "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
+                "file_source": "09_Results/tables/Table3_spatial_restoration_priority.csv",
+                "stations": srpi_rank_df.head(10)[srpi_cols].to_dict(orient="records"),
+            },
+            "all_30_stations_eq7": {
+                "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
+                "file_source": "09_Results/tables/Table3_spatial_restoration_priority.csv",
+                "stations": srpi_rank_df[srpi_cols].to_dict(orient="records"),
+            },
         },
     }
 

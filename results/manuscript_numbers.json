@@ -10,7 +10,8 @@
       108,
       256
     ],
-    "script_source": "09_Results/build_manuscript_numbers.py"
+    "script_source": "09_Results/build_manuscript_numbers.py",
+    "file_source": "results/manuscript_numbers.json"
   },
   "dataset_and_provenance": {
     "script_source": "03_Data/audit_data_provenance.py",
@@ -23,6 +24,11 @@
     "synthetic_percentage": 100.0,
     "real_observation_percentage": 0.0,
     "exact_rng_reproduction_verified": true,
+    "unverified_visual_inter_annotator_kappa_claim": {
+      "manuscript_claimed_kappa": 0.81,
+      "empirically_present_in_repo": false,
+      "audit_note": "No independent human visual benthic transect annotations exist in the repository; all 15,000 rows are deterministically generated from seed=42."
+    },
     "summary": {
       "audit_timestamp_utc": "2026-10-27T00:00:00Z",
       "dataset_path": "03_Data/final_dataset.csv",
@@ -955,7 +961,16 @@
         "ECE_10Bins": 0.0077,
         "Latency_Batch1_ms": 0.3218,
         "Latency_Batch256_ms": 0.0064,
-        "Model_Size_MB": 2.833
+        "Model_Size_MB": 2.833,
+        "script_source": "06_AI_and_Modeling/machine_learning/train_models.py",
+        "file_source": "results/model_benchmark_summary.csv",
+        "cohen_kappa_3class_pooled_oof": 0.8892,
+        "cohen_kappa_3class_fold_mean": 0.8882,
+        "cohen_kappa_3class_fold_sd": 0.0192,
+        "cohen_kappa_5class_with_dhw_tautological": 0.9959,
+        "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8989,
+        "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.898,
+        "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0368
       },
       "Random_Forest": {
         "Classification_Accuracy": 0.9888,
@@ -985,7 +1000,16 @@
         "ECE_10Bins": 0.0038,
         "Latency_Batch1_ms": 17.8013,
         "Latency_Batch256_ms": 0.0798,
-        "Model_Size_MB": 21.09
+        "Model_Size_MB": 21.09,
+        "script_source": "06_AI_and_Modeling/machine_learning/train_models.py",
+        "file_source": "results/model_benchmark_summary.csv",
+        "cohen_kappa_3class_pooled_oof": 0.8924,
+        "cohen_kappa_3class_fold_mean": 0.8916,
+        "cohen_kappa_3class_fold_sd": 0.0192,
+        "cohen_kappa_5class_with_dhw_tautological": 0.9956,
+        "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8979,
+        "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8976,
+        "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0274
       },
       "Deep_MLP": {
         "Classification_Accuracy": 0.9879,
@@ -1015,7 +1039,16 @@
         "ECE_10Bins": 0.0014,
         "Latency_Batch1_ms": 0.1967,
         "Latency_Batch256_ms": 0.0015,
-        "Model_Size_MB": 0.112
+        "Model_Size_MB": 0.112,
+        "script_source": "06_AI_and_Modeling/machine_learning/train_models.py",
+        "file_source": "results/model_benchmark_summary.csv",
+        "cohen_kappa_3class_pooled_oof": 0.8834,
+        "cohen_kappa_3class_fold_mean": 0.8826,
+        "cohen_kappa_3class_fold_sd": 0.021,
+        "cohen_kappa_5class_with_dhw_tautological": 0.9032,
+        "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8535,
+        "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8533,
+        "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0162
       },
       "Stacked_LSTM": {
         "Classification_Accuracy": 0.9881,
@@ -1045,11 +1078,65 @@
         "ECE_10Bins": 0.0009,
         "Latency_Batch1_ms": 0.4135,
         "Latency_Batch256_ms": 0.0131,
-        "Model_Size_MB": 0.262
+        "Model_Size_MB": 0.262,
+        "script_source": "06_AI_and_Modeling/machine_learning/train_models.py",
+        "file_source": "results/model_benchmark_summary.csv",
+        "cohen_kappa_3class_pooled_oof": 0.8852,
+        "cohen_kappa_3class_fold_mean": 0.8844,
+        "cohen_kappa_3class_fold_sd": 0.019,
+        "cohen_kappa_5class_with_dhw_tautological": 0.9276,
+        "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8738,
+        "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8739,
+        "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0147
+      }
+    },
+    "cohen_kappa_oof": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
+      "file_source": "results/oof_predictions_by_fold.csv",
+      "note": "Empirical out-of-fold classifier Cohen's kappa across 30-station spatial CV (distinct from the unverified 0.81 inter-annotator visual transect claim).",
+      "by_model": {
+        "XGBoost": {
+          "cohen_kappa_3class_pooled_oof": 0.8892,
+          "cohen_kappa_3class_fold_mean": 0.8882,
+          "cohen_kappa_3class_fold_sd": 0.0192,
+          "cohen_kappa_5class_with_dhw_tautological": 0.9959,
+          "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8989,
+          "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.898,
+          "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0368
+        },
+        "Random_Forest": {
+          "cohen_kappa_3class_pooled_oof": 0.8924,
+          "cohen_kappa_3class_fold_mean": 0.8916,
+          "cohen_kappa_3class_fold_sd": 0.0192,
+          "cohen_kappa_5class_with_dhw_tautological": 0.9956,
+          "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8979,
+          "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8976,
+          "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0274
+        },
+        "Deep_MLP": {
+          "cohen_kappa_3class_pooled_oof": 0.8834,
+          "cohen_kappa_3class_fold_mean": 0.8826,
+          "cohen_kappa_3class_fold_sd": 0.021,
+          "cohen_kappa_5class_with_dhw_tautological": 0.9032,
+          "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8535,
+          "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8533,
+          "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0162
+        },
+        "Stacked_LSTM": {
+          "cohen_kappa_3class_pooled_oof": 0.8852,
+          "cohen_kappa_3class_fold_mean": 0.8844,
+          "cohen_kappa_3class_fold_sd": 0.019,
+          "cohen_kappa_5class_with_dhw_tautological": 0.9276,
+          "cohen_kappa_5class_clean9_no_dhw_pooled_oof": 0.8738,
+          "cohen_kappa_5class_clean9_no_dhw_fold_mean": 0.8739,
+          "cohen_kappa_5class_clean9_no_dhw_fold_sd": 0.0147
+        }
       }
     },
     "leakage_ablation": {
+      "script_source": "06_AI_and_Modeling/machine_learning/train_models.py",
       "file_source": "results/leakage_ablation_metrics.csv",
+      "audit_file_source": "09_Results/audit/leakage_ablation_results.csv",
       "regimes": [
         {
           "Regime": "Regime_0_Leaked_16",
@@ -1394,6 +1481,7 @@
       ]
     },
     "per_class_3class": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
       "file_source": "results/per_class_report.csv",
       "metrics": [
         {
@@ -1639,6 +1727,7 @@
       ]
     },
     "per_class_5class": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
       "file_source": "results/per_class_report_5class.csv",
       "metrics": [
         {
@@ -2124,6 +2213,7 @@
       ]
     },
     "statistical_tests": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
       "file_source": "results/statistical_tests.csv",
       "comparisons": [
         {
@@ -2705,6 +2795,7 @@
       ]
     },
     "calibration": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
       "file_source": "results/calibration/calibration_metrics.csv",
       "metrics": [
         {
@@ -2754,6 +2845,7 @@
       ]
     },
     "inference_latency_and_size": {
+      "script_source": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
       "file_source": "results/latency_protocol.json",
       "protocol": {
         "protocol_version": "2026-10-27",
@@ -3148,6 +3240,7 @@
       }
     ],
     "leakage_comparison": {
+      "script_source": "06_AI_and_Modeling/explainability/SHAP_analysis/shap_explain.py",
       "file_source": "09_Results/audit/shap_leakage_comparison.csv",
       "table": [
         {
@@ -3265,6 +3358,7 @@
       ]
     },
     "partial_dependence_inflection_points": {
+      "script_source": "06_AI_and_Modeling/explainability/SHAP_analysis/shap_explain.py",
       "file_source": "results/inflection_points.json",
       "details": {
         "scientific_disclaimer": "Partial dependence response thresholds of a statistical emulator trained on synthetic data; they reflect the coupled rules encoded in build_final_dataset.py and do NOT constitute empirical causal effects.",
@@ -3453,7 +3547,90 @@
         "Ecological_State_2050": "Coral-Dominated"
       }
     },
+    "ode_parameters": {
+      "script_source": "07_Scenarios_and_Simulations/simulation_engine.py",
+      "file_source": "results/scenario_ode_parameters.json",
+      "details": {
+        "integration_method": "RK4 (4th-order Runge-Kutta)",
+        "dt_years": 0.05,
+        "n_steps": 500,
+        "horizon_years": [
+          2025,
+          2050
+        ],
+        "n_monte_carlo_runs_per_scenario": 5000,
+        "parameter_perturbation_gaussian_rel_sd": 0.15,
+        "seed": 42,
+        "empirical_baseline_2025": {
+          "Live_Coral_Cover_Pct": 33.68,
+          "Macroalgae_Cover_Pct": 31.41
+        },
+        "manuscript_claimed_baseline_2025": {
+          "Live_Coral_Cover_Pct": 28.5,
+          "Macroalgae_Cover_Pct": 22.0
+        },
+        "base_ode_parameters": {
+          "r": 0.45,
+          "d0": 0.05,
+          "alpha": 0.012,
+          "beta": 0.75,
+          "a": 0.85,
+          "gamma": 0.22
+        },
+        "scenario_configs": [
+          {
+            "id": "Scenario_1_Severe_Thermal_Stress_SSP585",
+            "code": "S1_SSP585_Unmitigated",
+            "label": "1. Severe Thermal Stress (SSP5-8.5)",
+            "dhw_0": 5.0,
+            "dhw_slope": 0.36,
+            "thermal_hardening": 0.0,
+            "omega_0": 3.65,
+            "omega_slope": -0.052,
+            "g_mpa": 0.25,
+            "phi_resto": 0.0
+          },
+          {
+            "id": "Scenario_2_Moderate_Mitigation_SSP245",
+            "code": "S2_SSP245_Moderate",
+            "label": "2. Moderate Mitigation (SSP2-4.5)",
+            "dhw_0": 5.0,
+            "dhw_slope": 0.18,
+            "thermal_hardening": 0.0,
+            "omega_0": 3.65,
+            "omega_slope": -0.022,
+            "g_mpa": 0.3,
+            "phi_resto": 0.0
+          },
+          {
+            "id": "Scenario_3_Active_Coral_Restoration",
+            "code": "S3_Active_Restoration",
+            "label": "3. Active Resilient Outplanting",
+            "dhw_0": 5.0,
+            "dhw_slope": 0.2,
+            "thermal_hardening": 2.0,
+            "omega_0": 3.65,
+            "omega_slope": -0.028,
+            "g_mpa": 0.35,
+            "phi_resto": 0.025
+          },
+          {
+            "id": "Scenario_4_MPA_Integrated_Protection",
+            "code": "S4_Integrated_Intervention",
+            "label": "4. Integrated MPA & Outplanting",
+            "dhw_0": 5.0,
+            "dhw_slope": 0.18,
+            "thermal_hardening": 2.0,
+            "omega_0": 3.65,
+            "omega_slope": -0.022,
+            "g_mpa": 0.68,
+            "phi_resto": 0.03
+          }
+        ]
+      }
+    },
     "model_comparison_audit": {
+      "script_source": "07_Scenarios_and_Simulations/simulation_engine.py",
       "file_source": "09_Results/audit/scenario_model_comparison.csv",
       "rows": [
         {
@@ -3692,107 +3869,417 @@
         "SRPI_Max": 0.682
       }
     ],
-    "top_10_tier1_stations_eq7": [
-      {
-        "Station_ID": "STN_06",
-        "Station_Name": "Belize_Atoll_06",
-        "Region": "Caribbean",
-        "Reef_Zone": "Reef Crest",
-        "Depth_m": 4.98978,
-        "Spatial_Restoration_Priority_Index_SRPI": 0.765,
-        "SRPI_MinMax_Legacy": 0.575,
-        "Priority_Tier": "Tier_1_High_Priority_Restoration"
-      },
-      {
-        "Station_ID": "STN_26",
-        "Station_Name": "Seychelles_Mahe_26",
-        "Region": "Indian Ocean",
-        "Reef_Zone": "Fore Reef",
-        "Depth_m": 10.78814,
-        "Spatial_Restoration_Priority_Index_SRPI": 0.765,
-        "SRPI_MinMax_Legacy": 0.603,
-        "Priority_Tier": "Tier_1_High_Priority_Restoration"
-      },
-      {
-        "Station_ID": "STN_28",
-        "Station_Name": "Hawaii_Kaneohe_28",
-        "Region": "Pacific",
-        "Reef_Zone": "Lagoon",
-        "Depth_m": 3.50314,
-        "Spatial_Restoration_Priority_Index_SRPI": 0.759,
-        "SRPI_MinMax_Legacy": 0.509,
-        "Priority_Tier": "Tier_1_High_Priority_Restoration"
-      },
-      {
-        "Station_ID": "STN_01",
-        "Station_Name": "Mesoamerican_Fore_01",
-        "Region": "Caribbean",
-        "Reef_Zone": "Fore Reef",
-        "Depth_m": 12.4911,
-        "Spatial_Restoration_Priority_Index_SRPI": 0.756,
-        "SRPI_MinMax_Legacy": 0.576,
-        "Priority_Tier": "Tier_1_High_Priority_Restoration"
-      },
-      {
-        "Station_ID": "STN_25",
-        "Station_Name": "RedSea_Farasan_25",
-        "Region": "Red Sea",
-        "Reef_Zone": "Fore Reef",
-        "Depth_m": 12.00596,
-        "Spatial_Restoration_Priority_Index_SRPI": 0.734,
-        "SRPI_MinMax_Legacy": 0.669,
-        "Priority_Tier": "Tier_1_High_Priority_Restoration"
-      },
-      {
-        "Station_ID": "STN_11",
-        "Station_Name": "Florida_Keys_Uppers_11",
-        "Region": "Caribbean",
-        "Reef_Zone": "Fore Reef",
-        "Depth_m": 9.50834,
-        "Spatial_Restoration_Priority_Index_SRPI": 0.729,
-        "SRPI_MinMax_Legacy": 0.531,
-        "Priority_Tier": "Tier_1_High_Priority_Restoration"
-      },
-      {
-        "Station_ID": "STN_30",
-        "Station_Name": "Palau_RockIslands_30",
-        "Region": "Pacific",
-        "Reef_Zone": "Lagoon",
-        "Depth_m": 4.798979999999999,
-        "Spatial_Restoration_Priority_Index_SRPI": 0.726,
-        "SRPI_MinMax_Legacy": 0.463,
-        "Priority_Tier": "Tier_1_High_Priority_Restoration"
-      },
-      {
-        "Station_ID": "STN_12",
-        "Station_Name": "Florida_Keys_Lowers_12",
-        "Region": "Caribbean",
-        "Reef_Zone": "Reef Crest",
-        "Depth_m": 4.50188,
-        "Spatial_Restoration_Priority_Index_SRPI": 0.722,
-        "SRPI_MinMax_Legacy": 0.544,
-        "Priority_Tier": "Tier_1_High_Priority_Restoration"
-      },
-      {
-        "Station_ID": "STN_24",
-        "Station_Name": "RedSea_Shallow_24",
-        "Region": "Red Sea",
-        "Reef_Zone": "Reef Crest",
-        "Depth_m": 4.00604,
-        "Spatial_Restoration_Priority_Index_SRPI": 0.721,
-        "SRPI_MinMax_Legacy": 0.519,
-        "Priority_Tier": "Tier_1_High_Priority_Restoration"
-      },
-      {
-        "Station_ID": "STN_21",
-        "Station_Name": "Okinawa_Kerama_21",
-        "Region": "Indo-Pacific",
-        "Reef_Zone": "Fore Reef",
-        "Depth_m": 14.4985,
-        "Spatial_Restoration_Priority_Index_SRPI": 0.703,
-        "SRPI_MinMax_Legacy": 0.694,
-        "Priority_Tier": "Tier_1_High_Priority_Restoration"
-      }
-    ]
+    "top_10_tier1_stations_eq7": {
+      "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
+      "file_source": "09_Results/tables/Table3_spatial_restoration_priority.csv",
+      "stations": [
+        {
+          "Station_ID": "STN_01",
+          "Station_Name": "Mesoamerican_Fore_01",
+          "Region": "Caribbean",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 12.4911,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.756,
+          "SRPI_MinMax_Legacy": 0.576,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_02",
+          "Station_Name": "Mesoamerican_Crest_02",
+          "Region": "Caribbean",
+          "Reef_Zone": "Reef Crest",
+          "Depth_m": 4.19748,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.657,
+          "SRPI_MinMax_Legacy": 0.489,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_03",
+          "Station_Name": "Mesoamerican_Back_03",
+          "Region": "Caribbean",
+          "Reef_Zone": "Back Reef",
+          "Depth_m": 6.78856,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.403,
+          "SRPI_MinMax_Legacy": 0.291,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_04",
+          "Station_Name": "Mesoamerican_Lagoon_04",
+          "Region": "Caribbean",
+          "Reef_Zone": "Lagoon",
+          "Depth_m": 2.4972800000000004,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.609,
+          "SRPI_MinMax_Legacy": 0.335,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_05",
+          "Station_Name": "Belize_Barrier_05",
+          "Region": "Caribbean",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 15.01228,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.423,
+          "SRPI_MinMax_Legacy": 0.461,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_06",
+          "Station_Name": "Belize_Atoll_06",
+          "Region": "Caribbean",
+          "Reef_Zone": "Reef Crest",
+          "Depth_m": 4.98978,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.765,
+          "SRPI_MinMax_Legacy": 0.575,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_07",
+          "Station_Name": "Cozumel_South_07",
+          "Region": "Caribbean",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 18.21912,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.642,
+          "SRPI_MinMax_Legacy": 0.467,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_08",
+          "Station_Name": "Cozumel_Shallow_08",
+          "Region": "Caribbean",
+          "Reef_Zone": "Lagoon",
+          "Depth_m": 3.10626,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.418,
+          "SRPI_MinMax_Legacy": 0.3,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_09",
+          "Station_Name": "Roatan_North_09",
+          "Region": "Caribbean",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 14.00066,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.415,
+          "SRPI_MinMax_Legacy": 0.448,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_10",
+          "Station_Name": "Roatan_South_10",
+          "Region": "Caribbean",
+          "Reef_Zone": "Back Reef",
+          "Depth_m": 7.99494,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.619,
+          "SRPI_MinMax_Legacy": 0.348,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        }
+      ]
+    },
+    "all_30_stations_eq7": {
+      "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
+      "file_source": "09_Results/tables/Table3_spatial_restoration_priority.csv",
+      "stations": [
+        {
+          "Station_ID": "STN_01",
+          "Station_Name": "Mesoamerican_Fore_01",
+          "Region": "Caribbean",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 12.4911,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.756,
+          "SRPI_MinMax_Legacy": 0.576,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_02",
+          "Station_Name": "Mesoamerican_Crest_02",
+          "Region": "Caribbean",
+          "Reef_Zone": "Reef Crest",
+          "Depth_m": 4.19748,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.657,
+          "SRPI_MinMax_Legacy": 0.489,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_03",
+          "Station_Name": "Mesoamerican_Back_03",
+          "Region": "Caribbean",
+          "Reef_Zone": "Back Reef",
+          "Depth_m": 6.78856,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.403,
+          "SRPI_MinMax_Legacy": 0.291,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_04",
+          "Station_Name": "Mesoamerican_Lagoon_04",
+          "Region": "Caribbean",
+          "Reef_Zone": "Lagoon",
+          "Depth_m": 2.4972800000000004,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.609,
+          "SRPI_MinMax_Legacy": 0.335,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_05",
+          "Station_Name": "Belize_Barrier_05",
+          "Region": "Caribbean",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 15.01228,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.423,
+          "SRPI_MinMax_Legacy": 0.461,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_06",
+          "Station_Name": "Belize_Atoll_06",
+          "Region": "Caribbean",
+          "Reef_Zone": "Reef Crest",
+          "Depth_m": 4.98978,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.765,
+          "SRPI_MinMax_Legacy": 0.575,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_07",
+          "Station_Name": "Cozumel_South_07",
+          "Region": "Caribbean",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 18.21912,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.642,
+          "SRPI_MinMax_Legacy": 0.467,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_08",
+          "Station_Name": "Cozumel_Shallow_08",
+          "Region": "Caribbean",
+          "Reef_Zone": "Lagoon",
+          "Depth_m": 3.10626,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.418,
+          "SRPI_MinMax_Legacy": 0.3,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_09",
+          "Station_Name": "Roatan_North_09",
+          "Region": "Caribbean",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 14.00066,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.415,
+          "SRPI_MinMax_Legacy": 0.448,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_10",
+          "Station_Name": "Roatan_South_10",
+          "Region": "Caribbean",
+          "Reef_Zone": "Back Reef",
+          "Depth_m": 7.99494,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.619,
+          "SRPI_MinMax_Legacy": 0.348,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_11",
+          "Station_Name": "Florida_Keys_Uppers_11",
+          "Region": "Caribbean",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 9.50834,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.729,
+          "SRPI_MinMax_Legacy": 0.531,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_12",
+          "Station_Name": "Florida_Keys_Lowers_12",
+          "Region": "Caribbean",
+          "Reef_Zone": "Reef Crest",
+          "Depth_m": 4.50188,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.722,
+          "SRPI_MinMax_Legacy": 0.544,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_13",
+          "Station_Name": "GreatBarrier_Northern_13",
+          "Region": "Indo-Pacific",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 10.9832,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.617,
+          "SRPI_MinMax_Legacy": 0.662,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_14",
+          "Station_Name": "GreatBarrier_Central_14",
+          "Region": "Indo-Pacific",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 13.50594,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.562,
+          "SRPI_MinMax_Legacy": 0.577,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_15",
+          "Station_Name": "GreatBarrier_Lagoon_15",
+          "Region": "Indo-Pacific",
+          "Reef_Zone": "Lagoon",
+          "Depth_m": 3.79618,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.353,
+          "SRPI_MinMax_Legacy": 0.381,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_16",
+          "Station_Name": "CoralTriangle_RajaAmpat_16",
+          "Region": "Indo-Pacific",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 10.50102,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.583,
+          "SRPI_MinMax_Legacy": 0.651,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_17",
+          "Station_Name": "CoralTriangle_Misool_17",
+          "Region": "Indo-Pacific",
+          "Reef_Zone": "Reef Crest",
+          "Depth_m": 5.21414,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.45,
+          "SRPI_MinMax_Legacy": 0.534,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_18",
+          "Station_Name": "CoralTriangle_Komodo_18",
+          "Region": "Indo-Pacific",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 16.00576,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.477,
+          "SRPI_MinMax_Legacy": 0.512,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_19",
+          "Station_Name": "CoralTriangle_Sulawesi_19",
+          "Region": "Indo-Pacific",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 11.99796,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.444,
+          "SRPI_MinMax_Legacy": 0.616,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_20",
+          "Station_Name": "CoralTriangle_Bali_20",
+          "Region": "Indo-Pacific",
+          "Reef_Zone": "Reef Crest",
+          "Depth_m": 6.48922,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.53,
+          "SRPI_MinMax_Legacy": 0.636,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_21",
+          "Station_Name": "Okinawa_Kerama_21",
+          "Region": "Indo-Pacific",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 14.4985,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.703,
+          "SRPI_MinMax_Legacy": 0.694,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_22",
+          "Station_Name": "Okinawa_Ishigaki_22",
+          "Region": "Indo-Pacific",
+          "Reef_Zone": "Lagoon",
+          "Depth_m": 3.19174,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.678,
+          "SRPI_MinMax_Legacy": 0.417,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_23",
+          "Station_Name": "RedSea_Aqaba_23",
+          "Region": "Red Sea",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 15.5097,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.685,
+          "SRPI_MinMax_Legacy": 0.598,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_24",
+          "Station_Name": "RedSea_Shallow_24",
+          "Region": "Red Sea",
+          "Reef_Zone": "Reef Crest",
+          "Depth_m": 4.00604,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.721,
+          "SRPI_MinMax_Legacy": 0.519,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_25",
+          "Station_Name": "RedSea_Farasan_25",
+          "Region": "Red Sea",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 12.00596,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.734,
+          "SRPI_MinMax_Legacy": 0.669,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_26",
+          "Station_Name": "Seychelles_Mahe_26",
+          "Region": "Indian Ocean",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 10.78814,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.765,
+          "SRPI_MinMax_Legacy": 0.603,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_27",
+          "Station_Name": "Maldives_AriAtoll_27",
+          "Region": "Indian Ocean",
+          "Reef_Zone": "Reef Crest",
+          "Depth_m": 5.495,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.356,
+          "SRPI_MinMax_Legacy": 0.471,
+          "Priority_Tier": "Tier_3_Low_Monitoring"
+        },
+        {
+          "Station_ID": "STN_28",
+          "Station_Name": "Hawaii_Kaneohe_28",
+          "Region": "Pacific",
+          "Reef_Zone": "Lagoon",
+          "Depth_m": 3.50314,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.759,
+          "SRPI_MinMax_Legacy": 0.509,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        },
+        {
+          "Station_ID": "STN_29",
+          "Station_Name": "Hawaii_OahuFore_29",
+          "Region": "Pacific",
+          "Reef_Zone": "Fore Reef",
+          "Depth_m": 11.19224,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.639,
+          "SRPI_MinMax_Legacy": 0.468,
+          "Priority_Tier": "Tier_2_Secondary_Conservation"
+        },
+        {
+          "Station_ID": "STN_30",
+          "Station_Name": "Palau_RockIslands_30",
+          "Region": "Pacific",
+          "Reef_Zone": "Lagoon",
+          "Depth_m": 4.798979999999999,
+          "Spatial_Restoration_Priority_Index_SRPI": 0.726,
+          "SRPI_MinMax_Legacy": 0.463,
+          "Priority_Tier": "Tier_1_High_Priority_Restoration"
+        }
+      ]
+    }
   }
 }

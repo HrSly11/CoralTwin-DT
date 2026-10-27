@@ -324,43 +324,57 @@ def generate_final_data_dictionary():
 
 
 def validate_ml_predictive_power(df):
-    """Verifies statistical emulation capability on the 12 clean pre-target environmental features."""
-    print("Verifying statistical emulation performance on clean pre-target features...")
+    """Verifies statistical emulation capability on the canonical 10 clean pre-target environmental features."""
+    print("Verifying statistical emulation performance on clean 10-feature set...")
     features = [
-        "Depth_m", "SST_degC", "SST_Anomaly_degC", "HotSpot_degC", "DHW_degC_weeks",
-        "pH_total", "Salinity_PSU", "Dissolved_Oxygen_mg_L", "Aragonite_Saturation_Omega",
-        "Turbidity_NTU", "Kd_490_m_inv", "PAR_umol_m2_s"
+        "SST_degC", "SST_Anomaly_degC", "DHW_degC_weeks", "pH_total",
+        "Aragonite_Saturation_Omega", "Turbidity_NTU", "PAR_umol_m2_s",
+        "Salinity_PSU", "Dissolved_Oxygen_mg_L", "Depth_m"
     ]
 
     X = df[features].values
     y_class = df["Bleaching_Risk"].map({"Low": 0, "Medium": 1, "High": 2}).values
     y_reg = df["Coral_Cover_Loss_Pct"].values
+    folds = df["Spatial_Cluster_ID"].values
 
-    stations = df["Station_Name"].unique()
-    kf = KFold(n_splits=5, shuffle=True, random_state=SEED)
+    eval_seeds = [17, 42, 73, 108, 256]
+    acc_list, f1_list, r2_list, rmse_list = [], [], [], []
 
-    clf = xgb.XGBClassifier(n_estimators=150, max_depth=6, learning_rate=0.08, random_state=SEED, eval_metric="mlogloss")
-    reg = xgb.XGBRegressor(n_estimators=150, max_depth=6, learning_rate=0.08, random_state=SEED)
+    for s in eval_seeds:
+        preds_class = np.zeros(len(df), dtype=int)
+        preds_reg = np.zeros(len(df), dtype=float)
+        for fold_id in sorted(np.unique(folds)):
+            train_mask = folds != fold_id
+            val_mask = folds == fold_id
 
-    preds_class = np.zeros(len(df))
-    preds_reg = np.zeros(len(df))
+            clf = xgb.XGBClassifier(
+                n_estimators=250, max_depth=6, learning_rate=0.06,
+                subsample=0.85, colsample_bytree=0.85,
+                random_state=s + int(fold_id), eval_metric="mlogloss", n_jobs=4
+            )
+            reg = xgb.XGBRegressor(
+                n_estimators=250, max_depth=6, learning_rate=0.06,
+                subsample=0.85, colsample_bytree=0.85,
+                random_state=s + int(fold_id), n_jobs=4
+            )
 
-    for train_st_idx, val_st_idx in kf.split(stations):
-        train_mask = df["Station_Name"].isin(stations[train_st_idx]).values
-        val_mask = df["Station_Name"].isin(stations[val_st_idx]).values
+            clf.fit(X[train_mask], y_class[train_mask])
+            reg.fit(X[train_mask], y_reg[train_mask])
 
-        clf.fit(X[train_mask], y_class[train_mask])
-        reg.fit(X[train_mask], y_reg[train_mask])
+            preds_class[val_mask] = clf.predict(X[val_mask])
+            preds_reg[val_mask] = np.clip(reg.predict(X[val_mask]), 0.0, 100.0)
 
-        preds_class[val_mask] = clf.predict(X[val_mask])
-        preds_reg[val_mask] = reg.predict(X[val_mask])
+        acc_list.append(accuracy_score(y_class, preds_class))
+        f1_list.append(f1_score(y_class, preds_class, average="macro"))
+        r2_list.append(r2_score(y_reg, preds_reg))
+        rmse_list.append(np.sqrt(mean_squared_error(y_reg, preds_reg)))
 
-    acc = accuracy_score(y_class, preds_class)
-    f1 = f1_score(y_class, preds_class, average="macro")
-    r2 = r2_score(y_reg, preds_reg)
-    rmse = np.sqrt(mean_squared_error(y_reg, preds_reg))
+    acc = float(np.mean(acc_list))
+    f1 = float(np.mean(f1_list))
+    r2 = float(np.mean(r2_list))
+    rmse = float(np.mean(rmse_list))
 
-    print(f"Final Dataset Validation (Leakage-Free): Accuracy={acc:.4f}, Macro-F1={f1:.4f}, R2={r2:.4f}, RMSE={rmse:.3f}%")
+    print(f"Final Dataset Validation (Regime_1_Clean_Emulation_10, 5 seeds x 5 spatial folds): Accuracy={acc:.4f}, Macro-F1={f1:.4f}, R2={r2:.4f}, RMSE={rmse:.3f}%")
     return {"accuracy": acc, "f1": f1, "r2": r2, "rmse": rmse}
 
 
@@ -429,12 +443,12 @@ def write_validation_report(df, ml_metrics):
         "",
         "## 3. Leakage-Free Statistical Emulation Baseline",
         "",
-        "Using only the 12 pre-target physical, biogeochemical, and optical variables (excluding all post-target benthic variables):",
+        "Using the canonical 10 clean pre-target environmental variables (`Regime_1_Clean_Emulation_10`, excluding all post-target benthic variables) across 5 random seeds and 5 spatial block folds (`> 25 km` buffer):",
         "",
-        f"- **Classification Accuracy (Bleaching Risk, 3-class):** **{acc_pct}%**",
-        f"- **Macro-F1 Score:** **{f1_val}**",
-        f"- **Regression R² (Coral Cover Loss %):** **{r2_val}** (theoretical ceiling ~0.77 due to irreducible Gaussian noise $\\sigma = 3.2\\%$ and $\\sigma = 3.5\\%$)",
-        f"- **Regression RMSE:** **{rmse_val}%**",
+        f"- **Classification Accuracy (Bleaching Risk, 3-class):** **{acc_pct:.2f}%**",
+        f"- **Macro-F1 Score:** **{f1_val:.4f}**",
+        f"- **Regression R² (Coral Cover Loss %):** **{r2_val:.4f}** (theoretical ceiling $R^2_{{\\max}} \\approx 0.9385, \\text{{RMSE}}_{{\\min}} \\approx 3.89\\%$ due to irreducible Gaussian noise $\\sigma = 4.0\\%$ scaled by $0.80$ plus $\\sigma = 2.2\\%$)",
+        f"- **Regression RMSE:** **{rmse_val:.3f}%**",
     ]
 
     with open(VALIDATION_MD, "w", encoding="utf-8") as f:

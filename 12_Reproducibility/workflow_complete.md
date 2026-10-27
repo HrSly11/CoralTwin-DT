@@ -1,8 +1,8 @@
 # Complete Computational Workflow & Pipeline Architecture: CoralTwin-DT
 
-**Document Purpose:** Complete directed acyclic graph (DAG) and step-by-step mathematical description of all 13 computational pipeline stages.  
+**Document Purpose:** Complete directed acyclic graph (DAG) and step-by-step mathematical description of all 17 computational pipeline stages.  
 **Repository:** https://github.com/HrSly11/CoralTwin-DT.git  
-**Master Orchestration Script:** `run_all.py`  
+**Master Orchestration Script:** `run_all.py` (17 stages in ~96s)  
 
 ---
 

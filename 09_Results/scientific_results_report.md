@@ -19,14 +19,14 @@
 |    By coupling 10m Sentinel-2 optical turbidity with 5km NOAA CRW DHW, CoralTwin-DT identifies hydrodynamic  |
 |    micro-refugia with active tidal flushing, preventing outplanting into deceptive high-mortality zones.      |
 |                                                                                                               |
-| 2. Discovers Synergistic Acidification Tipping Points:                                                        |
-|    TreeSHAP game-theoretic explainability reveals that ocean acidification (pH <= 7.85) drops the thermal     |
-|    mortality threshold from 8.5 to 5.8 °C-weeks. Restoration managers can avoid planting strains in           |
-|    acidified waters without alkalinity buffering.                                                             |
+| 2. Quantifies Acidification-Thermal Tipping Points:                                                           |
+|    Interventional TreeSHAP (DHW 53.71%) and 2D partial dependence confirm that shifting aragonite saturation  |
+|    from 3.85 to 2.20 (pH 7.80) lowers the analytical EC50 threshold by 1.55 °C-weeks (9.85 to 8.30 DHW) and   |
+|    the 35% cover-loss threshold by 2.00 °C-weeks (9.20 to 7.20 DHW).                                          |
 |                                                                                                               |
 | 3. Resolves the "Outplant vs. MPA" Conservation Dilemma:                                                      |
-|    Decadal forward simulations (2025–2050) prove that neither active outplanting nor passive MPAs alone       |
-|    prevent macroalgal dominance under SSP5-8.5. Only the coupled strategy maintains 46.2% live coral cover.   |
+|    Decadal RK4 forward simulations (2025–2050, N=5,000) show that unmitigated warming collapses cover to      |
+|    0.69% (S1), whereas integrated MPA herbivory (g=0.68) and outplanting (S4) sustains 55.20% live cover.     |
 |                                                                                                               |
 | 4. Multi-Criteria Spatial Optimization (SRPI):                                                                |
 |    Calculates the Spatial Restoration Priority Index (SRPI) across 500m cells, exporting ready-to-use GeoJSON |
@@ -102,7 +102,7 @@ When scleractinian corals experience elevated sea surface temperatures ($SST > M
 
 Under normal alkaline conditions ($pH \approx 8.10, \Omega_{\text{arag}} \ge 3.8$), the coral host utilizes ATP generated from translocated photosynthate to operate active $\text{Ca}^{2+}/\text{H}^+\text{-ATPase}$ proton pumps at the sub-calicoblastic extracellular fluid (SCEF), maintaining calcification rates. 
 
-However, under ocean acidification ($pH \le 7.85$), the thermodynamic gradient against proton extrusion steepens dramatically. The host must expend up to **$35\%$ more metabolic energy** purely on proton maintenance, starving the cellular repair machinery of the ATP required for antioxidant enzymes (Superoxide Dismutase, Catalase) and Heat Shock Proteins (HSP70). Consequently, endosymbiont expulsion and cellular apoptosis occur at substantially lower thermal loads ($5.8^\circ\text{C-weeks}$ vs $8.5^\circ\text{C-weeks}$).
+However, under ocean acidification ($\Omega_{\text{arag}} = 2.20, pH = 7.80$), the thermodynamic gradient against proton extrusion steepens dramatically. The host must expend up to **$35\%$ more metabolic energy** purely on proton maintenance, starving the cellular repair machinery of the ATP required for antioxidant enzymes (Superoxide Dismutase, Catalase) and Heat Shock Proteins (HSP70). Consequently, in the synthetic biophysical generator, the analytical half-maximal cover-loss threshold ($\text{EC}_{50}$) shifts downward by $1.55^\circ\text{C-weeks}$ (from $9.85$ to $8.30^\circ\text{C-weeks}$) and the $35\%$ cover-loss threshold shifts downward by $2.00^\circ\text{C-weeks}$ (from $9.20$ to $7.20^\circ\text{C-weeks}$).
 
 ---
 
@@ -117,23 +117,23 @@ Macroalgae Cover M(t)
    |     | (Suffocated recruits, low grazing g < 0.30, net erosion)  |
    |     +-----------------------------------------------------------+
    |                        ^
-   |                       / (Unmitigated Warming SSP5-8.5)
+   |                       / (Unmitigated Warming SSP5-8.5: C -> 0.69%)
    |                      /
    |     ................/............................................ (Tipping Manifold)
    |                    /
-   |                   / (Combined Intervention: Micro-Outplanting + MPA Grazing)
+   |                   / (Combined Intervention S4: Micro-Outplanting + MPA Grazing)
    |                  v
    |     +-----------------------------------------------------------+
-0.0|     | RESILIENT CORAL-DOMINATED STATE (Live Cover > 45%)       |
-   |     | (High grazing g = 0.68, net accretion G_net = +6.80)      |
+0.0|     | RESILIENT CORAL-DOMINATED STATE (Live Cover 55.20%)       |
+   |     | (High grazing g = 0.68, net accretion G_net = +7.46)      |
    +-----------------------------------------------------------------+---> Live Coral Cover C(t)
   0.0                                                               1.0
 ```
 
-1. **Unmitigated Climate Change (Scenario 1):** Thermal mortality increases $d(DHW, \Omega)$, pushing coral cover below the critical threshold ($C_{\text{crit}} \approx 15\%$). Macroalgae expand into unoccupied space, suppressing juvenile recruitment and trapping the reef in a degraded state.
-2. **Passive Conservation Alone (MPA):** Enhances grazing capacity ($g = 0.68$) to control macroalgae, but leaves the standing coral vulnerable to mass mortality during MHWs ($DHW \ge 12$).
-3. **Active Outplanting Alone:** Introduces coral biomass ($\Phi = 2.8\% \text{ yr}^{-1}$), but without herbivore protection, fleshy macroalgae overgrow outplanted fragments.
-4. **Hybrid CoralTwin-DT Strategy (Scenario 4):** Simultaneously elevates grazing capacity to keep substrate free of macroalgal turf while seeding thermally hardened genotypes ($+2.0^\circ\text{C}$ tolerance), pushing the ecosystem firmly into the coral-dominated basin of attraction.
+1. **Unmitigated Climate Change (Scenario 1):** Thermal mortality increases $d(DHW, \Omega)$, pushing coral cover to $0.69\%$ mean ($0.10\%$ median; $98.58\%$ collapse probability $<10\%$). Macroalgae expand to $67.35\%$, suppressing juvenile recruitment and trapping the reef in a degraded state ($G_{\text{net}} = -1.80\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$).
+2. **Moderate Climate Mitigation Alone (Scenario 2):** Stabilizes coral cover at a transitional $18.55\%$ mean ($13.54\%$ median; $42.84\%$ collapse probability) with $34.40\%$ macroalgal cover.
+3. **Active Outplanting Alone (Scenario 3):** Introduces thermally hardened coral biomass ($\Phi = 1.5\% \text{ yr}^{-1}$, $g = 0.35$), sustaining $48.92\%$ mean cover ($49.91\%$ median; $G_{\text{net}} = +5.50\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$).
+4. **Integrated CoralTwin-DT Strategy (Scenario 4):** Simultaneously elevates MPA grazing capacity ($g = 0.68$) and outplanting ($\Phi = 2.5\% \text{ yr}^{-1}$) of thermally hardened genotypes, achieving $55.20\%$ mean cover ($55.87\%$ median; $G_{\text{net}} = +7.46\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$, $0.00\%$ collapse probability).
 
 ---
 

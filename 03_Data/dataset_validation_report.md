@@ -44,9 +44,9 @@
 
 ## 3. Leakage-Free Statistical Emulation Baseline
 
-Using only the 12 pre-target physical, biogeochemical, and optical variables (excluding all post-target benthic variables):
+Using the canonical 10 clean pre-target environmental variables (`Regime_1_Clean_Emulation_10`, excluding all post-target benthic variables) across 5 random seeds and 5 spatial block folds (`> 25 km` buffer):
 
-- **Classification Accuracy (Bleaching Risk, 3-class):** **98.86%**
-- **Macro-F1 Score:** **0.727**
-- **Regression R² (Coral Cover Loss %):** **0.9362** (theoretical ceiling ~0.77 due to irreducible Gaussian noise $\sigma = 3.2\%$ and $\sigma = 3.5\%$)
-- **Regression RMSE:** **3.963%**
+- **Classification Accuracy (Bleaching Risk, 3-class):** **98.85%**
+- **Macro-F1 Score:** **0.7187**
+- **Regression R² (Coral Cover Loss %):** **0.9336** (theoretical ceiling $R^2_{\max} \approx 0.9385, \text{RMSE}_{\min} \approx 3.89\%$ due to irreducible Gaussian noise $\sigma = 4.0\%$ scaled by $0.80$ plus $\sigma = 2.2\%$)
+- **Regression RMSE:** **4.044%**

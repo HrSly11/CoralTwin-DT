@@ -290,7 +290,7 @@ def run_monte_carlo_scenarios(n_simulations: int = 5000):
             "Ecological_State_2050": state_2050,
         })
 
-        # Also record comparison row (Empirical baseline 31.25% vs Manuscript baseline 28.50% vs Legacy Euler vs Manuscript Table 4)
+        # Also record comparison row (Audited 30-station baseline 33.68% vs Manuscript baseline 28.50% vs Legacy Euler vs Manuscript Table 4)
         ms_mean = float(np.mean(coral_ms[:, -1]))
         ms_lo = float(np.percentile(coral_ms[:, -1], 2.5))
         ms_hi = float(np.percentile(coral_ms[:, -1], 97.5))

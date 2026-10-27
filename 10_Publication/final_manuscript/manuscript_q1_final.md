@@ -107,11 +107,11 @@ Numerical integration of the differential system is executed using a fourth-orde
 Four supervised learning architectures were trained and benchmarked on identical standardized partitions:
 1. **Extreme Gradient Boosting (XGBoost; Selected Model):** Ensemble of gradient-boosted decision trees configured with maximum tree depth $= 6$, learning rate $\eta = 0.06$, subsample ratio $= 0.85$, column subsample $= 0.80$, minimum child weight $= 3$, and $n_{\text{estimators}} = 350$ (Cheung et al., 2025; Lin et al., 2023).
 2. **Random Forest (RF Baseline):** Bagged ensemble of 200 fully grown decision trees utilizing Gini impurity splitting criteria and square-root feature subsampling (Giles et al., 2023).
-3. **Deep Multi-Layer Perceptron (MLP Baseline):** Fully connected 4-layer feedforward architecture ($[128, 64, 32, 16]$ hidden units) utilizing LeakyReLU activations, batch normalization, dropout ($p = 0.25$), and Adam optimizer (initial learning rate $= 10^{-3}$).
-4. **Stacked Long Short-Term Memory (LSTM Baseline):** Two-layer bidirectional recurrent network ($64$ hidden units per direction) evaluated across 6-step temporal lookback sequences to capture antecedent thermal trajectories (Lin et al., 2023).
+3. **Deep Multi-Layer Perceptron (MLP Baseline):** Fully connected 4-layer PyTorch feedforward architecture ($[128, 64, 32, 16]$ hidden units; $24,516$ total parameters across classification and regression heads) utilizing LeakyReLU activations, batch normalization, dropout ($p = 0.25$), and AdamW optimizer (learning rate $= 10^{-3}$).
+4. **Stacked Long Short-Term Memory (LSTM Baseline):** Two-layer PyTorch recurrent network ($64$ hidden units; $66,244$ total parameters) evaluated across within-station 8-week temporal lookback sequences (`seq_len = 8`) to capture antecedent thermal trajectories (Lin et al., 2023).
 
 ### 2.5 5-Fold Spatially Stratified Cross-Validation Protocol
-To prevent optimistic performance estimates arising from spatial autocorrelation across contiguous marine pixels (Roelfsema et al., 2021), validation was conducted using **5-Fold Spatially Stratified Cross-Validation**. The 30 benchmark stations were clustered into 5 distinct geographic partitions enforcing a minimum buffer distance of $25\text{ km}$ between training and testing sets. Hyperparameters were tuned exclusively inside nested inner folds using Bayesian optimization.
+To prevent optimistic performance estimates arising from spatial autocorrelation across contiguous marine pixels (Roelfsema et al., 2021), validation was conducted using **5-Fold Spatial Block Cross-Validation** across 5 evaluation seeds (`17, 42, 73, 108, 256`). The 30 benchmark stations (`STN_01`–`STN_30`) were partitioned into 5 geographic blocks (6 stations / $3,000$ records per fold) enforcing a minimum exclusion buffer of $25\text{ km}$ (verified minimum inter-fold station distance $= 119.72\text{ km}$, sample-level $= 115.33\text{ km}$, with $0$ violations $<25\text{ km}$).
 
 ### 2.6 Statistical Significance and Hypothesis Testing Protocol
 Differences in predictive error distributions across competing model architectures were assessed via two-sided **Paired Wilcoxon Signed-Rank Tests**. Effect sizes were quantified using **Cohen's $d$**. Significance thresholds were adjusted for multiple comparisons using the **Bonferroni correction** ($\alpha_{\text{adjusted}} = 0.05 / 6 = 0.0083$).
@@ -140,56 +140,58 @@ Under 5-Fold Spatially Stratified Cross-Validation ($N = 15,000$), tree-based gr
 | Deep MLP Neural Net | 98.79% [98.62, 98.96] | 0.6807 [0.6681, 0.6968] | 0.9337 [0.9292, 0.9375] | 4.041% [3.997, 4.086] | 0.1967 ms (0.0015 ms) | 24,516 Params / 0.112 MB |
 | Stacked LSTM (seq=8) | 98.81% [98.64, 98.98] | 0.6949 [0.6775, 0.7157] | 0.9371 [0.9331, 0.9408] | 3.934% [3.893, 3.977] | 0.4135 ms (0.0131 ms) | 66,244 Params / 0.262 MB |
 
-While Random Forest exhibited marginally higher unpruned accuracy ($98.89\%$ vs. $98.85\%$), paired Wilcoxon signed-rank testing demonstrated no statistically significant difference in residual distributions ($W = 14,210, p = 0.184$). Crucially, **XGBoost achieved an inference latency of $0.009\text{ ms/sample}$**—a $38.7\times$ speedup over Random Forest ($0.349\text{ ms}$) and a $53.4\times$ speedup over the recurrent LSTM baseline ($0.481\text{ ms}$). This sub-millisecond execution profile enables real-time edge deployment on autonomous marine monitoring buoys (Aguzzi et al., 2025; Føre et al., 2024).
+On the leak-free 10-feature environmental benchmark (`Regime_1_Clean_Emulation_10`), all four architectures converged toward the theoretical noise ceiling of the synthetic generator ($R^2_{\max} \approx 0.9385, \text{RMSE}_{\min} \approx 3.89\%$): Random Forest ($R^2 = 0.9375, \text{RMSE} = 3.924\%, \text{Acc} = 98.88\%, \text{Macro-F1} = 0.7284$, out-of-fold Cohen's $\kappa = 0.8924$), Stacked LSTM with 8-week sequences ($R^2 = 0.9371, \text{RMSE} = 3.934\%, \text{Acc} = 98.81\%, \text{Macro-F1} = 0.6949, \kappa = 0.8852$), Deep MLP ($R^2 = 0.9337, \text{RMSE} = 4.041\%, \text{Acc} = 98.79\%, \text{Macro-F1} = 0.6807, \kappa = 0.8834$), and XGBoost ($R^2 = 0.9336, \text{RMSE} = 4.044\%, \text{Acc} = 98.85\%, \text{Macro-F1} = 0.7187, \kappa = 0.8892$). Paired two-sided Wilcoxon signed-rank tests (`results/statistical_tests.csv`) confirmed negligible standardized effect sizes across all pairwise comparisons ($|d| \le 0.0397$ at sample level $N = 15,000$; $p_{\text{Bonf}} \ge 0.375$ across the $N = 5$ spatial folds).
 
-The recurrent LSTM baseline suffered severe degradation when generalized across spatially isolated marine test partitions ($R^2 = 0.0310, \text{RMSE} = 14.58\%$). Paired non-parametric comparisons confirmed that XGBoost significantly outperformed both Deep MLP ($W = 4,120, p < 0.0001, d = 1.84$) and LSTM ($W = 980, p < 0.0001, d = 2.62$) with large effect sizes under Bonferroni correction.
+Crucially, under the standardized single-thread CPU latency protocol (`n_jobs = 1`, 50 warmup iterations, 500 timed repetitions; `results/latency_protocol.json`), **Deep MLP ($0.1967\text{ ms/sample}$, $0.112\text{ MB}$) and XGBoost ($0.3218\text{ ms/sample}$, $2.833\text{ MB}$) achieved $90.5\times$ and $55.3\times$ lower single-sample (`batch_size = 1`) latency than Random Forest ($17.8013\text{ ms/sample}$, $21.090\text{ MB}$)**, while batch-256 latencies reached $0.0015\text{ ms}$ (Deep MLP), $0.0064\text{ ms}$ (XGBoost), $0.0131\text{ ms}$ (Stacked LSTM), and $0.0798\text{ ms}$ (Random Forest). This sub-millisecond execution profile enables real-time edge deployment on autonomous marine monitoring buoys (Aguzzi et al., 2025; Føre et al., 2024).
 
 ```
 +---------------------------------------------------------------------------------------+
-|                MODEL ACCURACY (%) vs. INFERENCE LATENCY (ms/sample)                   |
+|        CLEAN 10-FEATURE MODEL R² vs. BATCH-1 CPU INFERENCE LATENCY (ms/sample)        |
 +=======================================================================================+
-| Accuracy (%)                                                                          |
-| 100 |  * XGBoost (98.85%, 0.009ms)     * Random Forest (98.89%, 0.349ms)              |
-|  95 |                                         * Stacked LSTM (94.68%, 0.481ms)        |
-|  90 |                * Deep MLP (91.90%, 0.085ms)                                     |
-|     +-----------------------------------------------------------------------> Latency |
-|       0.001 ms               0.01 ms                 0.1 ms                  1.0 ms   |
+| Regression R²                                                                         |
+| 0.940 |  * Stacked LSTM (0.9371, 0.4135ms)      * Random Forest (0.9375, 17.8013ms)   |
+| 0.935 |  * Deep MLP (0.9337, 0.1967ms)   * XGBoost (0.9336, 0.3218ms)                 |
+| 0.930 |                                                                               |
+|       +---------------------------------------------------------------------> Latency |
+|         0.1 ms                 0.5 ms                  2.0 ms                 20.0 ms |
 +---------------------------------------------------------------------------------------+
 ```
-*Figure 2: Empirical trade-off between cross-validated predictive accuracy and computational latency.*
+*Figure 2: Empirical trade-off between spatial cross-validated predictive performance and single-thread batch-1 CPU latency.*
 
 ### 3.2 RQ2: Algorithmic Attribution and Acidification Tipping Points (TreeSHAP)
-Global feature importance derived through game-theoretic TreeSHAP attribution identified Degree Heating Weeks as the predominant driver of coral mortality ($47.0\%$ relative contribution), followed by benthic structural rugosity ($20.4\%$), baseline coral cover ($7.4\%$), sea surface temperature ($6.7\%$), and bathymetric depth ($6.5\%$; Figure 3).
+Global feature importance derived through interventional TreeSHAP attribution on the clean 10-feature environmental emulator (`results/shap_global_importance.csv`) identified Degree Heating Weeks (`DHW_degC_weeks`) as the predominant predictor of coral cover loss ($53.71\%$ relative contribution, 95% station-bootstrap CI $[51.37\%, 55.98\%]$), followed by downwelling irradiance `PAR_umol_m2_s` ($11.35\%$), `SST_Anomaly_degC` ($9.28\%$), `Aragonite_Saturation_Omega` ($8.81\%$), and `SST_degC` ($5.19\%$; Figure 3). Our 3-regime SHAP leakage audit (`09_Results/audit/shap_leakage_comparison.csv`) confirmed that elevated attributions previously reported for `Structural_Rugosity` ($21.18\%$) or `Shannon_Diversity_H` ($58.65\%$) were artifacts of including co-generated benthic state variables.
 
 ```
-Feature Contribution (TreeSHAP Relative % Importance)
+Feature Contribution (Clean 10-Feature Interventional TreeSHAP Relative % Importance)
 +-----------------------------------------------------------------------+
-| Degree Heating Weeks (DHW)       | [47.0%] =========================  |
-| Benthic Structural Rugosity      | [20.4%] ===========                |
-| Baseline Coral Cover (%)         | [ 7.4%] ====                       |
-| Sea Surface Temperature (SST)    | [ 6.7%] ===                        |
-| Bathymetric Depth (m)            | [ 6.5%] ===                        |
-| Aragonite Saturation (Omega)     | [ 5.8%] ===                        |
-| Seawater pH                      | [ 4.2%] ==                         |
-| Turbidity Kd(490)                | [ 2.0%] =                          |
+| Degree Heating Weeks (DHW)       | [53.71%] ========================= |
+| Photosynthetic Irradiance (PAR)  | [11.35%] ======                    |
+| SST Anomaly (SSTA)               | [ 9.28%] =====                     |
+| Aragonite Saturation (Omega)     | [ 8.81%] ====                      |
+| Sea Surface Temperature (SST)    | [ 5.19%] ===                       |
+| Salinity (PSU)                   | [ 2.66%] =                         |
+| Bathymetric Depth (m)            | [ 2.53%] =                         |
+| Seawater pH (Total)              | [ 2.37%] =                         |
+| Dissolved Oxygen (mg/L)          | [ 2.15%] =                         |
+| Turbidity (NTU)                  | [ 1.95%] =                         |
 +-----------------------------------------------------------------------+
 ```
-*Figure 3: Global TreeSHAP feature attribution ranking across 15,000 multi-source observations.*
+*Figure 3: Clean 10-feature interventional TreeSHAP attribution ranking across 15,000 observations (`results/shap_global_importance.csv`).*
 
-Two-dimensional TreeSHAP interaction slicing revealed a marked non-linear synergy between cumulative heat stress and seawater acidification (Cheung et al., 2025; Klein et al., 2022). Under ambient chemical equilibrium ($pH \approx 8.08, \Omega_{\text{arag}} \ge 3.80$), the critical thermal tipping point triggering irreversible bleaching tissue mortality occurred at $DHW = 8.4^\circ\text{C-weeks}$. Under acidified conditions ($pH \le 7.85, \Omega_{\text{arag}} \le 2.80$), the tipping point dropped precipitously to **$5.8^\circ\text{C-weeks}$**—a compression of **$1.4^\circ\text{C-weeks}$** ($26.2\%$ reduction in thermal tolerance buffer).
+Two-dimensional partial dependence analysis (`results/partial_dependence_dhw_ph.csv`, `results/inflection_points.json`) quantified how the emulator recovers the programmed interaction between cumulative heat stress and carbonate saturation (Cheung et al., 2025; Klein et al., 2022). In the analytical generator ground truth, shifting from ambient carbonate saturation ($\Omega_{\text{arag}} = 3.85, pH = 8.10$) to acidified conditions ($\Omega_{\text{arag}} = 2.20, pH = 7.80$) lowers the half-maximal cover-loss threshold ($\text{EC}_{50}$) by **$-1.55^\circ\text{C-weeks}$** (from **$9.85$** to **$8.30^\circ\text{C-weeks}$**), shifts the maximum-slope inflection point by **$-1.55^\circ\text{C-weeks}$** (from **$10.15$** to **$8.60^\circ\text{C-weeks}$**), and lowers the $35\%$ cover-loss threshold by **$-2.00^\circ\text{C-weeks}$** (from **$9.20$** to **$7.20^\circ\text{C-weeks}$**).
 
 ### 3.3 RQ3: Decadal Scenario Trajectories and Restoration Prioritization (2025–2050)
-Decadal numerical integration of the competitive benthic ODE system ($N = 5,000$ Monte Carlo stochastic runs per scenario) demonstrated stark divergence in ecosystem fates by 2050 (Table 2 and Figure 4).
+Fourth-order Runge-Kutta integration ($\Delta t = 0.05\text{ yr}$, $500$ steps, $N = 5,000$ Monte Carlo runs per scenario) of the coupled benthic ODE system (Eqs. 4–6) from the audited 30-station baseline ($33.68\%$ coral cover) demonstrated stark divergence in ecosystem trajectories by 2050 (Table 2 and Figure 4).
 
 *Table 2: Decadal ecosystem projections across 30 benchmark stations under four management regimes (2025–2050).*
 | Scenario ID & Intervention Strategy | Projected 2050 Coral Cover (%) [95% CI] | Macroalgal Cover (%) | Net Accretion Rate ($\text{kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$) | Structural State |
-| :--- | :---: | :---: | :---: | :---: |
+| :--- | :---: | :---: | :---: | :--- |
 | **S1: Severe Warming (SSP5-8.5, No Action)** | **0.69% mean / 0.10% med [0.1% – 6.2%]** | 67.35% | **-1.80 [-1.85, -1.39]** | 98.58% Collapse Risk (Degraded/Macroalgal) |
 | **S2: Moderate Mitigation (SSP2-4.5)** | **18.55% mean / 13.54% med [0.5% – 52.7%]** | 34.40% | **+0.94 [-1.77, +6.38]** | 42.84% Collapse Risk (Transitional) |
 | **S3: Active Outplanting Alone** | **48.92% mean / 49.91% med [23.3% – 67.4%]** | 1.75% | **+5.50 [+1.41, +9.15]** | 0.46% Collapse Risk (Coral-Dominated) |
-| **S4: Integrated Outplanting + MPA (Optimal)** | **55.20% mean / 55.87% med [36.2% – 70.5%]** | **0.10%** | **+7.46 [+3.80, +11.01]** | 0.00% Collapse Risk (Coral-Dominated) |
+| **S4: Integrated Outplanting + MPA** | **55.20% mean / 55.87% med [36.2% – 70.5%]** | **0.10%** | **+7.46 [+3.80, +11.01]** | 0.00% Collapse Risk (Coral-Dominated) |
 
-Under unmitigated emissions (Scenario 1, SSP5-8.5), recurrent annual severe bleaching (van Hooidonk et al., 2016) collapses live coral cover from a $28.5\%$ initial baseline to $4.8\%$, shifting reefs into net framework erosion ($-1.82\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$; Cornwall et al., 2021). In contrast, Scenario 4—combining thermally hardened outplanting ($+2.0^\circ\text{C}$ thermal hardening; Boström-Einarsson et al., 2020; Shaver et al., 2022) with strict MPA herbivore protection ($g = 0.68$)—suppressed macroalgae to $18.9\%$, maintaining $46.2\%$ live cover and positive calcification ($+6.80\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$).
+Under unmitigated emissions (Scenario 1, SSP5-8.5), recurrent severe bleaching (van Hooidonk et al., 2016) collapses live coral cover from the $33.68\%$ initial baseline to $0.69\%$ mean ($0.10\%$ median, 95% CI $[0.1\%, 6.2\%]$; $98.58\%$ collapse probability $<10\%$), shifting reefs into net framework dissolution ($-1.80\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$; Cornwall et al., 2021). In contrast, Scenario 4—combining thermally hardened outplanting ($+2.0^\circ\text{C-weeks}$ tolerance, $\Phi = 2.5\%\text{ yr}^{-1}$; Boström-Einarsson et al., 2020; Shaver et al., 2022) with enforced MPA herbivore protection ($g = 0.68$)—suppresses macroalgae to $0.10\%$, sustaining $55.20\%$ mean live cover ($55.87\%$ median, 95% CI $[36.2\%, 70.5\%]$) and positive calcification ($+7.46\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$, $0.00\%$ collapse probability).
 
 Spatial Restoration Priority Index ($\text{SRPI}$) evaluation under the biophysical Eq. (7) formulation categorized 33.33% of evaluated stations ($10/30$) and 32.48% of observations ($4,872/15,000$) as Tier-1 Priority Zones ($\text{SRPI} \ge 0.70$; across thresholds $\{0.60, 0.70, 0.80\}$, station Tier-1 shares are 60.00%, 33.33%, and 0.00%, while legacy min-max quantile tiering yields 26.67% = $8/30$ stations). These sites clustered in high-rugosity thermal refugia (led by *STN_06 Belize_Atoll_06* at $0.765$, *STN_26 Seychelles_Mahe_26* at $0.765$, *STN_28 Hawaii_Kaneohe_28* at $0.759$, *STN_01 Mesoamerican_Fore_01* at $0.756$, and *STN_25 RedSea_Farasan_25* at $0.734$; Anthony et al., 2020; Asner et al., 2020; Sauder et al., 2023).
 
@@ -214,13 +216,13 @@ Projected Live Coral Cover (%) Trajectories (2025 - 2050)
 ## 4. Discussion
 
 ### 4.1 Mechanistic Insights into Biophysical Synergies
-Our empirical findings corroborate the hypothesis that ocean acidification and thermal accumulation operate synergistically rather than through linear superposition (Anthony et al., 2011; Bove et al., 2022; Cornwall et al., 2021; Klein et al., 2022). Mechanistically, scleractinian calcification requires active proton extrusion from the sub-calicoblastic extracellular fluid (SCEF) against unfavorable electrochemical gradients via trans-membrane $\text{Ca}^{2+}/\text{H}^+\text{-ATPase}$ enzymatic pumps (Bove et al., 2022; Cornwall et al., 2021; Esplandiu et al., 2024). Under depressed external seawater pH ($\le 7.85$), proton extrusion demands elevated cellular adenosine triphosphate (ATP) expenditure (Dobson et al., 2024; Esplandiu et al., 2024). During acute marine heatwaves, host metabolic reserves are simultaneously exhausted by heat shock protein chaperone repair and reactive oxygen species (ROS) detoxification, precipitating sudden energetic failure and lowering the bleaching threshold from $8.4$ to $5.8\text{ DHW}$ (Barott et al., 2021; Klein et al., 2022).
+Our findings corroborate the hypothesis that ocean acidification and thermal accumulation operate synergistically rather than through linear superposition (Anthony et al., 2011; Bove et al., 2022; Cornwall et al., 2021; Klein et al., 2022). Mechanistically, scleractinian calcification requires active proton extrusion from the sub-calicoblastic extracellular fluid (SCEF) against unfavorable electrochemical gradients via trans-membrane $\text{Ca}^{2+}/\text{H}^+\text{-ATPase}$ enzymatic pumps (Bove et al., 2022; Cornwall et al., 2021; Esplandiu et al., 2024). Under depressed external seawater pH ($\le 7.85$), proton extrusion demands elevated cellular adenosine triphosphate (ATP) expenditure (Dobson et al., 2024; Esplandiu et al., 2024). During acute marine heatwaves, host metabolic reserves are simultaneously exhausted by heat shock protein chaperone repair and reactive oxygen species (ROS) detoxification, precipitating energetic failure and lowering the analytical half-maximal cover-loss threshold ($\text{EC}_{50}$) in the biophysical generator from $9.85$ to $8.30\text{ DHW}$ ($-1.55^\circ\text{C-weeks}$, and the $35\%$ loss threshold from $9.20$ to $7.20\text{ DHW}$; Barott et al., 2021; Klein et al., 2022).
 
 ### 4.2 Dynamic Digital Twins vs. Static Marine Protected Areas
-Our decadal forward projections provide an empirical resolution to the ongoing debate between passive reserve protection and active interventions (Boström-Einarsson et al., 2020; Kleypas et al., 2021; McLeod et al., 2019). While no-take MPAs preserve herbivorous grazer biomass (suppressing macroalgal competition $M$), they provide zero direct buffering against pan-tropical marine heatwaves (Klein et al., 2022; van Hooidonk et al., 2016). Conversely, active coral outplanting without herbivore protection fails due to competitive smothering by opportunistic macroalgal turf (Ladd et al., 2019; Mumby et al., 2007). Only an integrated cyber-physical strategy—where digital twin telemetry directs hardened micro-fragment outplants into verified hydrodynamic refugia within enforced MPAs—sustains viable carbonate framework budgets (Anthony et al., 2020; Shaver et al., 2022; Webb et al., 2023).
+Our decadal forward projections provide a quantitative resolution to the ongoing debate between passive reserve protection and active interventions (Boström-Einarsson et al., 2020; Kleypas et al., 2021; McLeod et al., 2019). While no-take MPAs preserve herbivorous grazer biomass (suppressing macroalgal competition $M$), they provide zero direct buffering against pan-tropical marine heatwaves (Klein et al., 2022; van Hooidonk et al., 2016). Conversely, active coral outplanting without herbivore protection faces competitive pressure from opportunistic macroalgal turf (Ladd et al., 2019; Mumby et al., 2007). Only an integrated cyber-physical strategy—where digital twin telemetry directs hardened micro-fragment outplants into verified hydrodynamic refugia within enforced MPAs—sustains viable carbonate framework budgets ($55.20\%$ mean cover and $+7.46\text{ kg CaCO}_3\text{ m}^{-2}\text{ yr}^{-1}$; Anthony et al., 2020; Shaver et al., 2022; Webb et al., 2023).
 
 ### 4.3 Practical and Theoretical Implications for Software Engineering and Applied AI
-From a software engineering perspective, CoralTwin-DT illustrates the necessity of decoupling multi-sensor ingestion, machine learning inference, and forward dynamical simulation into discrete, modular cyber-physical layers (Aguzzi et al., 2025; Chen et al., 2023; Føre et al., 2024). By selecting a gradient-boosted decision tree architecture with sub-millisecond inference latency ($0.009\text{ ms/sample}$), CoralTwin-DT demonstrates that lightweight, interpretable tabular models frequently outperform over-parameterized deep recurrent networks in operational telemetry applications where spatial domain transferability is mandatory (Cheung et al., 2025; Lundberg et al., 2020).
+From a software engineering perspective, CoralTwin-DT illustrates the necessity of decoupling multi-sensor ingestion, machine learning inference, and forward dynamical simulation into discrete, modular cyber-physical layers (Aguzzi et al., 2025; Chen et al., 2023; Føre et al., 2024). By pairing lightweight neural and gradient-boosted architectures ($0.1967\text{ ms/sample}$ for Deep MLP and $0.3218\text{ ms/sample}$ for XGBoost at batch size 1; $0.0015\text{ ms}$ and $0.0064\text{ ms}$ at batch size 256) with interventional TreeSHAP explainability, CoralTwin-DT demonstrates that compact models match the spatial cross-validated accuracy of deeper recurrent networks ($R^2 \in [0.9336, 0.9375]$) while delivering a $55.3\times$ single-sample speedup over Random Forest ($17.8013\text{ ms/sample}$) for edge telemetry applications (Cheung et al., 2025; Lundberg et al., 2020).
 
 ### 4.4 Threats to Validity and Study Limitations
 
@@ -242,8 +244,8 @@ Conclusion validity relates to the statistical robustness of reported performanc
 
 All computational artifacts developed in this research adhere to the FAIR Guiding Principles (de Koning et al., 2023):
 - **Public Source Repository:** Complete codebase, data pipelines, model training scripts, and simulation engines are openly accessible at https://github.com/HrSly11/CoralTwin-DT.git under the permissive **MIT License**.
-- **Permanent Archival DOI:** The complete benchmark dataset ($N = 15,000$ rows), trained model weights (`xgboost_model.json`, `random_forest.joblib`), and high-resolution GeoJSON zoning assets are permanently preserved on Zenodo under DOI `10.5281/zenodo.16892401`.
-- **Reproducibility Pipeline:** A containerized execution environment is provided via Docker (`Dockerfile` and `requirements.txt`), allowing push-button replication of the complete 13-stage analytical pipeline via `python run_all.py` in under two minutes on standard commodity hardware.
+- **Archival DOI (Pre-Registration Placeholder):** The complete synthetic benchmark dataset ($N = 15,000$ rows, 30 stations, 36 columns, `SEED = 42`), trained model weights, and GeoJSON zoning assets carry the reserved pre-registration Zenodo DOI placeholder `10.5281/zenodo.10275001` pending final archival activation upon publication.
+- **Reproducibility Pipeline:** A containerized execution environment with pinned dependencies (`torch==2.14.1`, `xgboost==3.2.0`, `scikit-learn==1.9.0`, `shap==0.51.0`) is provided via `Dockerfile` and `requirements.txt`, enabling deterministic push-button replication of the complete 17-stage analytical pipeline via `python run_all.py` in ~96 seconds (`results/pipeline_execution_log.json`).
 
 ---
 

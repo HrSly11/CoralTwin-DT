@@ -51,42 +51,42 @@ Mumby, Hastings & Edwards (2007) formalized the non-linear bistability between l
 ## 3. Materials and Methods
 
 ### 3.1 Research Protocol and Spatial Domain
-The study encompasses 25 benchmark monitoring stations distributed across the Caribbean Sea (Mesoamerican Barrier Reef System, Belize Atolls, Cozumel, Roatan, Florida Keys), the Indo-Pacific Coral Triangle (Raja Ampat, Komodo, Sulawesi), the Great Barrier Reef (Northern and Central Sectors), the Red Sea (Gulf of Aqaba), and the Central Pacific (Hawaii, Palau).
+The study encompasses 30 benchmark monitoring stations (`STN_01` to `STN_30`) distributed across five major biogeographic provinces: the Caribbean Sea (Mesoamerican Barrier Reef System, Belize Atolls, Cozumel, Roatan, Florida Keys), the Indo-Pacific Coral Triangle (Raja Ampat, Komodo, Wakatobi), the Great Barrier Reef (Lizard Island, Heron Island, Ribbon Reefs), the Red Sea & Indian Ocean (Hurghada, Farasan, Seychelles, Maldives), and the Central-Western Pacific (Hawaii, Palau, Okinawa, Moorea).
 
 ### 3.2 Spatio-Temporal Harmonization Pipeline
-All continuous raster layers (NOAA CRW 5km SST/DHW, Copernicus Sentinel-2 Level-2A surface reflectance, GEBCO bathymetry) and point-source data (Allen Coral Atlas benthic habitat polygons, in-situ mooring sensors) were spatially resampled to a standardized $500\text{m} \times 500\text{m}$ grid and aggregated temporally to daily intervals over the 2015–2024 period ($N = 12,500$ harmonized observations).
+All continuous oceanographic, carbonate, optical, and benthic state variables across the 30 stations were synthesized and harmonized onto standardized $500\text{m} \times 500\text{m}$ reef station grids at weekly intervals over the 2015–2024 period ($N = 15,000$ synthetic benchmark observations, 500 records per station, 36 standardized columns, `SEED = 42`).
 
 ### 3.3 Artificial Intelligence Modeling & Validation
-We developed and benchmarked four supervised learning architectures:
-1. **Extreme Gradient Boosting (XGBoost):** Optimized with $\eta = 0.05$, tree depth $= 6$, subsample $= 0.8$, and colsample $= 0.8$.
-2. **Random Forest (RF):** 250 ensemble trees with Gini splitting criteria.
-3. **Deep Multi-Layer Perceptron (MLP):** 4 dense layers $(128 \to 64 \to 32 \to 3)$ with LeakyReLU and dropout regularization.
-4. **Regularized Linear/Logistic Baseline:** L2-regularized baseline classifiers and regressors.
+We developed and benchmarked four supervised learning architectures on the Clean 10-Feature Environmental Predictor Set (`Regime_1_Clean_Emulation_10`):
+1. **Extreme Gradient Boosting (XGBoost):** Configured with $\eta = 0.06$, tree depth $= 6$, subsample $= 0.85$, colsample $= 0.80$, and $350$ trees per head.
+2. **Random Forest (RF):** $200$ bagged decision trees per head.
+3. **Deep Multi-Layer Perceptron (MLP):** 4-layer PyTorch architecture $(128 \to 64 \to 32 \to 16)$ with LeakyReLU, BatchNorm, and dropout ($p = 0.25$; $24,516$ total parameters).
+4. **Stacked Long Short-Term Memory (LSTM):** 2-layer PyTorch recurrent network evaluated on within-station 8-week temporal lookback sequences (`seq_len = 8`; $66,244$ total parameters).
 
-Validation was conducted using **5-Fold Spatially Stratified Cross-Validation**, partitioning the dataset by geographic reef clusters to prevent spatial autocorrelation leakage.
+Validation was conducted using **5-Fold Spatial Block Cross-Validation** ($>25\text{ km}$ exclusion buffer; minimum inter-fold station distance $= 119.72\text{ km}$, sample-level $= 115.33\text{ km}$) across 5 evaluation seeds (`17, 42, 73, 108, 256`) to prevent spatial autocorrelation leakage.
 
 ---
 
 ## 4. Digital Twin Architecture
 
 CoralTwin-DT implements a modular Six-Layer Cyber-Physical Framework (Figure 1):
-- **Layer 1 (Data Acquisition):** Continuous telemetry ingestion from NOAA CRW, Sentinel-2 MSI, Allen Coral Atlas, and biogeochemical moorings.
-- **Layer 2 (Data Integration & Harmonization):** Automated ETL, 500m grid resampling, ISO 19115 metadata cataloging, and FAIR data publishing.
+- **Layer 1 (Data Acquisition):** Multi-source oceanographic parameter bounds derived from NOAA CRW, Sentinel-2 MSI, Allen Coral Atlas, and biogeochemical moorings.
+- **Layer 2 (Data Integration & Harmonization):** Automated ETL, 500m grid standardization, ISO 19115 metadata cataloging, and FAIR data publishing ($N = 15,000$, 30 stations, 36 columns).
 - **Layer 3 (Hybrid Biophysical-AI Engine):** Coupled multi-task XGBoost classification/regression and Mumby dynamical ODEs.
-- **Layer 4 (Forward Scenario Simulation):** 2025–2050 decadal forward projection under 4 climate and intervention pathways.
-- **Layer 5 (Validation & Uncertainty):** 5-fold spatial CV, backtesting against historical MHWs (2016, 2023), and Monte Carlo parameter propagation ($N = 5,000$).
-- **Layer 6 (Visualization & Decision Support):** Interactive environmental dashboard, Spatial Restoration Priority Index (SRPI), and GeoJSON cartography.
+- **Layer 4 (Forward Scenario Simulation):** 2025–2050 decadal RK4 forward projection ($\Delta t = 0.05\text{ yr}$, $N = 5,000$ Monte Carlo runs) under 4 climate and intervention pathways.
+- **Layer 5 (Validation & Uncertainty):** 5-fold spatial block CV ($>25\text{ km}$ buffer), 5-regime target leakage ablation, and Monte Carlo parameter propagation ($N = 5,000$).
+- **Layer 6 (Visualization & Decision Support):** Interactive environmental dashboard, biophysical Spatial Restoration Priority Index (Eq. 7 SRPI), and GeoJSON cartography.
 
 ---
 
 ## 5. Dataset Specifications
 
-The complete dataset (`03_Data/processed_data/coral_environmental_harmonized.csv`) comprises $12,500$ rows and $24$ attributes:
-- **Spatiotemporal Identifiers:** Record ID, Timestamp, Latitude, Longitude, Station Name, Biogeographic Region, Geomorphic Reef Zone.
-- **Oceanographic & Optical Covariates:** Bathymetric Depth ($m$), SST ($^\circ\text{C}$), SST Anomaly ($^\circ\text{C}$), DHW ($^\circ\text{C-weeks}$), Seawater pH (total scale), Aragonite Saturation State ($\Omega_{\text{arag}}$), Turbidity (NTU), Downwelling Solar PAR ($\mu\text{mol photons m}^{-2}\text{s}^{-1}$).
-- **Benthic Ecological State Variables:** Live Coral Cover ($\% $), Macroalgae Cover ($\% $), Structural Rugosity Index, Shannon Diversity ($H'$), Bleaching Severity ($\% $).
-- **Target Variables:** Bleaching Risk (`Low`, `Medium`, `High`), Projected Live Coral Cover Loss Rate ($\Delta C \in [0, 100]\%$).
-- **Provenance & Attribution:** Explicit provenance flag (`Real_Observation` vs `Digital_Twin_Simulated`) and mandatory disclaimer: `"Resultado obtenido mediante prototipo computacional del gemelo digital"`.
+The unified dataset (`03_Data/final_dataset.csv` and `03_Data/processed_data/coral_environmental_harmonized.csv`) comprises $15,000$ rows across 30 stations (`STN_01`–`STN_30`) and $36$ attributes:
+- **Spatiotemporal Identifiers:** Record ID, Timestamp, Latitude, Longitude, Station ID, Station Name, Biogeographic Region, Geomorphic Reef Zone, Spatial Cluster Fold ID (`1`–`5`).
+- **Clean 10 Environmental Predictors (`Regime_1_Clean_Emulation_10`):** Bathymetric Depth ($m$), SST ($^\circ\text{C}$), SST Anomaly ($^\circ\text{C}$), DHW ($^\circ\text{C-weeks}$), Seawater pH (total scale), Aragonite Saturation State ($\Omega_{\text{arag}}$), Turbidity (NTU), Downwelling Solar PAR ($\mu\text{mol photons m}^{-2}\text{s}^{-1}$), Salinity (PSU), and Dissolved Oxygen ($\text{mg L}^{-1}$).
+- **Co-Generated Benthic State Variables (Excluded from Clean Predictors to Prevent Target Leakage):** Live Coral Cover ($\%$), Macroalgae Cover ($\%$), Turf Algae Cover ($\%$), Structural Rugosity Index, Shannon Diversity ($H'$), Colony Density ($\text{m}^{-2}$), Bleaching Severity ($\%$).
+- **Target Variables:** 3-Class Bleaching Risk (`Low`: $93.98\%$, `Medium`: $1.24\%$, `High`: $4.78\%$), 5-Class Bleaching Alert Level (`No_Stress`: $70.05\%$, `Watch`: $22.50\%$, `Warning`: $2.53\%$, `Alert_Level_1`: $0.14\%$, `Alert_Level_2`: $4.78\%$), and Continuous Live Coral Cover Loss ($\Delta C \in [0, 100]\%$).
+- **Provenance & Attribution:** Audited provenance flag (`100.0% Digital_Twin_Simulated`, `SEED = 42`, `09_Results/audit/data_provenance_summary.json`) and mandatory disclaimer: `"Resultado obtenido mediante prototipo computacional del gemelo digital"`.
 
 ---
 

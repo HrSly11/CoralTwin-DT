@@ -61,7 +61,7 @@ The operational registry is exactly 25 canonical IDs (`station-01` through `stat
 
 Use the CLI for scheduled or manual synchronization. The HTTP trigger is disabled until `CORALTWIN_SYNC_TOKEN` is configured, and then requires that exact value in the `X-CoralTwin-Sync-Token` header. The token is never returned by the API. A request made while another synchronization is active receives `409 Conflict`.
 
-Today, only NOAA SST/DHW are live-synchronized. The remaining model features (for example pH, turbidity, rugosity, and coral cover) come from the deterministic processed-CSV baseline used by inference; Sentinel-2 and in-situ feeds are part of the broader research architecture, not continuous operational inputs yet.
+Today, only NOAA SST/DHW are live-synchronized. The remaining clean environmental model features (for example pH, aragonite saturation, turbidity, PAR, salinity, dissolved oxygen, and depth) come from the deterministic processed-CSV baseline used by inference; Sentinel-2 and in-situ feeds are part of the broader research architecture, not continuous operational inputs yet.
 
 ---
 
@@ -228,7 +228,7 @@ pip install -r 12_Reproducibility/requirements.txt
 python run_all.py
 ```
 
-*The automated master script `run_all.py` executes all 13 pipeline stages sequentially in ~104 seconds, regenerating all datasets, models, simulations, GeoJSON layers, and publication figures deterministically (`SEED = 42`).*
+*The automated master script `run_all.py` executes all 17 pipeline stages sequentially in ~96 seconds, regenerating all datasets, models, simulations, GeoJSON layers, and publication figures deterministically (`SEED = 42`).*
 
 ---
 
