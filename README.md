@@ -164,6 +164,35 @@ The unified analysis-ready dataset (`03_Data/final_dataset.csv`, synchronized id
 
 *Note: All four models approach the theoretical noise ceiling of the synthetic data generator ($R^2_{\max} \approx 0.9385, \text{RMSE}_{\min} \approx 3.89\%$). Pre-audit $R^2 = 0.9995$ values were artifacts of including co-generated benthic response variables (`Shannon_Diversity_H`, `Structural_Rugosity`, `Live_Coral_Cover_Pct`) in the feature matrix (`results/leakage_ablation_metrics.csv`).*
 
+### 6.1.1 Target Leakage Audit & Feature Ablation (Table 5 Reproduction)
+To systematically audit target leakage and prove that the initial $R^2 = 0.9994$ was an artifact of co-generated benthic indices, we evaluated 5 feature regimes under 5-fold Spatial Block Cross-Validation (25 km Haversine buffer).
+
+The full unconstrained space contains **16 features**:
+- **10 Clean Environmental Predictors (Canonical Regime 1):** `Depth_m`, `SST_degC`, `SST_Anomaly_degC`, `DHW_degC_weeks`, `pH_total`, `Salinity_PSU`, `Dissolved_Oxygen_mg_L`, `Aragonite_Saturation_Omega`, `Turbidity_NTU`, `PAR_umol_m2_s`.
+- **2 Auxiliary Satellite Predictors:** `HotSpot_degC` (SST thermal anomaly over Maximum Monthly Mean) and `Kd_490_m_inv` (diffuse attenuation coefficient at 490 nm for water clarity), omitted from Regime 1 due to collinear redundancy with DHW and turbidity.
+- **4 Post-Target Benthic Metrics:** `Shannon_Diversity_H`, `Structural_Rugosity`, `Live_Coral_Cover_Pct`, `Macroalgae_Cover_Pct`, which are generated downstream from bleaching severity in synthetic data generators.
+
+#### Immediate Standalone Reproduction (< 10 seconds):
+```bash
+python 06_AI_and_Modeling/machine_learning/run_leakage_ablation.py
+```
+
+| Regime | N. Vars | Predictor Set Description | Accuracy (%) | Macro-F1 | Emulation $R^2$ | RMSE (%) |
+| :--- | :---: | :--- | :---: | :---: | :---: | :---: |
+| **Leaked (Audit)** | 16 | 10 env + 2 satellite (`HotSpot`, `Kd_490`) + 4 benthic post-target (`Shannon`, rugosity, covers) | 98.83% | 0.7335 | 0.9994 | 0.395% |
+| **Alternative Set** | 10 | Environmental plus rugosity & live coral cover (omits salinity & DO) | 98.81% | 0.7197 | 0.8305 | 6.460% |
+| **Canonical Clean** | 10 | Clean thermodynamic forcings (SST, SST Anom, DHW, pH, Sal, DO, $\Omega_{\text{arag}}$, Turb, PAR, Depth) | 98.85% | 0.7187 | 0.9336 | 4.044% |
+| **No Thermal Forcing**| 6 | Depth, SST, SST Anomaly, pH, Salinity, DO (excludes DHW, $\Omega_{\text{arag}}$, PAR, Turbidity) | 98.29% | 0.6925 | 0.8487 | 6.104% |
+| **Minimal Baseline** | 2 | Depth and Salinity only | 93.98% | 0.3230 | -0.0269 | 15.901% |
+
+### 6.1.2 Audited Model Hyperparameters (Table 2 in Manuscript)
+Every hyperparameter in the source code (`06_AI_and_Modeling/machine_learning/train_models.py`) matches Table 2 of the manuscript:
+- **XGBoost (Classifier & Regressor):** `n_estimators = 350`, `max_depth = 6`, `learning_rate = 0.05`, `subsample = 0.80`, `colsample_bytree = 0.80`, `min_child_weight = 3`, `gamma = 0.10`, `eval_metric = "mlogloss"`.
+- **Random Forest (Classifier & Regressor):** `n_estimators = 200`, `max_depth = 12`, `min_samples_split = 4`, `min_samples_leaf = 2`, `max_features = 'sqrt'` (classifier) / `1.0` (regressor), `bootstrap = True`.
+- **Deep MLP (PyTorch):** `Input(10) -> Linear(128) -> BatchNorm1d -> ReLU -> Dropout(0.2) -> Linear(64) -> BatchNorm1d -> ReLU -> Dropout(0.2) -> Linear(32) -> BatchNorm1d -> ReLU -> Output`, `AdamW(lr=1e-3, weight_decay=1e-4)`, batch size 256, early stopping with patience 5.
+- **Stacked LSTM (PyTorch):** `seq_len = 8`, `LSTM(10, 64) -> Dropout(0.2) -> LSTM(64, 32) -> Head(32, 32) -> Output`, `AdamW(lr=3e-3)`, batch size 256, patience 5.
+
+
 ### 6.2 Clean 10-Feature Interventional TreeSHAP & Carbonate Regime Thresholds
 - **Top Clean Environmental Predictors (`results/shap_global_importance.csv`):** Degree Heating Weeks (`DHW_degC_weeks`, **53.71%**), Downwelling Solar Irradiance (`PAR_umol_m2_s`, **11.35%**), SST Anomaly (`SST_Anomaly_degC`, **9.28%**), Aragonite Saturation (`Aragonite_Saturation_Omega`, **8.81%**), and SST (`SST_degC`, **5.19%**).
 - **Carbonate Regime Shift (`results/inflection_points.json`):** In the analytical generator ground truth, ocean acidification ($\Omega_{\text{arag}} = 2.20$ vs. $3.85$) shifts the half-maximal cover-loss threshold ($\text{EC}_{50}$) downward by **$-1.55^\circ\text{C-weeks}$** (from **$9.85$** to **$8.30^\circ\text{C-weeks}$**) and the $35\%$ loss threshold by **$-2.00^\circ\text{C-weeks}$** (from **$9.20$** to **$7.20^\circ\text{C-weeks}$**).
@@ -226,6 +255,9 @@ pip install -r 12_Reproducibility/requirements.txt
 
 # 4. Run the master automated orchestration pipeline
 python run_all.py
+
+# 5. (Optional) Run standalone feature ablation (< 10 seconds, reproduces Table 5)
+python 06_AI_and_Modeling/machine_learning/run_leakage_ablation.py
 ```
 
 *The automated master script `run_all.py` executes all 17 pipeline stages sequentially in ~96 seconds, regenerating all datasets, models, simulations, GeoJSON layers, and publication figures deterministically (`SEED = 42`).*
