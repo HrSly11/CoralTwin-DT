@@ -1,0 +1,11 @@
+Formulation,Weights,w_thermal,w_urgency,w_rugosity,w_water,Threshold,Tier1_synthetic_N30,Tier1_synthetic_N29,Tier1_NOAA_N29,Preserved,Gained_only_NOAA,Preservation_pct
+strict_Eq7,base,0.35,0.25,0.25,0.15,0.6,18,18,13,8,5,44.44
+strict_Eq7,base,0.35,0.25,0.25,0.15,0.65,13,13,6,2,4,15.38
+strict_Eq7,base,0.35,0.25,0.25,0.15,0.7,10,10,4,2,2,20.0
+strict_Eq7,base,0.35,0.25,0.25,0.15,0.75,4,4,1,1,0,25.0
+strict_Eq7,base,0.35,0.25,0.25,0.15,0.8,0,0,0,0,0,
+linear_variant,base,0.35,0.25,0.25,0.15,0.6,18,18,15,7,8,38.89
+linear_variant,base,0.35,0.25,0.25,0.15,0.65,18,18,9,5,4,27.78
+linear_variant,base,0.35,0.25,0.25,0.15,0.7,17,17,4,2,2,11.76
+linear_variant,base,0.35,0.25,0.25,0.15,0.75,11,11,2,1,1,9.09
+linear_variant,base,0.35,0.25,0.25,0.15,0.8,2,2,1,1,0,50.0

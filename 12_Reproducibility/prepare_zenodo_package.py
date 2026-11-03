@@ -57,6 +57,11 @@ This archive contains the complete computational assets required to independentl
 4. **Master Numerical Registry (`manuscript_numbers.json`):**
    - Complete machine-readable JSON containing every single numerical figure cited in the manuscript with exact file and script provenance.
 
+5. **Reviewer Sensitivity & S4 Factor Isolation Suite:**
+   - `07_Scenarios_and_Simulations/s4_factor_isolation.py`: Coupled ODE factor isolation (DHW, grazing g, restoration Phi, Omega).
+   - `08_GIS_and_Remote_Sensing/srpi_sensitivity_analysis.py`: Multi-criteria SRPI threshold and weight sensitivity (5 thresholds, +-20% weights, 10,000 Monte Carlo draws).
+   - Associated analytical results: `results/s4_factor_isolation_*.csv`, `results/srpi_*sensitivity*.csv`.
+
 ---
 
 ## 2. Experimental Random Seeds
@@ -156,6 +161,26 @@ def main():
                 if os.path.isfile(fpath) and fname.endswith(".geojson"):
                     zf.write(fpath, arcname=f"geospatial_outputs/{fname}")
             print("  + Added geospatial_outputs/ (*.geojson)")
+
+        # Add reviewer analysis scripts and outputs
+        s4_script = os.path.join(BASE_DIR, "07_Scenarios_and_Simulations", "s4_factor_isolation.py")
+        if os.path.exists(s4_script):
+            zf.write(s4_script, arcname="07_Scenarios_and_Simulations/s4_factor_isolation.py")
+            print("  + Added 07_Scenarios_and_Simulations/s4_factor_isolation.py")
+
+        srpi_script = os.path.join(BASE_DIR, "08_GIS_and_Remote_Sensing", "srpi_sensitivity_analysis.py")
+        if os.path.exists(srpi_script):
+            zf.write(srpi_script, arcname="08_GIS_and_Remote_Sensing/srpi_sensitivity_analysis.py")
+            print("  + Added 08_GIS_and_Remote_Sensing/srpi_sensitivity_analysis.py")
+
+        results_dir = os.path.join(BASE_DIR, "results")
+        if os.path.exists(results_dir):
+            for fname in os.listdir(results_dir):
+                if fname.startswith("s4_factor_isolation") or fname.startswith("srpi_"):
+                    fpath = os.path.join(results_dir, fname)
+                    if os.path.isfile(fpath):
+                        zf.write(fpath, arcname=f"results/{fname}")
+                        print(f"  + Added results/{fname}")
 
     zip_size_mb = os.path.getsize(zip_path) / (1024.0 * 1024.0)
     print(f"\nZenodo archival package ready: {zip_path} ({zip_size_mb:.2f} MB)")

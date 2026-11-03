@@ -1,0 +1,40 @@
+{
+  "n_monte_carlo": 5000,
+  "dt_years": 0.05,
+  "integrator": "RK4",
+  "common_seed": 42,
+  "baseline_coral_pct": 33.68,
+  "baseline_macroalgae_pct": 31.41,
+  "s3_params": {
+    "g_mpa": 0.35,
+    "phi_resto": 0.025,
+    "dhw_slope": 0.2,
+    "omega_slope": -0.028
+  },
+  "s4_params": {
+    "g_mpa": 0.68,
+    "phi_resto": 0.03,
+    "dhw_slope": 0.18,
+    "omega_slope": -0.022
+  },
+  "shapley": {
+    "Cover_2050_pp": {
+      "gap": 6.252124011996216,
+      "phi": {
+        "g": 0.7049867963411866,
+        "Phi": 0.7019223072848824,
+        "DHW": 3.8970304937242926,
+        "Omega": 0.9481844146458542
+      }
+    },
+    "NetCarbonate_2050": {
+      "gap": 1.9614316280328845,
+      "phi": {
+        "g": 0.11085510324165025,
+        "Phi": 0.1106120997496025,
+        "DHW": 0.8587453947800131,
+        "Omega": 0.8812190302616183
+      }
+    }
+  }
+}

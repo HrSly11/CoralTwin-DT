@@ -1,0 +1,33 @@
+{
+  "thresholds": [
+    0.6,
+    0.65,
+    0.7,
+    0.75,
+    0.8
+  ],
+  "base_weights": [
+    0.35,
+    0.25,
+    0.25,
+    0.15
+  ],
+  "weight_perturbation": 0.2,
+  "renormalised": true,
+  "n_random_draws": 10000,
+  "seed": 42,
+  "n_stations": 30,
+  "n_stations_noaa": 29,
+  "max_dev_vs_repo_ranking": 0.0,
+  "record_level_synthetic_tier1": {
+    "0.60": 8701,
+    "0.65": 6572,
+    "0.70": 4872,
+    "0.75": 1749,
+    "0.80": 17
+  },
+  "stations_within_0.005": [
+    "Hawaii_OahuFore_29 NOAA 0.653 vs 0.65",
+    "Okinawa_Kerama_21 synthetic 0.703 vs 0.70"
+  ]
+}

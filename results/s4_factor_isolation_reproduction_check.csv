@@ -1,0 +1,3 @@
+Scenario_Code,Seed_used,Cover_2050_rerun,Cover_2050_repo_csv,Cover_CI_rerun,Cover_CI_repo_csv,Net_Carbonate_rerun,Net_Carbonate_repo_csv,Net_Carbonate_CI_rerun,Net_Carbonate_CI_repo_csv,Macroalgae_2050_rerun,Macroalgae_2050_repo_csv,Collapse_pct_rerun,Collapse_pct_repo_csv
+S3_Active_Restoration,44,48.92,48.92,[23.3 - 67.4],[23.3 - 67.4],5.5,5.5,[1.41 - 9.15],[1.41 - 9.15],1.75,1.75,0.46,0.46
+S4_Integrated_Intervention,45,55.2,55.2,[36.2 - 70.5],[36.2 - 70.5],7.46,7.46,[3.80 - 11.01],[3.80 - 11.01],0.1,0.1,0.0,0.0
