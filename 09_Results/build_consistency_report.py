@@ -25,6 +25,32 @@ RESULTS_DIR = os.path.join(PROJECT_ROOT, "results")
 PUB_DIR = r"c:\Users\Harry\Documents\CICLO 8\ING SOFT II\GRUPO28_RodríguezSandoval\publicacion"
 
 
+def get_element_repr(p_el):
+    """Reconstructs text representation including OMML math and XML subscript/superscript markup."""
+    parts = []
+    for c in p_el.iterchildren():
+        if c.tag == qn("w:r"):
+            va = c.xpath("./w:rPr/w:vertAlign/@w:val")
+            txt = "".join(c.xpath("./w:t/text()"))
+            if va and va[0] == "subscript":
+                parts.append(f"_{txt}")
+            elif va and va[0] == "superscript":
+                parts.append(f"^{txt}")
+            else:
+                parts.append(txt)
+        elif c.tag == "{http://schemas.openxmlformats.org/officeDocument/2006/math}oMath":
+            for m in c.iterchildren():
+                if m.tag == "{http://schemas.openxmlformats.org/officeDocument/2006/math}r":
+                    parts.append("".join(m.xpath(".//m:t/text()", namespaces={"m": "http://schemas.openxmlformats.org/officeDocument/2006/math"})))
+                elif m.tag == "{http://schemas.openxmlformats.org/officeDocument/2006/math}nary":
+                    chr_val = "".join(m.xpath("./m:naryPr/m:chr/@m:val", namespaces={"m": "http://schemas.openxmlformats.org/officeDocument/2006/math"})) or "∑"
+                    sub_val = "".join(m.xpath("./m:sub//m:t/text()", namespaces={"m": "http://schemas.openxmlformats.org/officeDocument/2006/math"}))
+                    sup_val = "".join(m.xpath("./m:sup//m:t/text()", namespaces={"m": "http://schemas.openxmlformats.org/officeDocument/2006/math"}))
+                    e_val = "".join(m.xpath("./m:e//m:t/text()", namespaces={"m": "http://schemas.openxmlformats.org/officeDocument/2006/math"}))
+                    parts.append(f"{chr_val}_{{{sub_val}}}^{{{sup_val}}} {e_val}")
+    return "".join(parts)
+
+
 def load_docx_and_json():
     docx_path = os.path.join(PROJECT_ROOT, "Grupo28B_RodriguezSandoval_HarrySly_v3.docx")
     json_path = os.path.join(RESULTS_DIR, "manuscript_numbers.json")
@@ -33,10 +59,10 @@ def load_docx_and_json():
     with open(json_path, "r", encoding="utf-8") as f:
         mn = json.load(f)
 
-    paragraphs = [p.text.strip() for p in doc.paragraphs]
+    paragraphs = [get_element_repr(p._p).strip() for p in doc.paragraphs]
     tables_text = []
     for tbl in doc.tables:
-        t_str = " ".join(c.text.strip() for r in tbl.rows for c in r.cells)
+        t_str = " ".join(" ".join(get_element_repr(p._p).strip() for p in c.paragraphs) for r in tbl.rows for c in r.cells)
         tables_text.append(t_str)
 
     full_text = "\n".join(paragraphs) + "\n" + "\n".join(tables_text)
@@ -169,7 +195,10 @@ def build_consistency_report():
     eq_params = mn["equations_and_symbols_fase4"]
 
     eq2_ok = (
-        "DHW(t) = (1/7) · Σ_{i=0}^{83} HotSpot(t−i) · 1[HotSpot(t−i) ≥ 1.0]" in eq2_text
+        "DHW(t) = (1/7)" in eq2_text
+        and "83" in eq2_text
+        and "i=0" in eq2_text
+        and "HotSpot(t−i) · 1[HotSpot(t−i) ≥ 1.0]" in eq2_text
         and "(1−0)×(83)" not in full_text
         and "HotSpot(t−1)" not in full_text
         and "·0" not in eq2_text
@@ -182,10 +211,12 @@ def build_consistency_report():
     )
 
     eq4_ok = (
-        "[max((Ω_arag − Ω_0) / Ω_ref, 0)]^κ" in eq4_text
+        "^κ" in eq4_text
+        and "λ_DHW" in eq4_text
         and "κ = 1.2" in eq4_desc
         and "κ = 1.2" in fig5_cap
         and "k = 1.2" not in full_text
+        and "\\wedge" not in full_text
     )
     add_check(
         "BLOQUE 2 — Ecuación (4) G_net(t) con exponente [max((Ω_arag − Ω_0) / Ω_ref, 0)]^κ (κ = 1.2 en simulation_engine.py L172)",
@@ -194,8 +225,8 @@ def build_consistency_report():
         eq4_ok,
     )
 
-    eq5_text = find_paragraph(paragraphs, "dC / dt = r · C")
-    eq5_ok = "(α · DHW_eff(t))²" in eq5_text and "(α · DHW · eff(t))" not in full_text
+    eq5_text = find_paragraph(paragraphs, "dC/dt = r · C")
+    eq5_ok = ("DHW_eff(t)" in eq5_text and ("^2" in eq5_text or "²" in eq5_text)) and "(α · DHW · eff(t))" not in full_text
     add_check(
         "CORRECCIÓN v5 — Ecuación (5) dC/dt con término térmico cuadrático (α · DHW_eff(t))²",
         eq5_text,

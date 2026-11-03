@@ -26,12 +26,22 @@ import os
 import sys
 import copy
 import json
+import io
+import re
+import zipfile
 import pandas as pd
 import docx
+from PIL import Image, ImageDraw, ImageFont
 from docx.shared import Inches, Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+
+M_NS = "http://schemas.openxmlformats.org/officeDocument/2006/math"
+
+
+def mqn(tag):
+    return f"{{{M_NS}}}{tag.split(':', 1)[1]}"
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -158,6 +168,335 @@ def keep_together(*els):
             ppr.insert(0, OxmlElement("w:keepNext"))
 
 
+def make_omml_run(text, italic=False, sz_half_pts=22):
+    mr = OxmlElement("m:r")
+    if not italic:
+        mrPr = OxmlElement("m:rPr")
+        nor = OxmlElement("m:nor")
+        mrPr.append(nor)
+        mr.append(mrPr)
+    wrPr = OxmlElement("w:rPr")
+    rFonts = OxmlElement("w:rFonts")
+    rFonts.set(qn("w:ascii"), "Cambria Math")
+    rFonts.set(qn("w:hAnsi"), "Cambria Math")
+    rFonts.set(qn("w:cs"), "Cambria Math")
+    wrPr.append(rFonts)
+    wrPr.append(OxmlElement("w:b"))
+    if italic:
+        wrPr.append(OxmlElement("w:i"))
+    color = OxmlElement("w:color")
+    color.set(qn("w:val"), "000000")
+    wrPr.append(color)
+    sz = OxmlElement("w:sz")
+    sz.set(qn("w:val"), str(sz_half_pts))
+    wrPr.append(sz)
+    szCs = OxmlElement("w:szCs")
+    szCs.set(qn("w:val"), str(sz_half_pts))
+    wrPr.append(szCs)
+    mr.append(wrPr)
+    mt = OxmlElement("m:t")
+    mt.text = text
+    mt.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+    mr.append(mt)
+    return mr
+
+
+def set_equation_2_omml(par):
+    """Formats Eq. (2) in P[44] using native Word OMML <m:nary> summation with stacked limits i=0..83."""
+    p_el = par._p
+    for child in list(p_el):
+        if child.tag != qn("w:pPr"):
+            p_el.remove(child)
+    pPr = p_el.find(qn("w:pPr"))
+    if pPr is None:
+        pPr = OxmlElement("w:pPr")
+        p_el.insert(0, pPr)
+    spacing = pPr.find(qn("w:spacing"))
+    if spacing is None:
+        spacing = OxmlElement("w:spacing")
+        pPr.append(spacing)
+    spacing.set(qn("w:before"), "120")
+    spacing.set(qn("w:after"), "120")
+    spacing.set(qn("w:line"), "260")
+
+    omath = OxmlElement("m:oMath")
+    omath.append(make_omml_run("DHW(t) = (1/7) · ", italic=False, sz_half_pts=22))
+
+    nary = OxmlElement("m:nary")
+    naryPr = OxmlElement("m:naryPr")
+    chr_el = OxmlElement("m:chr")
+    chr_el.set(mqn("m:val"), "∑")
+    limLoc = OxmlElement("m:limLoc")
+    limLoc.set(mqn("m:val"), "undOvr")
+    grow = OxmlElement("m:grow")
+    grow.set(mqn("m:val"), "1")
+    naryPr.append(chr_el)
+    naryPr.append(limLoc)
+    naryPr.append(grow)
+    nary.append(naryPr)
+
+    sub = OxmlElement("m:sub")
+    sub.append(make_omml_run("i=0", italic=False, sz_half_pts=18))
+    sup = OxmlElement("m:sup")
+    sup.append(make_omml_run("83", italic=False, sz_half_pts=18))
+    e_el = OxmlElement("m:e")
+    e_el.append(make_omml_run("HotSpot(t−i) · 1[HotSpot(t−i) ≥ 1.0]", italic=False, sz_half_pts=22))
+    nary.append(sub)
+    nary.append(sup)
+    nary.append(e_el)
+    omath.append(nary)
+
+    omath.append(make_omml_run("   [°C-semanas]   (2)", italic=False, sz_half_pts=20))
+    p_el.append(omath)
+
+
+def set_rich_runs(par, specs, base_sz=21, base_font="Cambria Math", bold=True):
+    """
+    Replaces paragraph runs with structured Word runs supporting true <w:vertAlign>
+    superscript/subscript, custom font, italic, and font size (in half-points).
+    Each item in specs is (text, vert_align, italic, font_name_or_None).
+    """
+    p_el = par._p
+    for child in list(p_el):
+        if child.tag != qn("w:pPr"):
+            p_el.remove(child)
+    pPr = p_el.find(qn("w:pPr"))
+    if pPr is None:
+        pPr = OxmlElement("w:pPr")
+        p_el.insert(0, pPr)
+    spacing = pPr.find(qn("w:spacing"))
+    if spacing is None:
+        spacing = OxmlElement("w:spacing")
+        pPr.append(spacing)
+    spacing.set(qn("w:before"), "100")
+    spacing.set(qn("w:after"), "100")
+    spacing.set(qn("w:line"), "260")
+
+    for txt, va, is_italic, fnt in specs:
+        r = OxmlElement("w:r")
+        rPr = OxmlElement("w:rPr")
+        font_use = fnt or base_font
+        rFonts = OxmlElement("w:rFonts")
+        rFonts.set(qn("w:ascii"), font_use)
+        rFonts.set(qn("w:hAnsi"), font_use)
+        rFonts.set(qn("w:cs"), font_use)
+        rPr.append(rFonts)
+        if bold:
+            rPr.append(OxmlElement("w:b"))
+        if is_italic:
+            rPr.append(OxmlElement("w:i"))
+        color = OxmlElement("w:color")
+        color.set(qn("w:val"), "000000")
+        rPr.append(color)
+        sz = OxmlElement("w:sz")
+        sz.set(qn("w:val"), str(base_sz))
+        rPr.append(sz)
+        szCs = OxmlElement("w:szCs")
+        szCs.set(qn("w:val"), str(base_sz))
+        rPr.append(szCs)
+        if va in ("subscript", "superscript"):
+            va_el = OxmlElement("w:vertAlign")
+            va_el.set(qn("w:val"), va)
+            rPr.append(va_el)
+        r.append(rPr)
+        t_el = OxmlElement("w:t")
+        t_el.text = txt
+        t_el.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+        r.append(t_el)
+        p_el.append(r)
+
+
+MATH_TOKEN_RE = re.compile(
+    r"(ρ̄_Spearman|ρ_Spearman|r̄_Pearson|r_Pearson|DHW_eff|DHW_95th|λ_DHW|Ω_arag|Ω_0|Ω_ref|G_net|G_max|E_bioerosion|Φ_restoration|H_MPA|w_T|w_U|w_R|w_W|ρ̄|ρ|κ)"
+)
+GREEK_BASES = {"ρ", "ρ̄", "κ", "λ", "Ω", "Φ"}
+
+
+def _clone_rpr(rPr_src):
+    if rPr_src is not None:
+        return copy.deepcopy(rPr_src)
+    return OxmlElement("w:rPr")
+
+
+def _set_rpr_font(rPr, font_name, bold=None, italic=None, vert_align=None, min_sz=None):
+    rFonts = rPr.find(qn("w:rFonts"))
+    if rFonts is None:
+        rFonts = OxmlElement("w:rFonts")
+        rPr.insert(0, rFonts)
+    rFonts.set(qn("w:ascii"), font_name)
+    rFonts.set(qn("w:hAnsi"), font_name)
+    rFonts.set(qn("w:cs"), font_name)
+    if bold is True and rPr.find(qn("w:b")) is None:
+        rPr.append(OxmlElement("w:b"))
+    if italic is True and rPr.find(qn("w:i")) is None:
+        rPr.append(OxmlElement("w:i"))
+    if min_sz is not None:
+        for tag in ("w:sz", "w:szCs"):
+            sz_el = rPr.find(qn(tag))
+            if sz_el is None:
+                sz_el = OxmlElement(tag)
+                sz_el.set(qn("w:val"), str(min_sz))
+                rPr.append(sz_el)
+            else:
+                try:
+                    cur = int(sz_el.get(qn("w:val"), "0"))
+                except ValueError:
+                    cur = 0
+                if cur < min_sz:
+                    sz_el.set(qn("w:val"), str(min_sz))
+    if vert_align in ("subscript", "superscript"):
+        va = rPr.find(qn("w:vertAlign"))
+        if va is None:
+            va = OxmlElement("w:vertAlign")
+            rPr.append(va)
+        va.set(qn("w:val"), vert_align)
+
+
+def _upgrade_paragraph_runs(p_el, is_table=False, is_ref=False):
+    min_body_sz = 16 if is_table else 19
+    spacing_val = "3" if is_table else ("6" if is_ref else "4")
+    min_math_sz = 18 if is_table else 21
+
+    # First pass: boost tiny font sizes and add subtle character spacing to prevent glyph crowding
+    for r in list(p_el.findall(qn("w:r"))):
+        rPr = r.find(qn("w:rPr"))
+        if rPr is None:
+            rPr = OxmlElement("w:rPr")
+            r.insert(0, rPr)
+        for tag in ("w:sz", "w:szCs"):
+            sz_el = rPr.find(qn(tag))
+            if sz_el is not None:
+                try:
+                    v = int(sz_el.get(qn("w:val"), "20"))
+                except ValueError:
+                    v = 20
+                if v <= (14 if is_table else 17):
+                    sz_el.set(qn("w:val"), str(min_body_sz))
+        if rPr.find(qn("w:spacing")) is None:
+            sp = OxmlElement("w:spacing")
+            sp.set(qn("w:val"), spacing_val)
+            rPr.append(sp)
+
+    # Second pass: split runs containing math/Greek/subscript tokens
+    for r in list(p_el.findall(qn("w:r"))):
+        t_el = r.find(qn("w:t"))
+        if t_el is None or not t_el.text:
+            continue
+        text = t_el.text
+        if not MATH_TOKEN_RE.search(text):
+            continue
+        rPr_orig = r.find(qn("w:rPr"))
+        parts = MATH_TOKEN_RE.split(text)
+        new_runs = []
+        for idx, part in enumerate(parts):
+            if not part:
+                continue
+            if idx % 2 == 1:
+                # Matched a math token
+                if "_" in part:
+                    base_sym, sub_sym = part.split("_", 1)
+                    r_base = OxmlElement("w:r")
+                    rPr_b = _clone_rpr(rPr_orig)
+                    if base_sym in GREEK_BASES:
+                        _set_rpr_font(rPr_b, "Cambria Math", bold=True, italic=True, min_sz=min_math_sz)
+                    else:
+                        _set_rpr_font(rPr_b, "Cambria Math", italic=(len(base_sym) == 1), min_sz=min_math_sz)
+                    r_base.append(rPr_b)
+                    tb = OxmlElement("w:t")
+                    tb.text = base_sym
+                    tb.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+                    r_base.append(tb)
+                    new_runs.append(r_base)
+
+                    r_sub = OxmlElement("w:r")
+                    rPr_s = _clone_rpr(rPr_orig)
+                    _set_rpr_font(rPr_s, "Cambria Math", italic=False, vert_align="subscript", min_sz=min_math_sz)
+                    r_sub.append(rPr_s)
+                    ts = OxmlElement("w:t")
+                    ts.text = sub_sym
+                    ts.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+                    r_sub.append(ts)
+                    new_runs.append(r_sub)
+                else:
+                    r_sym = OxmlElement("w:r")
+                    rPr_m = _clone_rpr(rPr_orig)
+                    _set_rpr_font(rPr_m, "Cambria Math", bold=True, italic=True, min_sz=min_math_sz)
+                    r_sym.append(rPr_m)
+                    tm = OxmlElement("w:t")
+                    tm.text = part
+                    tm.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+                    r_sym.append(tm)
+                    new_runs.append(r_sym)
+            else:
+                r_txt = OxmlElement("w:r")
+                rPr_t = _clone_rpr(rPr_orig)
+                r_txt.append(rPr_t)
+                tt = OxmlElement("w:t")
+                tt.text = part
+                tt.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+                r_txt.append(tt)
+                new_runs.append(r_txt)
+        for nr in new_runs:
+            r.addprevious(nr)
+        p_el.remove(r)
+
+
+def upgrade_typography_and_math_runs(doc, skip_pars=None):
+    """Formats inline Greek/math tokens in Cambria Math with true subscripts and boosts 7pt text to prevent OCR errors."""
+    if skip_pars is None:
+        skip_pars = set()
+    in_refs = False
+    for p in doc.paragraphs:
+        txt_head = p.text.strip()
+        if txt_head.startswith("7. Referencias") or txt_head.startswith("Referencias"):
+            in_refs = True
+        if p._p in skip_pars:
+            continue
+        _upgrade_paragraph_runs(p._p, is_table=False, is_ref=in_refs)
+
+    for tbl in doc.tables:
+        for row in tbl.rows:
+            for cell in row.cells:
+                for p in cell.paragraphs:
+                    if p._p in skip_pars:
+                        continue
+                    _upgrade_paragraph_runs(p._p, is_table=True, is_ref=False)
+
+
+def patch_docx_media_images(docx_path):
+    """Patches image1.png (Figura 1 title CoralTwin-DT upright) and image6.png (Figura 6 STN_17: CoralTriangle_Misool_17 pill box)."""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(docx_path, "r") as zin:
+        with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED) as zout:
+            for item in zin.infolist():
+                data = zin.read(item.filename)
+                if item.filename == "word/media/image1.png":
+                    im = Image.open(io.BytesIO(data)).convert("RGB")
+                    draw = ImageDraw.Draw(im)
+                    draw.rectangle([450, 92, 3715, 180], fill=(255, 255, 255))
+                    font = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", 50)
+                    title = "Arquitectura Ciberfísica de Seis Capas de CoralTwin-DT"
+                    bbox = draw.textbbox((0, 0), title, font=font)
+                    tw = bbox[2] - bbox[0]
+                    x = (im.size[0] - tw) // 2
+                    draw.text((x, 108), title, fill=(17, 24, 39), font=font)
+                    out_img = io.BytesIO()
+                    im.save(out_img, format="PNG")
+                    data = out_img.getvalue()
+                elif item.filename == "word/media/image6.png":
+                    im = Image.open(io.BytesIO(data)).convert("RGB")
+                    draw = ImageDraw.Draw(im)
+                    draw.rectangle([3305, 1152, 3880, 1200], fill=(255, 255, 255), outline=(203, 213, 225), width=2)
+                    font = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", 27)
+                    draw.text((3314, 1161), "STN_17: CoralTriangle_Misool_17", fill=(15, 23, 42), font=font)
+                    out_img = io.BytesIO()
+                    im.save(out_img, format="PNG")
+                    data = out_img.getvalue()
+                zout.writestr(item, data)
+    with open(docx_path, "wb") as f:
+        f.write(buf.getvalue())
+
+
 def enforce_table_integrity(doc):
     """Ensures no table in the DOCX is truncated, split mid-row, or separated from its caption/header."""
     body_children = list(doc.element.body.iterchildren())
@@ -274,7 +613,7 @@ def main():
     )
     new_p044 = "DHW(t) = (1/7) · Σ_{i=0}^{83} HotSpot(t−i) · 1[HotSpot(t−i) ≥ 1.0]   [°C-semanas]   (2)"
     set_full_par_text(P[42], new_p042)
-    set_full_par_text(P[44], new_p044)
+    set_equation_2_omml(P[44])
     record_change("Sección 2.3.1 (Ec. 2)", "P042, P044", "FON-06 / BLOQUE-2", old_p044, new_p044)
 
     old_p045 = P[45].text
@@ -292,7 +631,7 @@ def main():
 
     old_p050, old_p051 = P[50].text, P[51].text
     new_p050 = (
-        "G_net(t) = G_max · [max((Ω_arag − Ω_0) / Ω_ref, 0)]^κ · exp(−λ_DHW · DHW(t)) · (C(t) / C_0) − E_bioerosion   [kg CaCO₃ m⁻² año⁻¹]   (4)"
+        "G_net(t) = G_max · [max((Ω_arag − Ω_0)/Ω_ref, 0)]^κ · exp(−λ_DHW · DHW(t)) · (C(t)/C_0) − E_bioerosion   [kg CaCO₃ m⁻² año⁻¹]   (4)"
     )
     new_p051 = (
         "donde cada parámetro tiene significado físico y unidades explícitas conforme a la implementación en 07_Scenarios_and_Simulations/simulation_engine.py: "
@@ -306,7 +645,32 @@ def main():
         "E_bioerosion = 1.85 kg CaCO₃ m⁻² año⁻¹ es la tasa basal constante de bioerosión física y biológica producida por peces escáridos, equinoideos y "
         "endolitos perforadores (Cornwall et al., 2021; Esplandiu et al., 2024)."
     )
-    set_full_par_text(P[50], new_p050)
+    set_rich_runs(
+        P[50],
+        [
+            ("G", None, True, "Cambria Math"),
+            ("net", "subscript", False, "Cambria Math"),
+            ("(t) = ", None, False, "Cambria Math"),
+            ("G", None, True, "Cambria Math"),
+            ("max", "subscript", False, "Cambria Math"),
+            (" · [max((Ω", None, False, "Cambria Math"),
+            ("arag", "subscript", False, "Cambria Math"),
+            (" − Ω", None, False, "Cambria Math"),
+            ("0", "subscript", False, "Cambria Math"),
+            (")/Ω", None, False, "Cambria Math"),
+            ("ref", "subscript", False, "Cambria Math"),
+            (", 0)]", None, False, "Cambria Math"),
+            ("κ", "superscript", True, "Cambria Math"),
+            (" · exp(−λ", None, False, "Cambria Math"),
+            ("DHW", "subscript", False, "Cambria Math"),
+            (" · DHW(t)) · (C(t)/C", None, False, "Cambria Math"),
+            ("0", "subscript", False, "Cambria Math"),
+            (") − E", None, False, "Cambria Math"),
+            ("bioerosion", "subscript", False, "Cambria Math"),
+            ("   [kg CaCO₃ m⁻² año⁻¹]   (4)", None, False, "Cambria Math"),
+        ],
+        base_sz=22,
+    )
     set_full_par_text(P[51], new_p051)
     record_change("Sección 2.3.2 (Ec. 4)", "P050, P051", "FON-06", old_p050 + " | " + old_p051, new_p050 + " | " + new_p051)
 
@@ -329,8 +693,32 @@ def main():
         "Ladd et al., 2019). En las 5,000 corridas Monte Carlo por escenario, los parámetros cinéticos (r, a, α, γ, g, Φ) se perturban con ruido gaussiano "
         "multiplicativo de ±15 % (truncado a [0.60, 1.40]). La Tabla 1b sintetiza todos los símbolos, definiciones, valores en código y unidades de las Ecs. (1)–(7)."
     )
-    set_full_par_text(P[54], new_p054)
-    set_full_par_text(P[55], new_p055)
+    set_rich_runs(
+        P[54],
+        [
+            ("dC/dt = r · C · (1 − C − M) − [d", None, False, "Cambria Math"),
+            ("0", "subscript", False, "Cambria Math"),
+            (" + (α · DHW", None, False, "Cambria Math"),
+            ("eff", "subscript", False, "Cambria Math"),
+            ("(t))", None, False, "Cambria Math"),
+            ("2", "superscript", False, "Cambria Math"),
+            (" / (1 + β · Ω", None, False, "Cambria Math"),
+            ("arag", "subscript", False, "Cambria Math"),
+            ("(t))] · C + Φ", None, False, "Cambria Math"),
+            ("restoration", "subscript", False, "Cambria Math"),
+            (" · (1 − C − M)   [año⁻¹]   (5)", None, False, "Cambria Math"),
+        ],
+        base_sz=22,
+    )
+    set_rich_runs(
+        P[55],
+        [
+            ("dM/dt = a · M · (1 − C − M) − [g(H", None, False, "Cambria Math"),
+            ("MPA", "subscript", False, "Cambria Math"),
+            (") · M / (1 − C + ε)] + γ · M · C   [año⁻¹]   (6)", None, False, "Cambria Math"),
+        ],
+        base_sz=22,
+    )
     set_full_par_text(P[56], new_p056)
     record_change("Sección 2.3.3 (Ecs. 5-6)", "P054-P056", "FON-06", old_p054 + " | " + old_p056, new_p054 + " | " + new_p056)
 
@@ -384,6 +772,30 @@ def main():
     )
     set_full_par_text(P[87], new_p087)
     record_change("Sección 2.7 (Ec. 7)", "P087", "FON-06", old_p087, new_p087)
+
+    # Clean Tabla 2 note (P068) and unify Tabla 3 (orig_tables[2], pág. 9) & its note (P093) to 23 etapas
+    set_full_par_text(
+        P[68],
+        "Nota. Todos los modelos se evaluaron con las mismas particiones espaciales y cinco semillas externas independientes. "
+        "El guion (—) indica que la justificación es común a la fila anterior del mismo grupo.",
+    )
+    tbl3 = orig_tables[2]
+    set_runs(tbl3.rows[1].cells[1]._tc.find(qn("w:p")), ["Python 3.11 sobre Windows 10 x64 (arquitectura AMD64)"])
+    set_runs(
+        tbl3.rows[4].cells[1]._tc.find(qn("w:p")),
+        ["Semilla maestra del generador de datos = 42; cinco semillas independientes de evaluación cruzada"],
+    )
+    set_runs(
+        tbl3.rows[5].cells[1]._tc.find(qn("w:p")),
+        ["Ejecución automatizada de 23 etapas mediante python run_all.py (verificado en results/pipeline_execution_log_v4.json)"],
+    )
+    old_p093 = P[93].text
+    new_p093 = (
+        "Nota. Las especificaciones de software y librerías coinciden con el archivo requirements.txt y el contenedor Dockerfile del repositorio oficial. "
+        "Las latencias dependen del hardware de prueba y deben interpretarse en términos relativos entre modelos."
+    )
+    set_full_par_text(P[93], new_p093)
+    record_change("Tabla 3 y Nota (pág. 9)", "Table_3, P093", "Unificación 23 etapas y limpieza de Nota", old_p093, new_p093)
 
     # -------------------------------------------------------------------------
     # 3. FON-08: RESOLVE 14 vs 16 VARIABLES & ELIMINATE [VERIFICAR] (P069, P102, Tabla 5)
@@ -574,7 +986,7 @@ def main():
     ]
     new_tbl8_el = make_table(
         tmpl_tbl,
-        [700, 1750, 920, 920, 920, 860, 1060, 1060, 1660],
+        [680, 1950, 900, 880, 880, 840, 1040, 1040, 1640],
         [
             "ID",
             "Nombre de Estación",
@@ -606,6 +1018,20 @@ def main():
     )
     set_full_par_text(P[145], new_p145)
     record_change("Tabla 8 y Nota (BLOQUE 1 y BLOQUE 3)", "P143-P145, Table_8", "FON-01 / BLOQUE-1 / BLOQUE-3", old_p145, new_p145)
+
+    # Format P[147] (centered correlation display line on pág. 15) in Cambria Math 11 pt with true subscripts
+    set_rich_runs(
+        P[147],
+        [
+            ("ρ", None, True, "Cambria Math"),
+            ("Spearman", "subscript", False, "Cambria Math"),
+            (" = −0.0921   (p = 0.6346, no significativo)   |   ", None, False, "Cambria Math"),
+            ("r", None, True, "Cambria Math"),
+            ("Pearson", "subscript", False, "Cambria Math"),
+            (" = −0.2016   (p = 0.2944)", None, False, "Cambria Math"),
+        ],
+        base_sz=22,
+    )
 
     old_p148 = P[148].text
     new_p148 = (
@@ -680,9 +1106,9 @@ def main():
         "las 3 estaciones identificadas, el 100.0 % de las calibradas y el 75.0 % de las 4 de NOAA). Bajo 10,000 remuestreos bootstrap de estaciones "
         "(semilla 42), el número medio de estaciones preservadas en los umbrales de 0.60 a 0.75 es 8.04 [IC 95 %: 4.0–13.0] (44.67 % [21.4 %–68.4 %]), "
         "2.00 [0.0–5.0] (15.39 % [0.0 %–37.5 %]), 2.01 [0.0–5.0] (20.09 % [0.0 %–50.0 %]) y 0.99 [0.0–3.0] (24.47 % [0.0 %–100.0 %]), y la correlación "
-        "de rangos de Spearman entre las puntuaciones SRPI sintéticas y reales de NOAA es ρ = −0.1059 [IC 95 % bootstrap: −0.4912 a +0.2968]. En el "
+        "de rangos de Spearman entre las puntuaciones SRPI sintéticas y reales de NOAA es ρ_Spearman = −0.1059 [IC 95 % bootstrap: −0.4912 a +0.2968]. En el "
         "análisis leave-one-station-out (LOSO), al retirar una estación a la vez en el umbral de 0.70, las estaciones sintéticas de Nivel 1 varían entre "
-        "9 y 10, las de NOAA entre 3 y 4, y las preservadas entre 1 y 2 (11.11 %–22.22 %), mientras que la correlación de Spearman del SRPI oscila entre "
+        "9 y 10, las de NOAA entre 3 y 4, y las preservadas entre 1 y 2 (11.11 %–22.22 %), mientras que la correlación ρ_Spearman del SRPI oscila entre "
         "−0.1636 y −0.0398. Dos estaciones se sitúan a menos de 0.005 de un umbral (Okinawa_Kerama_21 sintética, 0.703 frente a 0.70, y "
         "Hawaii_OahuFore_29 con NOAA, 0.653 frente a 0.65). Estos resultados confirman que el SRPI es heurístico, no validado en campo, no operacional."
     )
@@ -845,7 +1271,7 @@ def main():
         "archivo de origen y script generador mediante results/manuscript_numbers.json y consistency_report.md. Los análisis de calibración con NOAA CRW "
         "(Fase 1), aislamiento factorial S4 vs. S3 (Fase 2, Tabla 7b), sensibilidad ampliada del SRPI (Fase 3, Tabla 8b) y auditoría de referencias (Fase 5) "
         "se ejecutan con 01_Data/calibrate_generator_to_noaa.py, 07_Scenarios_and_Simulations/s4_factor_isolation.py, "
-        "08_GIS_and_Remote_Sensing/srpi_sensitivity.py y 09_Results/audit_references.py, integrados en python run_all.py y verificados mediante "
+        "08_GIS_and_Remote_Sensing/srpi_sensitivity.py y 09_Results/audit_references.py, integrados en python run_all.py (23 etapas) y verificados mediante "
         "verify_release.sh y SHA256SUMS en el release v2.1.0."
     )
     new_p182 = (
@@ -865,7 +1291,9 @@ def main():
 
     # Apply keepNext, cantSplit, and tblHeader pagination guards to all 11 tables and captions
     enforce_table_integrity(doc)
+    upgrade_typography_and_math_runs(doc, skip_pars={P[44]._p, P[50]._p, P[54]._p, P[55]._p, P[147]._p})
     doc.save(DST_DOCX)
+    patch_docx_media_images(DST_DOCX)
     print(f"Saved v3 manuscript to: {DST_DOCX}")
 
     # Write trackchanges report

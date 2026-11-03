@@ -43,6 +43,8 @@ venv.bak/
 # OS files
 .DS_Store
 Thumbs.db
+~$*.docx
+~$*.doc
 
 # Operational runtime state and local configuration
 .coraltwin/
