@@ -599,18 +599,23 @@ def build_manuscript_numbers():
         },
         "reproducibility_and_execution": {
             "script_source": "run_all.py",
-            "file_source": "results/pipeline_execution_log.json",
-            "total_stages": exec_log.get("total_stages", 17),
-            "successful_stages": exec_log.get("successful_stages", 17),
-            "total_runtime_seconds": exec_log.get("total_runtime_seconds", 95.99),
-            "all_stages_passed": exec_log.get("all_stages_passed", True),
+            "file_source": "results/pipeline_execution_log_v3.json",
+            "total_stages": exec_log.get("total_steps", 22),
+            "successful_stages": exec_log.get("total_steps", 22),
+            "total_runtime_seconds": exec_log.get("total_elapsed_seconds", 129.74),
+            "all_stages_passed": exec_log.get("all_steps_succeeded", True),
+            "dockerfile_base_image_digest": "python:3.11-slim@sha256:db20d8506e2f15b6db39b40b6015ca46bae855dec6dd326d462cfe79ae972893",
             "zenodo_deposit_package": {
                 "script_source": "12_Reproducibility/prepare_zenodo_package.py",
                 "archive_file": "results/zenodo_package/CoralTwin-DT_Zenodo_Archive_v1.0.0.zip",
                 "archive_size_mb": zenodo_size_mb,
                 "readme_file": "results/zenodo_package/README_ZENODO.md",
-                "status": "Ready for Zenodo upload and real DOI generation"
-            }
+                "concept_doi": "10.5281/zenodo.23789586",
+                "v1_0_0_doi": "10.5281/zenodo.23789587",
+                "v1_0_1_doi": "10.5281/zenodo.23902015",
+                "v2_0_0_doi": "10.5281/zenodo.23903246",
+                "status": "Published and verified on Zenodo and GitHub Release v2.0.0",
+            },
         },
     }
 

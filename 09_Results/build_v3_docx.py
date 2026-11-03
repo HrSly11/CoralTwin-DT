@@ -751,7 +751,7 @@ def main():
         "• Depósito inmutable en Zenodo: El archivo de distribución completa (results/zenodo_package/CoralTwin-DT_Zenodo_Archive_v1.0.0.zip), que "
         "contiene el dataset sintético base y calibrado, los modelos .joblib y PyTorch .pt, las capas GeoJSON, las tablas de sensibilidad y los "
         "reportes auditados, está depositado de forma permanente en Zenodo bajo el Concept DOI permanente 10.5281/zenodo.23789586 (v1.0.0 DOI: "
-        "10.5281/zenodo.23789587; v1.0.1 DOI: 10.5281/zenodo.23902015; y release v2.0.0 sincronizado con GitHub–Zenodo)."
+        "10.5281/zenodo.23789587; v1.0.1 DOI: 10.5281/zenodo.23902015; v2.0.0 DOI: 10.5281/zenodo.23903246)."
     )
     new_p183 = (
         "• Contenedor Docker y pipeline reproducible: El entorno reproducible completo (fijado por digest SHA-256 en Dockerfile y verificado con "

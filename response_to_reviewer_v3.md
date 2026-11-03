@@ -5,7 +5,7 @@
 - **Manuscrito de salida:** `Grupo28B_RodriguezSandoval_HarrySly_v3.docx`
 - **Reporte de control de cambios:** `Grupo28B_RodriguezSandoval_HarrySly_v3_trackchanges_report.md`
 - **Registro maestro de trazabilidad numérica:** `results/manuscript_numbers.json`
-- **Release y Archivo Zenodo:** Release `v2.0.0` (Concept DOI permanente: `10.5281/zenodo.23789586`; v1.0.1: `10.5281/zenodo.23902015`; v2.0.0: verificado con `verify_release.sh` y `SHA256SUMS`)
+- **Release y Archivo Zenodo:** Release `v2.0.0` (DOI v2.0.0: `10.5281/zenodo.23903246`; Concept DOI permanente: `10.5281/zenodo.23789586`; v1.0.1: `10.5281/zenodo.23902015`; v1.0.0: `10.5281/zenodo.23789587`; verificado con `verify_release.sh` y `SHA256SUMS`)
 
 ---
 
