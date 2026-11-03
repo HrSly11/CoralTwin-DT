@@ -27,7 +27,7 @@
 | Tabla 8b (FON-05) — Sensibilidad SRPI (umbral τ=0.70 Ec. 7 estricta: 10→4 estaciones, 2 preservadas; pesos ±20%; Bootstrap 10,000; LOSO) | τ=0.70: 10 sint. → 4 NOAA real (2 preservadas, 20.0%); Bootstrap media=2.01; LOSO=1–2 | τ=0.70: 10→4 (2 pres., 20.0%), Boot=2.01, LOSO=1–2 [srpi_sensitivity.csv] | **OK** |
 | BLOQUE 4 — Búsqueda exhaustiva de erratas (Deducal, partopicales, Misolol, Sinterótico, NEA, Talba, decaales, Coral/Twin-DT) | 0 ocurrencias en todo el DOCX ({'Deducal': 0, 'partopicales': 0, 'Misolol': 0, 'Sinterótico': 0, 'NEA': 0, 'Talba': 0, 'decaales': 0, 'Coral/Twin-DT': 0}) | 0 ocurrencias en references_audit_summary.json (total=0) | **OK** |
 | Auditoría de referencias bibliográficas (Sección 9 vs citas en texto) | 42 referencias citadas 1-a-1 (0 huérfanas, 0 no citadas; incluye Nomenisoa 2024, Ouassine 2025, Føre 2024) | total=42, orphans=0, uncited=0 [references_audit_summary.json] | **OK** |
-| BLOQUE 6 — Sección 6 Archivado automático GitHub–Zenodo v2.1.0 (sin ZIP manual) | Release v2.1.0, Concept DOI: 10.5281/zenodo.23789586, DOI versión: 10.5281/zenodo.23789586 (sin ZIP manual) | Release=https://github.com/HrSly11/CoralTwin-DT/releases/tag/v2.1.0, Concept_DOI=10.5281/zenodo.23789586, v2.1.0_DOI=10.5281/zenodo.23789586 | **OK** |
+| BLOQUE 6 — Sección 6 Archivado automático GitHub–Zenodo v2.1.0 (sin ZIP manual) | Release v2.1.0, Concept DOI: 10.5281/zenodo.23789586, DOI versión: 10.5281/zenodo.23905108 (sin ZIP manual) | Release=https://github.com/HrSly11/CoralTwin-DT/releases/tag/v2.1.0, Concept_DOI=10.5281/zenodo.23789586, v2.1.0_DOI=10.5281/zenodo.23905108 | **OK** |
 
 ## Limitaciones Metodológicas Declaradas Explícitamente (Cero Maquillaje)
 
