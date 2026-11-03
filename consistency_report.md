@@ -3,7 +3,7 @@
 - **Manuscrito verificado**: `Grupo28B_RodriguezSandoval_HarrySly_v3.docx`
 - **Fuente maestra de métricas**: `results/manuscript_numbers.json` y salidas de scripts reproducibles (`seed = 42`)
 - **Versión del release**: `v2.1.0` (`https://github.com/HrSly11/CoralTwin-DT/releases/tag/v2.1.0`)
-- **Resumen de verificación**: **21/21 verificaciones en estado `OK`**, **0 discrepancias**.
+- **Resumen de verificación**: **22/22 verificaciones en estado `OK`**, **0 discrepancias**.
 
 | elemento | valor en DOCX | valor en manuscript_numbers.json o script | estado (OK / discrepancia) |
 | :--- | :--- | :--- | :---: |
@@ -17,7 +17,8 @@
 | Tabla 6 — Ponderación de clases (XGBoost y Random Forest sin ponderar vs. Balanced) | XGB Macro-F1: 0.7225 vs 0.7089; RF Macro-F1: 0.7285 vs 0.6818 (Recall Medium RF: 10.75% → 45.91%) | XGB F1=0.7225→0.7089; RF F1=0.7285→0.6818, Recall_Med=10.75%→45.91% | **OK** |
 | TreeSHAP y Dependencia Parcial 2D — Importancia de DHW_degC_weeks y umbrales de inflexión/EC50 | DHW = 53.71% (IC 95%: [51.37%, 55.98%]); máx. pendiente en 7.3 °C-sem, EC50 = 10.7 °C-sem | DHW=53.71% ([51.37%, 55.98%]), max_d=7.3, EC50=10.7 [shap_global_importance.csv] | **OK** |
 | BLOQUE 2 — Ecuación (2) DHW(t) con indicador 1[HotSpot(t−i) ≥ 1.0] y sin erratas | DHW(t) = (1/7) · Σ_{i=0}^{83} HotSpot(t−i) · 1[HotSpot(t−i) ≥ 1.0]   [°C-semanas]   (2) | DHW(t) = (1/7) · Σ_{i=0}^{83} HotSpot(t−i) · 1[HotSpot(t−i) ≥ 1.0] | **OK** |
-| BLOQUE 2 — Ecuación (4) G_net(t) con exponente [...]^κ (κ = 1.2 en código simulation_engine.py L172) | G_net(t) = G_max · [max((Ω_arag(t) − Ω_0) / Ω_ref, 0)]^κ · exp(−λ_DHW · DHW(t)) · (C(t) / C_0) − E_bioerosion   [kg CaCO₃ m⁻² año⁻¹]   (4) | G_max=12.5, Ω_ref=2.8, κ=1.2, λ_DHW=0.06, E_bio=1.85 (simulation_engine.py: ** 1.2) | **OK** |
+| BLOQUE 2 — Ecuación (4) G_net(t) con exponente [max((Ω_arag − Ω_0) / Ω_ref, 0)]^κ (κ = 1.2 en simulation_engine.py L172) | G_net(t) = G_max · [max((Ω_arag − Ω_0) / Ω_ref, 0)]^κ · exp(−λ_DHW · DHW(t)) · (C(t) / C_0) − E_bioerosion   [kg CaCO₃ m⁻² año⁻¹]   (4) | G_max=12.5, Ω_ref=2.8, κ=1.2, λ_DHW=0.06, E_bio=1.85 (simulation_engine.py: ** 1.2) | **OK** |
+| CORRECCIÓN v5 — Ecuación (5) dC/dt con término térmico cuadrático (α · DHW_eff(t))² | dC / dt = r · C · (1 − C − M) − [d₀ + (α · DHW_eff(t))² / (1 + β · Ω_arag(t))] · C + Φ_restoration · (1 − C − M)   [año⁻¹]   (5) | r=0.28, d0=0.03, α=0.0022, β=0.35 [simulation_engine.py] | **OK** |
 | Tabla 7 — Cobertura coralina 2050 y G_net 2050 para escenarios S1, S2, S3 y S4 | S1: 0.69% (-1.80); S2: 18.55% (0.94); S3: 48.92% (5.50); S4: 55.20% (7.46) | S1=0.69% (-1.80), S2=18.55% (0.94), S3=48.92% (5.50), S4=55.20% (7.46) | **OK** |
 | Tabla 7b (FON-04) — Descomposición exacta de Shapley y Sobol S4 vs S3 (+6.25 pp cobertura, +1.96 G_net) | ΔTotal=+6.25 pp: DHW=+3.90 pp (62.3%, Sobol S1=88.91%), Ω=+0.95 pp (15.2%), g=+0.70 pp (11.3%), Φ=+0.70 pp (11.2%) | Gap=+6.25 pp: DHW=62.3% (S1=88.91%), Ω=15.2%, g=11.3%, Φ=11.2% [s4_factor_isolation_shapley.csv] | **OK** |
 | BLOQUE 1 — Tabla 8 estructura (32 filas × 9 columnas, cero celdas fusionadas, STN_01 y STN_02 separadas) | 32 filas × 9 cols, celdas fusionadas=0, fila 1=STN_01, fila 2=STN_02, fila 30=STN_30, fila 31=PROMEDIO | 32 filas (encabezado + STN_01..STN_30 + PROMEDIO) × 9 cols, merged_cells=0 [noaa_crw_validation.csv] | **OK** |
@@ -25,9 +26,9 @@
 | BLOQUE 3 — Coeficiente de Spearman con ρ (cero usos de p_Spearman o p = −0.0921) | ρ = −0.0921 (p = 0.6346); ocurrencias de p_Spearman o p = −0.0921: 0 | spearman_rho=-0.0921, spearman_p=0.6346 [noaa_crw_validation_summary.json] | **OK** |
 | FON-01 — Calibración climatológica NOAA CRW (DHW_95th test 2021–2024 y serie completa 2015–2024) | Test 2021–2024: ρ=-0.1520 → 0.6360 (p=0.0002), RMSE=8.10 → 4.19 °C-sem; Serie 2015–2024: ρ=0.7857 (RMSE=1.80) | Test ρ: -0.1520→0.6360, RMSE: 8.10→4.19; Full ρ=0.7857 [noaa_calibration_summary.json] | **OK** |
 | Tabla 8b (FON-05) — Sensibilidad SRPI (umbral τ=0.70 Ec. 7 estricta: 10→4 estaciones, 2 preservadas; pesos ±20%; Bootstrap 10,000; LOSO) | τ=0.70: 10 sint. → 4 NOAA real (2 preservadas, 20.0%); Bootstrap media=2.01; LOSO=1–2 | τ=0.70: 10→4 (2 pres., 20.0%), Boot=2.01, LOSO=1–2 [srpi_sensitivity.csv] | **OK** |
-| BLOQUE 4 — Búsqueda exhaustiva de erratas (Deducal, partopicales, Misolol, Sinterótico, NEA, Talba, decaales, Coral/Twin-DT) | 0 ocurrencias en todo el DOCX ({'Deducal': 0, 'partopicales': 0, 'Misolol': 0, 'Sinterótico': 0, 'NEA': 0, 'Talba': 0, 'decaales': 0, 'Coral/Twin-DT': 0}) | 0 ocurrencias en references_audit_summary.json (total=0) | **OK** |
+| BLOQUE 4 / v5 — Búsqueda exhaustiva de erratas (Deducal, partopicales, Misolol, Sinterótico, NEA, Talba, decaales, Coral/Twin-DT, van Hooiidonk) | 0 ocurrencias en todo el DOCX ({'Deducal': 0, 'partopicales': 0, 'Misolol': 0, 'Sinterótico': 0, 'NEA': 0, 'Talba': 0, 'decaales': 0, 'Coral/Twin-DT': 0, 'van Hooiidonk': 0}) | 0 ocurrencias en references_audit_summary.json (total=0) | **OK** |
 | Auditoría de referencias bibliográficas (Sección 9 vs citas en texto) | 42 referencias citadas 1-a-1 (0 huérfanas, 0 no citadas; incluye Nomenisoa 2024, Ouassine 2025, Føre 2024) | total=42, orphans=0, uncited=0 [references_audit_summary.json] | **OK** |
-| BLOQUE 6 — Sección 6 Archivado automático GitHub–Zenodo v2.1.0 (sin ZIP manual) | Release v2.1.0, Concept DOI: 10.5281/zenodo.23789586, DOI versión: 10.5281/zenodo.23905108 (sin ZIP manual) | Release=https://github.com/HrSly11/CoralTwin-DT/releases/tag/v2.1.0, Concept_DOI=10.5281/zenodo.23789586, v2.1.0_DOI=10.5281/zenodo.23905108 | **OK** |
+| BLOQUE 6 / v5 — Sección 6 Archivado automático GitHub–Zenodo v2.1.0 (único DOI de versión vigente: DOI de la versión v2.1.0: 10.5281/zenodo.23905108) | Release v2.1.0, Concept DOI: 10.5281/zenodo.23789586, DOI de la versión v2.1.0: 10.5281/zenodo.23905108 (sin DOIs antiguos ni ZIP manual) | Release=https://github.com/HrSly11/CoralTwin-DT/releases/tag/v2.1.0, Concept_DOI=10.5281/zenodo.23789586, v2.1.0_DOI=10.5281/zenodo.23905108 | **OK** |
 
 ## Limitaciones Metodológicas Declaradas Explícitamente (Cero Maquillaje)
 

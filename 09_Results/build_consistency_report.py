@@ -182,16 +182,25 @@ def build_consistency_report():
     )
 
     eq4_ok = (
-        "[max((Ω_arag(t) − Ω_0) / Ω_ref, 0)]^κ" in eq4_text
+        "[max((Ω_arag − Ω_0) / Ω_ref, 0)]^κ" in eq4_text
         and "κ = 1.2" in eq4_desc
         and "κ = 1.2" in fig5_cap
         and "k = 1.2" not in full_text
     )
     add_check(
-        "BLOQUE 2 — Ecuación (4) G_net(t) con exponente [...]^κ (κ = 1.2 en código simulation_engine.py L172)",
+        "BLOQUE 2 — Ecuación (4) G_net(t) con exponente [max((Ω_arag − Ω_0) / Ω_ref, 0)]^κ (κ = 1.2 en simulation_engine.py L172)",
         eq4_text,
         f"G_max={eq_params['eq4_g_max_kg_CaCO3_m2_yr']}, Ω_ref=2.8, κ={eq_params['eq4_kappa_exponent']}, λ_DHW={eq_params['eq4_lambda_dhw_decay_inv_degC_wk']}, E_bio={eq_params['eq4_e_bioerosion_kg_CaCO3_m2_yr']} (simulation_engine.py: ** 1.2)",
         eq4_ok,
+    )
+
+    eq5_text = find_paragraph(paragraphs, "dC / dt = r · C")
+    eq5_ok = "(α · DHW_eff(t))²" in eq5_text and "(α · DHW · eff(t))" not in full_text
+    add_check(
+        "CORRECCIÓN v5 — Ecuación (5) dC/dt con término térmico cuadrático (α · DHW_eff(t))²",
+        eq5_text,
+        f"r={eq_params['eq5_r_coral_growth_yr_inv']}, d0={eq_params['eq5_d0_natural_mortality_yr_inv']}, α={eq_params['eq5_alpha_thermal_mortality_coeff']}, β={eq_params['eq5_beta_aragonite_protection_coeff']} [simulation_engine.py]",
+        eq5_ok,
     )
 
     # 8. Decadal Scenarios S1-S4 (Table 7)
@@ -286,8 +295,8 @@ def build_consistency_report():
         all(x in full_text for x in ["20.0", "2.01", "heurístico"]),
     )
 
-    # 14. BLOQUE 4 — Erratas dudosas
-    banned_b4 = ["Deducal", "partopicales", "Misolol", "Sinterótico", "NEA", "Talba", "decaales", "Coral/Twin-DT"]
+    # 14. BLOQUE 4 & v5 — Erratas dudosas
+    banned_b4 = ["Deducal", "partopicales", "Misolol", "Sinterótico", "NEA", "Talba", "decaales", "Coral/Twin-DT", "van Hooiidonk"]
     b4_counts = {}
     for term in banned_b4:
         if term == "NEA":
@@ -296,7 +305,7 @@ def build_consistency_report():
             b4_counts[term] = full_text.count(term)
     total_b4 = sum(b4_counts.values())
     add_check(
-        "BLOQUE 4 — Búsqueda exhaustiva de erratas (Deducal, partopicales, Misolol, Sinterótico, NEA, Talba, decaales, Coral/Twin-DT)",
+        "BLOQUE 4 / v5 — Búsqueda exhaustiva de erratas (Deducal, partopicales, Misolol, Sinterótico, NEA, Talba, decaales, Coral/Twin-DT, van Hooiidonk)",
         f"0 ocurrencias en todo el DOCX ({b4_counts})",
         f"0 ocurrencias en references_audit_summary.json (total={total_b4})",
         total_b4 == 0,
@@ -311,19 +320,20 @@ def build_consistency_report():
         ref_sum["total_references_in_list"] == 42 and ref_sum["orphan_citations_count"] == 0 and ref_sum["uncited_references_count"] == 0,
     )
 
-    # 16. BLOQUE 6 — Zenodo via GitHub Release v2.1.0 (no manual ZIP in Section 6)
+    # 16. BLOQUE 6 & v5 — Zenodo via GitHub Release v2.1.0 (único DOI de versión vigente)
     p_sec6 = find_paragraph(paragraphs, "El release v2.1.0 de GitHub")
     zen_pkg = mn["reproducibility_and_execution"]["zenodo_deposit_package"]
     v210_doi = zen_pkg["v2_1_0_doi"]
     no_zip_in_sec6 = "CoralTwin-DT_Zenodo_Archive_v1.0.0.zip" not in full_text
     has_v210_url = "https://github.com/HrSly11/CoralTwin-DT/releases/tag/v2.1.0" in p_sec6
     has_concept_doi = "10.5281/zenodo.23789586" in p_sec6
-    has_v210_doi = v210_doi in p_sec6
+    has_v210_doi = f"DOI de la versión v2.1.0: {v210_doi}" in p_sec6
+    no_old_doi = "23903246" not in full_text
     add_check(
-        "BLOQUE 6 — Sección 6 Archivado automático GitHub–Zenodo v2.1.0 (sin ZIP manual)",
-        f"Release v2.1.0, Concept DOI: 10.5281/zenodo.23789586, DOI versión: {v210_doi} (sin ZIP manual)",
+        "BLOQUE 6 / v5 — Sección 6 Archivado automático GitHub–Zenodo v2.1.0 (único DOI de versión vigente: DOI de la versión v2.1.0: 10.5281/zenodo.23905108)",
+        f"Release v2.1.0, Concept DOI: 10.5281/zenodo.23789586, DOI de la versión v2.1.0: {v210_doi} (sin DOIs antiguos ni ZIP manual)",
         f"Release={zen_pkg['github_release_url']}, Concept_DOI={zen_pkg['concept_doi']}, v2.1.0_DOI={v210_doi}",
-        no_zip_in_sec6 and has_v210_url and has_concept_doi and has_v210_doi,
+        no_zip_in_sec6 and has_v210_url and has_concept_doi and has_v210_doi and no_old_doi,
     )
 
     # Build Markdown table

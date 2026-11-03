@@ -249,7 +249,7 @@ def main():
         "(S4, mejor escenario simulado) alcanza 55.20 % y +7.46 kg CaCO₃ m⁻² año⁻¹; al aislar los factores mediante diseño factorial 2⁴, valores de "
         "Shapley e índices de Sobol, solo el 22.5 % de la ventaja aditiva de S4 sobre S3 en cobertura (5.77 % de la varianza factorial de Sobol) "
         "corresponde al manejo (pastoreo y trasplante) y el 77.5 % restante (94.17 % de la varianza de Sobol) al forzamiento climático menos severo "
-        "asignado a S4. La validación con NOAA mostró una correlación nula con el generador sin calibrar (ρ de Spearman = −0.0921; p = 0.6346; "
+        "asignado a S4. La validación con NOAA mostró una correlación nula con el generador sin calibrar (ρ_Spearman = −0.0921; p = 0.6346; "
         "KGE = −0.474) y redujo las estaciones SRPI de Nivel 1 de 10 a 4 (20.00 % de preservación con el umbral de 0.70; 15.38 %–44.44 % entre 0.60 "
         "y 0.75; media bootstrap 10,000 de 2.01 estaciones [IC 95 %: 0.0–5.0] y rango leave-one-station-out de 1–2 estaciones en 0.70). Al calibrar "
         "el generador por estación en 2015–2020 y evaluar en prueba (2021–2024; N = 29), el ajuste espacial de DHW_95th mejora (ρ = +0.6360, "
@@ -292,7 +292,7 @@ def main():
 
     old_p050, old_p051 = P[50].text, P[51].text
     new_p050 = (
-        "G_net(t) = G_max · [max((Ω_arag(t) − Ω_0) / Ω_ref, 0)]^κ · exp(−λ_DHW · DHW(t)) · (C(t) / C_0) − E_bioerosion   [kg CaCO₃ m⁻² año⁻¹]   (4)"
+        "G_net(t) = G_max · [max((Ω_arag − Ω_0) / Ω_ref, 0)]^κ · exp(−λ_DHW · DHW(t)) · (C(t) / C_0) − E_bioerosion   [kg CaCO₃ m⁻² año⁻¹]   (4)"
     )
     new_p051 = (
         "donde cada parámetro tiene significado físico y unidades explícitas conforme a la implementación en 07_Scenarios_and_Simulations/simulation_engine.py: "
@@ -312,7 +312,7 @@ def main():
 
     old_p054, old_p055, old_p056 = P[54].text, P[55].text, P[56].text
     new_p054 = (
-        "dC / dt = r · C · (1 − C − M) − [d₀ + (α · DHW_eff(t)²) / (1 + β · Ω_arag(t))] · C + Φ_restoration · (1 − C − M)   [año⁻¹]   (5)"
+        "dC / dt = r · C · (1 − C − M) − [d₀ + (α · DHW_eff(t))² / (1 + β · Ω_arag(t))] · C + Φ_restoration · (1 − C − M)   [año⁻¹]   (5)"
     )
     new_p055 = (
         "dM / dt = a · M · (1 − C − M) − [g(H_MPA) · M / (1 − C + ε)] + γ · M · C   [año⁻¹]   (6)"
@@ -632,7 +632,7 @@ def main():
         "(2021–2024), el generador calibrado elevó la correlación espacial de DHW_95th de ρ = −0.1520 (p = 0.4312; r = +0.0215, p = 0.9119) a "
         "ρ = +0.6360 (p = 0.0002; r = +0.6238, p = 0.0003), redujo el RMSE a la mitad (de 8.102 a 4.195 °C-semanas), eliminó el sesgo sistemático "
         "(de +4.727 a +0.012 °C-semanas; DHW_95th medio de 9.168 frente a 9.156 °C-semanas en NOAA) y mejoró el KGE de −0.106 a +0.619. En el período "
-        "completo 2015–2024, la calibración elevó la concordancia espacial de DHW_95th de ρ = −0.0921 (p = 0.6346; r = −0.2016; RMSE = 6.839 °C-semanas; "
+        "completo 2015–2024, la calibración elevó la concordancia espacial de DHW_95th de ρ_Spearman = −0.0921 (p = 0.6346; r = −0.2016; RMSE = 6.839 °C-semanas; "
         "sesgo = −1.004 °C-semanas; KGE = −0.474) a ρ = +0.7857 (p < 0.0001; r = +0.8795, p < 0.0001; RMSE = 1.803 °C-semanas; sesgo = +0.342 °C-semanas; "
         "KGE = +0.733). No obstante, reportamos dos limitaciones físicas fundamentales: primero, en el propio registro satelital de NOAA CRW existe un "
         "cambio de régimen no estacionario entre 2015–2020 y 2021–2024 (correlación empírica inter-período de DHW_95th de solo ρ = +0.5350, p = 0.0028; "
@@ -790,7 +790,7 @@ def main():
     new_p162 = (
         "Validez de constructo: La principal amenaza era el uso exclusivo de datos sintéticos generados de forma paramétrica. La validación con 10 años "
         "de telemetría real de NOAA CRW (Sección 3.4) confirmó que el generador sin calibrar presenta una correlación espacial nula con los datos "
-        "satelitales (ρ = −0.0921; p = 0.6346; KGE = −0.474). Al calibrar los parámetros térmicos por estación en entrenamiento (2015–2020) y evaluar "
+        "satelitales (ρ_Spearman = −0.0921; p = 0.6346; KGE = −0.474). Al calibrar los parámetros térmicos por estación en entrenamiento (2015–2020) y evaluar "
         "en prueba (2021–2024), la concordancia espacial de DHW_95th mejora sustancialmente (ρ = +0.6360 en prueba y ρ = +0.7857 en 2015–2024; "
         "KGE = +0.619 y +0.733), pero la correlación temporal semanal intra-estación permanece baja (ρ̄ = +0.1107 en prueba) debido a la naturaleza "
         "estocástica no asimilativa del generador y al cambio de régimen térmico de 2023–2024. Además, el desbalance extremo de clases (clase Medio: "
@@ -821,7 +821,7 @@ def main():
         "de la ventaja aditiva de cobertura de S4 sobre S3 (+1.40 pp de +6.25 pp; 5.77 % de la varianza factorial de Sobol) corresponde al manejo "
         "(pastoreo +0.70 pp y trasplante +0.70 pp) y el 77.5 % (+4.85 pp; 94.17 % de la varianza de Sobol) al forzamiento climático menos severo "
         "asignado a S4. Además, la validación con 10 años de telemetría real de NOAA CRW (2015–2024) mostró una correlación nula con los datos "
-        "sintéticos sin calibrar (ρ = −0.0921; p = 0.6346) y redujo las estaciones de Nivel 1 del SRPI de 10 a 4 (20.00 % de preservación en 0.70; "
+        "sintéticos sin calibrar (ρ_Spearman = −0.0921; p = 0.6346) y redujo las estaciones de Nivel 1 del SRPI de 10 a 4 (20.00 % de preservación en 0.70; "
         "15.38 %–44.44 % entre 0.60 y 0.75; media bootstrap 10,000 de 2.01 [IC 95 %: 0.0–5.0] y rango leave-one-station-out de 1–2 estaciones). "
         "Aunque la calibración paramétrica por estación en 2015–2020 mejora la correlación espacial de DHW_95th en la ventana de prueba 2021–2024 "
         "(ρ = +0.6360, p = 0.0002; RMSE = 4.195 °C-semanas; KGE = +0.619), la correlación temporal semanal intra-estación sigue siendo baja "
@@ -832,7 +832,7 @@ def main():
     record_change("Sección 5 (Conclusiones)", "P178", "FON-01, FON-04, FON-05", old_p178, new_p178)
 
     doi_file = os.path.join(RESULTS_DIR, "zenodo_v210_doi.txt")
-    v210_doi = os.environ.get("ZENODO_V210_DOI", "10.5281/zenodo.23903246")
+    v210_doi = os.environ.get("ZENODO_V210_DOI", "10.5281/zenodo.23905108")
     if os.path.exists(doi_file):
         with open(doi_file, "r", encoding="utf-8") as dfp:
             val = dfp.read().strip()
@@ -850,13 +850,12 @@ def main():
     )
     new_p182 = (
         f"• Depósito inmutable en Zenodo: El release v2.1.0 de GitHub (https://github.com/HrSly11/CoralTwin-DT/releases/tag/v2.1.0) está archivado "
-        f"automáticamente en Zenodo; Concept DOI: 10.5281/zenodo.23789586; DOI de la versión: {v210_doi}. "
-        f"La integración Zenodo–GitHub archiva el snapshot del release; el contenido archivado coincide con el commit etiquetado v2.1.0 "
-        f"(versiones históricas previas: v1.0.0 DOI: 10.5281/zenodo.23789587; v1.0.1 DOI: 10.5281/zenodo.23902015; v2.0.0 DOI: 10.5281/zenodo.23903246)."
+        f"automáticamente en Zenodo; Concept DOI: 10.5281/zenodo.23789586; DOI de la versión v2.1.0: {v210_doi}. "
+        f"La integración Zenodo–GitHub archiva el snapshot del release; el contenido archivado coincide con el commit etiquetado v2.1.0."
     )
     new_p183 = (
         "• Contenedor Docker y pipeline reproducible: El entorno reproducible completo (fijado por digest SHA-256 en Dockerfile y verificado con "
-        "verify_release.sh, SHA256SUMS y consistency_report.md) se ejecuta de extremo a extremo con el comando python run_all.py (22 etapas verificadas en "
+        "verify_release.sh, SHA256SUMS y consistency_report.md) se ejecuta de extremo a extremo con el comando python run_all.py (23 etapas verificadas en "
         "results/pipeline_execution_log_v4.json)."
     )
     set_full_par_text(P[180], new_p180)

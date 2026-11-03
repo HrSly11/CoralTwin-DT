@@ -120,8 +120,11 @@ def audit_docx_references(docx_path: str):
         "Talba",
         "decaales",
         "Coral/Twin-DT",
+        "van Hooiidonk",
+        "23903246",
         "p_Spearman",
         "p = −0.0921",
+        "p = –0.0921",
         "p = -0.0921",
     ]
     banned_counts = {}
