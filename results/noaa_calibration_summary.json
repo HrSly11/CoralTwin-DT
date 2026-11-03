@@ -1,0 +1,205 @@
+{
+  "phase": "FASE 1 - FON-01: Station-Level NOAA CRW DHW Generator Calibration",
+  "rng_seed": 42,
+  "train_period": "2015-01-01 to 2020-12-31",
+  "test_period": "2021-01-01 to 2024-12-31",
+  "full_period": "2015-01-01 to 2024-12-31",
+  "erddap_primary_tested": "https://coastwatch.pfeg.noaa.gov/erddap/griddap/CRW_dhw_v1_0 (timeout)",
+  "erddap_active_mirror": "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/CRW_dhw_v1_0 (HTTP 200 OK)",
+  "spatial_evaluation": {
+    "N29_Direct_Marine_Pixels": {
+      "n_stations": 29,
+      "train_2015_2020_dhw_95th": {
+        "before_calibration": {
+          "spearman_rho": 0.1655,
+          "spearman_p": 0.3908532089207225,
+          "pearson_r": 0.1116,
+          "pearson_p": 0.5645300015687191,
+          "rmse": 4.9865,
+          "bias": -3.862,
+          "kge": -0.1774
+        },
+        "after_calibration": {
+          "spearman_rho": 0.9995,
+          "spearman_p": 3.923749270358064e-42,
+          "pearson_r": 0.9998,
+          "pearson_p": 1.6640329971043401e-46,
+          "rmse": 0.0614,
+          "bias": -0.02,
+          "kge": 0.9953
+        },
+        "noaa_mean_dhw_95th": 5.27,
+        "uncal_mean_dhw_95th": 1.408,
+        "cal_mean_dhw_95th": 5.25
+      },
+      "test_2021_2024_dhw_95th": {
+        "before_calibration": {
+          "spearman_rho": -0.152,
+          "spearman_p": 0.43123940610852685,
+          "pearson_r": 0.0215,
+          "pearson_p": 0.9119179097104572,
+          "rmse": 8.1021,
+          "bias": 4.7274,
+          "kge": -0.1064
+        },
+        "after_calibration": {
+          "spearman_rho": 0.636,
+          "spearman_p": 0.00020859845158324863,
+          "pearson_r": 0.6238,
+          "pearson_p": 0.00029993417831149536,
+          "rmse": 4.1948,
+          "bias": 0.0116,
+          "kge": 0.6193
+        },
+        "noaa_mean_dhw_95th": 9.156,
+        "uncal_mean_dhw_95th": 13.883,
+        "cal_mean_dhw_95th": 9.168
+      },
+      "full_2015_2024_dhw_95th": {
+        "before_calibration": {
+          "spearman_rho": -0.0921,
+          "spearman_p": 0.6345990363023872,
+          "pearson_r": -0.2016,
+          "pearson_p": 0.2944221211733736,
+          "rmse": 6.8386,
+          "bias": -1.0035,
+          "kge": -0.4739
+        },
+        "after_calibration": {
+          "spearman_rho": 0.7857,
+          "spearman_p": 4.425692157128278e-07,
+          "pearson_r": 0.8795,
+          "pearson_p": 3.37576203164962e-10,
+          "rmse": 1.803,
+          "bias": 0.3417,
+          "kge": 0.7331
+        },
+        "noaa_mean_dhw_95th": 6.533,
+        "uncal_mean_dhw_95th": 5.529,
+        "cal_mean_dhw_95th": 6.874
+      },
+      "noaa_empirical_regime_shift_train_vs_test": {
+        "spearman_rho": 0.535,
+        "spearman_p": 0.0027846999977889034,
+        "pearson_r": 0.6543,
+        "pearson_p": 0.00011801330723881942,
+        "rmse": 5.2769,
+        "bias": -3.8857,
+        "kge": 0.3027
+      },
+      "within_station_temporal_averages": {
+        "train_uncal_rmse_mean": 3.405,
+        "train_cal_rmse_mean": 2.714,
+        "train_uncal_bias_mean": -0.307,
+        "train_cal_bias_mean": 0.04,
+        "train_uncal_kge_mean": -1.145,
+        "train_cal_kge_mean": -0.03,
+        "test_uncal_rmse_mean": 5.303,
+        "test_cal_rmse_mean": 3.82,
+        "test_uncal_bias_mean": -0.333,
+        "test_cal_bias_mean": -0.255,
+        "test_uncal_kge_mean": -0.658,
+        "test_cal_kge_mean": -0.005,
+        "test_cal_spearman_mean": 0.1107,
+        "test_cal_pearson_mean": 0.2123
+      }
+    },
+    "N30_All_Stations": {
+      "n_stations": 30,
+      "train_2015_2020_dhw_95th": {
+        "before_calibration": {
+          "spearman_rho": 0.1655,
+          "spearman_p": 0.3908532089207225,
+          "pearson_r": 0.1116,
+          "pearson_p": 0.5645300015687191,
+          "rmse": 4.9865,
+          "bias": -3.862,
+          "kge": -0.1774
+        },
+        "after_calibration": {
+          "spearman_rho": 0.9995,
+          "spearman_p": 3.923749270358064e-42,
+          "pearson_r": 0.9998,
+          "pearson_p": 1.6640329971043401e-46,
+          "rmse": 0.0614,
+          "bias": -0.02,
+          "kge": 0.9953
+        },
+        "noaa_mean_dhw_95th": 5.27,
+        "uncal_mean_dhw_95th": 1.476,
+        "cal_mean_dhw_95th": 5.388
+      },
+      "test_2021_2024_dhw_95th": {
+        "before_calibration": {
+          "spearman_rho": -0.152,
+          "spearman_p": 0.43123940610852685,
+          "pearson_r": 0.0215,
+          "pearson_p": 0.9119179097104572,
+          "rmse": 8.1021,
+          "bias": 4.7274,
+          "kge": -0.1064
+        },
+        "after_calibration": {
+          "spearman_rho": 0.636,
+          "spearman_p": 0.00020859845158324863,
+          "pearson_r": 0.6238,
+          "pearson_p": 0.00029993417831149536,
+          "rmse": 4.1948,
+          "bias": 0.0116,
+          "kge": 0.6193
+        },
+        "noaa_mean_dhw_95th": 9.156,
+        "uncal_mean_dhw_95th": 13.977,
+        "cal_mean_dhw_95th": 9.419
+      },
+      "full_2015_2024_dhw_95th": {
+        "before_calibration": {
+          "spearman_rho": -0.0921,
+          "spearman_p": 0.6345990363023872,
+          "pearson_r": -0.2016,
+          "pearson_p": 0.2944221211733736,
+          "rmse": 6.8386,
+          "bias": -1.0035,
+          "kge": -0.4739
+        },
+        "after_calibration": {
+          "spearman_rho": 0.7857,
+          "spearman_p": 4.425692157128278e-07,
+          "pearson_r": 0.8795,
+          "pearson_p": 3.37576203164962e-10,
+          "rmse": 1.803,
+          "bias": 0.3417,
+          "kge": 0.7331
+        },
+        "noaa_mean_dhw_95th": 6.533,
+        "uncal_mean_dhw_95th": 5.726,
+        "cal_mean_dhw_95th": 7.026
+      },
+      "noaa_empirical_regime_shift_train_vs_test": {
+        "spearman_rho": 0.535,
+        "spearman_p": 0.0027846999977889034,
+        "pearson_r": 0.6543,
+        "pearson_p": 0.00011801330723881942,
+        "rmse": 5.2769,
+        "bias": -3.8857,
+        "kge": 0.3027
+      },
+      "within_station_temporal_averages": {
+        "train_uncal_rmse_mean": 3.405,
+        "train_cal_rmse_mean": 2.714,
+        "train_uncal_bias_mean": -0.307,
+        "train_cal_bias_mean": 0.04,
+        "train_uncal_kge_mean": -1.145,
+        "train_cal_kge_mean": -0.03,
+        "test_uncal_rmse_mean": 5.303,
+        "test_cal_rmse_mean": 3.82,
+        "test_uncal_bias_mean": -0.333,
+        "test_cal_bias_mean": -0.255,
+        "test_uncal_kge_mean": -0.658,
+        "test_cal_kge_mean": -0.005,
+        "test_cal_spearman_mean": 0.107,
+        "test_cal_pearson_mean": 0.2052
+      }
+    }
+  }
+}

@@ -14,13 +14,14 @@ repository's own integrator (`simulation_engine.rk4_coupled_ode_simulate`, RK4, 
   3. Reports 2050 coral cover and 2050 net carbonate balance (mean, 2.5-97.5 % percentile
      interval of the Monte Carlo distribution, as in Table 7) and paired differences vs S3
      (mean difference with 95 % CI of the mean).
-  4. Computes the exact Shapley decomposition of the S4-S3 gap over the factors.
+  4. Computes the exact Shapley decomposition AND Factorial ANOVA / Sobol (first-order S_i
+     and total-order S_Ti) variance decomposition of the S4-S3 gap over the factors.
   5. Repeats the key quantities over four common seeds (42..45) as a robustness check.
 
 Outputs (results/):
-  s4_factor_isolation_variants.csv, s4_factor_isolation_shapley.csv,
-  s4_factor_isolation_seed_robustness.csv, s4_factor_isolation_reproduction_check.csv,
-  s4_factor_isolation_summary.json
+  s4_factor_isolation.csv, s4_factor_isolation_variants.csv, s4_factor_isolation_shapley.csv,
+  s4_factor_isolation_anova_sobol.csv, s4_factor_isolation_seed_robustness.csv,
+  s4_factor_isolation_reproduction_check.csv, s4_factor_isolation_summary.json
 """
 
 import os
@@ -32,6 +33,9 @@ import copy
 
 import numpy as np
 import pandas as pd
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
@@ -100,6 +104,67 @@ def paired_diff(x, ref):
     return m, m - 1.96 * se_, m + 1.96 * se_
 
 
+def compute_factorial_anova_sobol(res, names, key_fn, metric_fn):
+    """
+    Computes exact 2^4 Factorial ANOVA Sums of Squares (SS) and Sobol First-Order (S_i)
+    and Total-Order (S_Ti) variance indices over the uniform discrete hypercube {0, 1}^4.
+    """
+    # Collect all 16 cell means
+    cells = {}
+    for r in range(len(names) + 1):
+        for subset in itertools.combinations(names, r):
+            cells[key_fn(subset)] = metric_fn(res[key_fn(subset)])
+
+    grand_mean = float(np.mean(list(cells.values())))
+    ss_total = float(sum((val - grand_mean) ** 2 for val in cells.values()))
+
+    # Orthogonal contrast coding (-1 for S3 level, +1 for S4 level) for each subset of factors
+    effect_ss = {}
+    effect_contrast = {}
+    for r in range(1, len(names) + 1):
+        for effect_subset in itertools.combinations(names, r):
+            eff_key = key_fn(effect_subset)
+            # Contrast sum over all 16 cells
+            contrast_sum = 0.0
+            for cell_subset, val in cells.items():
+                # Sign is product of (-1 if f not in cell_subset else +1) for f in effect_subset
+                sgn = 1
+                for f in effect_subset:
+                    if f not in cell_subset:
+                        sgn *= -1
+                contrast_sum += sgn * val
+            # Average main/interaction effect (when moving from -1 to +1, step is contrast_sum / 8)
+            avg_effect = contrast_sum / (2 ** (len(names) - 1))
+            ss_eff = (contrast_sum ** 2) / (2 ** len(names))
+            effect_ss[eff_key] = float(ss_eff)
+            effect_contrast[eff_key] = float(avg_effect)
+
+    # First-order Sobol index S_i = SS_{i} / SS_total
+    # Total-order Sobol index S_Ti = sum_{A containing i} SS_A / SS_total
+    sobol_first = {}
+    sobol_total = {}
+    main_anova_effect = {}
+    for f in names:
+        ss_i = effect_ss[key_fn((f,))]
+        ss_ti = sum(ss_val for eff_k, ss_val in effect_ss.items() if f in eff_k)
+        sobol_first[f] = float(ss_i / ss_total) if ss_total > 0 else 0.0
+        sobol_total[f] = float(ss_ti / ss_total) if ss_total > 0 else 0.0
+        main_anova_effect[f] = effect_contrast[key_fn((f,))]
+
+    interaction_ss = sum(ss_val for eff_k, ss_val in effect_ss.items() if len(eff_k) >= 2)
+    interaction_share_pct = float(100.0 * interaction_ss / ss_total) if ss_total > 0 else 0.0
+
+    return {
+        "grand_mean": grand_mean,
+        "ss_total": ss_total,
+        "main_anova_effect": main_anova_effect,
+        "sobol_first_order": sobol_first,
+        "sobol_total_order": sobol_total,
+        "interaction_ss": interaction_ss,
+        "interaction_share_pct": interaction_share_pct,
+    }
+
+
 def main():
     c0, m0 = baseline_covers()
     print(f"Baseline: coral {c0} %, macroalgae {m0} %  | N={N_SIM}, dt={DT}, RK4, common seed={COMMON_SEED}")
@@ -165,6 +230,7 @@ def main():
 
     rows = []
     for subset, out in res.items():
+        cfg_sub = build_cfg(subset)
         lo, hi = pct_ci(out["cover"])
         clo, chi = pct_ci(out["carb"])
         dc = paired_diff(out["cover"], base["cover"])
@@ -173,6 +239,10 @@ def main():
             "Variant": label(subset),
             "Factors_switched_to_S4": "+".join(subset) if subset else "none",
             "n_factors": len(subset),
+            "g_mpa": cfg_sub["g_mpa"],
+            "phi_resto": cfg_sub["phi_resto"],
+            "dhw_slope": cfg_sub["dhw_slope"],
+            "omega_slope": cfg_sub["omega_slope"],
             "Cover_2050_Mean_Pct": round(float(out["cover"].mean()), 2),
             "Cover_2050_CI_lo": round(lo, 1),
             "Cover_2050_CI_hi": round(hi, 1),
@@ -190,11 +260,12 @@ def main():
         })
     var_df = pd.DataFrame(rows).sort_values(["n_factors", "Factors_switched_to_S4"]).reset_index(drop=True)
     var_df.to_csv(os.path.join(RESULTS_DIR, "s4_factor_isolation_variants.csv"), index=False)
+    var_df.to_csv(os.path.join(RESULTS_DIR, "s4_factor_isolation.csv"), index=False)
     print("\nAll 16 variants (common seed {}):".format(COMMON_SEED))
     print(var_df[["Variant", "Cover_2050_Mean_Pct", "Cover_2050_CI_lo", "Cover_2050_CI_hi",
                   "Cover_diff_vs_S3_pp", "NetCarbonate_2050_Mean", "NetCarbonate_diff_vs_S3"]].to_string())
 
-    # ---- 3. Shapley decomposition of the S4 - S3 gap -------------------------------------
+    # ---- 3. Shapley + Factorial ANOVA / Sobol decomposition of the S4 - S3 gap ------------
     def shapley(metric_fn):
         n = len(names)
         phi = {}
@@ -214,10 +285,16 @@ def main():
     }
     full = key(tuple(names))
     sh_rows = []
+    anova_sobol_rows = []
     shap_summary = {}
+    anova_sobol_summary = {}
+
     for mname, fn in metrics.items():
         phi = shapley(fn)
         gap = fn(res[full]) - fn(res[()])
+        as_res = compute_factorial_anova_sobol(res, names, key, fn)
+        anova_sobol_summary[mname] = as_res
+
         # Bootstrap CI of the Shapley values over Monte Carlo runs (paired resampling of runs)
         rng = np.random.default_rng(COMMON_SEED)
         B = 1000
@@ -244,12 +321,28 @@ def main():
                 "Shapley_CI_lo": round(float(lo), 2),
                 "Shapley_CI_hi": round(float(hi), 2),
                 "Share_of_gap_pct": round(100.0 * phi[f] / gap, 1),
+                "ANOVA_Main_Effect": round(as_res["main_anova_effect"][f], 3),
+                "Sobol_S1_pct": round(100.0 * as_res["sobol_first_order"][f], 2),
+                "Sobol_ST_pct": round(100.0 * as_res["sobol_total_order"][f], 2),
                 "Total_gap_S4_minus_S3": round(gap, 2),
                 "Sum_of_Shapley": round(sum(phi.values()), 2),
             })
+            anova_sobol_rows.append({
+                "Metric": mname,
+                "Factor": f,
+                "ANOVA_Main_Effect": round(as_res["main_anova_effect"][f], 4),
+                "Sobol_First_Order_S1": round(as_res["sobol_first_order"][f], 4),
+                "Sobol_First_Order_Pct": round(100.0 * as_res["sobol_first_order"][f], 2),
+                "Sobol_Total_Order_ST": round(as_res["sobol_total_order"][f], 4),
+                "Sobol_Total_Order_Pct": round(100.0 * as_res["sobol_total_order"][f], 2),
+                "Interaction_Share_Pct_Total": round(as_res["interaction_share_pct"], 2),
+            })
+
     sh_df = pd.DataFrame(sh_rows)
     sh_df.to_csv(os.path.join(RESULTS_DIR, "s4_factor_isolation_shapley.csv"), index=False)
-    print("\nShapley decomposition of S4 - S3:")
+    as_df = pd.DataFrame(anova_sobol_rows)
+    as_df.to_csv(os.path.join(RESULTS_DIR, "s4_factor_isolation_anova_sobol.csv"), index=False)
+    print("\nShapley & ANOVA/Sobol decomposition of S4 - S3:")
     print(sh_df.to_string())
 
     # ---- 4. Seed robustness ----------------------------------------------------------------
@@ -269,7 +362,6 @@ def main():
                 "NetCarbonate_2050_Mean": round(float(o["carb"].mean()), 2),
                 "NetCarbonate_diff_vs_S3": round(float((o["carb"] - b["carb"]).mean()), 2),
             })
-        # Shapley per seed for the record
         for mname, fn in metrics.items():
             n = len(names)
             for f in names:
@@ -286,8 +378,6 @@ def main():
                                  "NetCarbonate_diff_vs_S3": round(tot, 2) if mname.startswith("Net") else np.nan})
     rob_df = pd.DataFrame(rob_rows)
     rob_df.to_csv(os.path.join(RESULTS_DIR, "s4_factor_isolation_seed_robustness.csv"), index=False)
-    print("\nSeed robustness:")
-    print(rob_df.to_string())
 
     with open(os.path.join(RESULTS_DIR, "s4_factor_isolation_summary.json"), "w", encoding="utf-8") as f:
         json.dump({
@@ -296,6 +386,7 @@ def main():
             "s3_params": {k: S3[k] for k in FACTORS.values()},
             "s4_params": {k: S4[k] for k in FACTORS.values()},
             "shapley": shap_summary,
+            "anova_sobol": anova_sobol_summary,
         }, f, indent=2)
 
 

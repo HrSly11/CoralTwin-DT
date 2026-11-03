@@ -1,15 +1,11 @@
-Formulation,Unit_of_Analysis,Total_Units,Threshold_Method,Threshold_Value,Tier_1_Count,Tier_1_Pct,SRPI_Min,SRPI_Mean,SRPI_Max
-Biophysical_Eq7_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.60,0.6,18,60.0,0.353,0.598,0.765
-Biophysical_Eq7_15000_Observations,Observation_Grid_Record (N=15000),15000,Fixed_Threshold_SRPI_ge_0.60,0.6,8701,58.01,0.255,0.598,0.805
-Relative_MinMax_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.60,0.6,7,23.33,0.291,0.512,0.694
-Biophysical_Eq7_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.70,0.7,10,33.33,0.353,0.598,0.765
-Biophysical_Eq7_15000_Observations,Observation_Grid_Record (N=15000),15000,Fixed_Threshold_SRPI_ge_0.70,0.7,4872,32.48,0.255,0.598,0.805
-Relative_MinMax_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.70,0.7,0,0.0,0.291,0.512,0.694
-Biophysical_Eq7_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.80,0.8,0,0.0,0.353,0.598,0.765
-Biophysical_Eq7_15000_Observations,Observation_Grid_Record (N=15000),15000,Fixed_Threshold_SRPI_ge_0.80,0.8,17,0.11,0.255,0.598,0.805
-Relative_MinMax_30_Stations,Station (N=30),30,Fixed_Threshold_SRPI_ge_0.80,0.8,0,0.0,0.291,0.512,0.694
-Relative_MinMax_30_Stations,Station (N=30),30,Quantile_qcut_Top25Pct,0.593,8,26.67,0.291,0.512,0.694
-Relative_MinMax_Legacy_25_Stations,Station_Legacy (N=25),25,Fixed_Threshold_SRPI_ge_0.60,0.6,5,20.0,0.277,0.479,0.682
-Relative_MinMax_Legacy_25_Stations,Station_Legacy (N=25),25,Fixed_Threshold_SRPI_ge_0.70,0.7,0,0.0,0.277,0.479,0.682
-Relative_MinMax_Legacy_25_Stations,Station_Legacy (N=25),25,Fixed_Threshold_SRPI_ge_0.80,0.8,0,0.0,0.277,0.479,0.682
-Relative_MinMax_Legacy_25_Stations,Station_Legacy (N=25),25,Quantile_qcut_Top25Pct,0.553,6,24.0,0.277,0.479,0.682
+Formulation,Threshold,Base_Tier1_Syn_N30,Base_Tier1_Syn_N29,Base_Tier1_NOAA_N29,Base_Preserved,Base_Gained_NOAA,Base_Preservation_Pct,Calibrated_Tier1_Syn_N29,Calibrated_Preserved_vs_NOAA,Weights20_Syn_Min,Weights20_Syn_Max,Weights20_Syn_Median,Weights20_Syn_P2.5,Weights20_Syn_P97.5,Weights20_NOAA_Min,Weights20_NOAA_Max,Weights20_NOAA_Median,Weights20_NOAA_P2.5,Weights20_NOAA_P97.5,Weights20_Preserved_Min,Weights20_Preserved_Max,Weights20_Preserved_Median,Weights20_Preserved_P2.5,Weights20_Preserved_P97.5,Bootstrap10k_Preserved_Mean,Bootstrap10k_Preserved_CI_lo,Bootstrap10k_Preserved_CI_hi,Bootstrap10k_Preservation_Pct_Mean,Bootstrap10k_Preservation_Pct_CI_lo,Bootstrap10k_Preservation_Pct_CI_hi,LOSO_Syn_Min,LOSO_Syn_Max,LOSO_NOAA_Min,LOSO_NOAA_Max,LOSO_Preserved_Min,LOSO_Preserved_Max,LOSO_Preservation_Pct_Min,LOSO_Preservation_Pct_Max
+strict_Eq7,0.6,18,18,13,8,5,44.44,13,10,13,20,18.0,15.0,19.0,8,17,13.0,10.0,15.0,4,13,8.0,5.0,10.0,8.04,4.0,13.0,44.67,21.4,68.4,17,18,12,13,7,8,41.18,47.06
+strict_Eq7,0.65,13,13,6,2,4,15.38,5,4,9,17,13.0,11.0,16.0,4,9,6.0,5.0,8.0,2,5,2.0,2.0,4.0,2.0,0.0,5.0,15.39,0.0,37.5,12,13,5,6,1,2,8.33,16.67
+strict_Eq7,0.7,10,10,4,2,2,20.0,3,3,4,13,10.0,6.0,12.0,1,5,4.0,1.0,5.0,1,2,2.0,1.0,2.0,2.01,0.0,5.0,20.09,0.0,50.0,9,10,3,4,1,2,11.11,22.22
+strict_Eq7,0.75,4,4,1,1,0,25.0,1,1,0,9,4.0,0.0,6.0,0,3,1.0,1.0,2.0,0,1,1.0,0.0,1.0,0.99,0.0,3.0,24.47,0.0,100.0,3,4,0,1,0,1,0.0,33.33
+strict_Eq7,0.8,0,0,0,0,0,0.0,0,0,0,0,0.0,0.0,0.0,0,1,0.0,0.0,0.0,0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0.0,0.0
+linear_variant,0.6,18,18,15,7,8,38.89,13,10,18,20,18.0,18.0,19.0,11,17,14.0,12.0,17.0,6,11,7.0,6.0,10.0,7.01,3.0,12.0,38.92,16.7,62.5,17,18,14,15,6,7,35.29,41.18
+linear_variant,0.65,18,18,9,5,4,27.78,5,4,17,18,18.0,17.0,18.0,6,10,9.0,7.0,10.0,3,6,5.0,4.0,6.0,4.99,1.0,9.0,27.74,7.1,50.0,17,18,8,9,4,5,23.53,29.41
+linear_variant,0.7,17,17,4,2,2,11.76,3,3,14,17,17.0,16.0,17.0,4,5,4.0,4.0,4.0,2,2,2.0,2.0,2.0,2.03,0.0,5.0,11.94,0.0,29.4,16,17,3,4,1,2,6.25,12.5
+linear_variant,0.75,11,11,2,1,1,9.09,1,1,7,13,11.0,8.0,13.0,2,3,2.0,2.0,3.0,1,2,1.0,1.0,2.0,0.98,0.0,3.0,9.01,0.0,30.0,10,11,1,2,0,1,0.0,10.0
+linear_variant,0.8,2,2,1,1,0,50.0,0,0,1,4,2.0,1.0,2.0,1,2,1.0,1.0,2.0,1,1,1.0,1.0,1.0,0.99,0.0,3.0,43.64,0.0,100.0,1,2,0,1,0,1,0.0,100.0

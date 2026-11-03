@@ -1,0 +1,19 @@
+{
+  "audited_docx": "Grupo28B_RodriguezSandoval_HarrySly_v3.docx",
+  "total_references_in_list": 42,
+  "total_references_cited_in_text": 42,
+  "orphan_citations_count": 0,
+  "uncited_references_count": 0,
+  "nomenisoa_2024_present_and_cited": true,
+  "ouassine_2025_present_and_cited": true,
+  "fore_2024_present_and_cited": true,
+  "banned_terms_occurrences": {
+    "Palaros": 0,
+    "partopicales": 0,
+    "Misolot": 0,
+    "Misolol": 0,
+    "[VERIFICAR": 0,
+    "Fare": 0
+  },
+  "all_checks_passed": true
+}

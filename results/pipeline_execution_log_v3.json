@@ -1,0 +1,164 @@
+{
+  "pipeline": "CoralTwin-DT Master End-to-End Orchestrator",
+  "executed_at_utc": "2026-11-03T02:16:31.475443+00:00",
+  "python_version": "3.11.0",
+  "total_steps": 22,
+  "all_steps_succeeded": true,
+  "total_elapsed_seconds": 129.737,
+  "steps": [
+    {
+      "step": 1,
+      "title": "Data Synthesis & 30-Station Unification",
+      "script": "03_Data/generate_datasets.py",
+      "exit_code": 0,
+      "elapsed_seconds": 4.091
+    },
+    {
+      "step": 2,
+      "title": "Data Provenance & Synthetic RNG Audit",
+      "script": "03_Data/audit_data_provenance.py",
+      "exit_code": 0,
+      "elapsed_seconds": 2.011
+    },
+    {
+      "step": 3,
+      "title": "5-Fold Spatial Block Cross-Validation (>25 km Buffer)",
+      "script": "05_Methodology/spatial_cv.py",
+      "exit_code": 0,
+      "elapsed_seconds": 10.483
+    },
+    {
+      "step": 4,
+      "title": "Exploratory Data Analysis (EDA) & Statistical Profiling",
+      "script": "06_AI_and_Modeling/exploratory_analysis/eda.py",
+      "exit_code": 0,
+      "elapsed_seconds": 1.466
+    },
+    {
+      "step": 5,
+      "title": "Multi-Seed Spatial CV & 5-Regime Leakage Ablation Training",
+      "script": "06_AI_and_Modeling/machine_learning/train_models.py",
+      "exit_code": 0,
+      "elapsed_seconds": 11.868
+    },
+    {
+      "step": 6,
+      "title": "Model Evaluation, Calibration & Non-Parametric Tests",
+      "script": "06_AI_and_Modeling/model_evaluation/evaluate_models.py",
+      "exit_code": 0,
+      "elapsed_seconds": 4.081
+    },
+    {
+      "step": 7,
+      "title": "Benchmark Summary & Legacy Table Sync",
+      "script": "06_AI_and_Modeling/compare_rf_xgb_lstm.py",
+      "exit_code": 0,
+      "elapsed_seconds": 1.857
+    },
+    {
+      "step": 8,
+      "title": "Interventional TreeSHAP & 2D Partial Dependence Analysis",
+      "script": "06_AI_and_Modeling/explainability/SHAP_analysis/shap_explain.py",
+      "exit_code": 0,
+      "elapsed_seconds": 30.134
+    },
+    {
+      "step": 9,
+      "title": "Coupled RK4 ODE Decadal Simulation (2025-2050; N=5,000)",
+      "script": "07_Scenarios_and_Simulations/simulation_engine.py",
+      "exit_code": 0,
+      "elapsed_seconds": 2.44
+    },
+    {
+      "step": 10,
+      "title": "Spatial Restoration Priority Index (Eq. 7 SRPI) & Sensitivity",
+      "script": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.698
+    },
+    {
+      "step": 11,
+      "title": "NOAA CRW 2015-2024 Generator Calibration (Train/Test)",
+      "script": "01_Data/calibrate_generator_to_noaa.py",
+      "exit_code": 0,
+      "elapsed_seconds": 7.13
+    },
+    {
+      "step": 12,
+      "title": "S4 vs S3 Factorial Isolation & ANOVA/Sobol (N=5,000)",
+      "script": "07_Scenarios_and_Simulations/s4_factor_isolation.py",
+      "exit_code": 0,
+      "elapsed_seconds": 15.005
+    },
+    {
+      "step": 13,
+      "title": "SRPI Extended Sensitivity (0.60-0.80, +-20% Weights, Bootstrap 10k, LOSO)",
+      "script": "08_GIS_and_Remote_Sensing/srpi_sensitivity.py",
+      "exit_code": 0,
+      "elapsed_seconds": 8.721
+    },
+    {
+      "step": 14,
+      "title": "Manuscript v3 DOCX Compilation & Track-Changes Report",
+      "script": "09_Results/build_v3_docx.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.922
+    },
+    {
+      "step": 15,
+      "title": "References & Banned Strings Audit (42 References, 0 Orphans)",
+      "script": "09_Results/audit_references.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.806
+    },
+    {
+      "step": 16,
+      "title": "Master Manuscript Numbers Compilation",
+      "script": "09_Results/build_manuscript_numbers.py",
+      "exit_code": 0,
+      "elapsed_seconds": 1.836
+    },
+    {
+      "step": 17,
+      "title": "Publication Figures Rendering (Figures 1-7 at 300 DPI)",
+      "script": "09_Results/generate_all_figures.py",
+      "exit_code": 0,
+      "elapsed_seconds": 21.811
+    },
+    {
+      "step": 18,
+      "title": "Scientific Manuscript PDF Compilation (DOCX Untouched)",
+      "script": "10_Publication/generate_publication_docs.py",
+      "exit_code": 0,
+      "elapsed_seconds": 1.161
+    },
+    {
+      "step": 19,
+      "title": "Scientific Presentation Deck Generation (.pptx)",
+      "script": "11_Presentation/generate_presentation.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.357
+    },
+    {
+      "step": 20,
+      "title": "Scientific Conference Poster Rendering (300 DPI .png)",
+      "script": "11_Presentation/generate_poster.py",
+      "exit_code": 0,
+      "elapsed_seconds": 1.597
+    },
+    {
+      "step": 21,
+      "title": "Executive Policy Brief PDF Compilation",
+      "script": "11_Presentation/generate_executive_summary_pdf.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.628
+    },
+    {
+      "step": 22,
+      "title": "Technical Systems Report PDF Compilation",
+      "script": "13_Documentation/generate_technical_report_pdf.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.633
+    }
+  ]
+}

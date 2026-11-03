@@ -162,21 +162,43 @@ def main():
                     zf.write(fpath, arcname=f"geospatial_outputs/{fname}")
             print("  + Added geospatial_outputs/ (*.geojson)")
 
-        # Add reviewer analysis scripts and outputs
-        s4_script = os.path.join(BASE_DIR, "07_Scenarios_and_Simulations", "s4_factor_isolation.py")
-        if os.path.exists(s4_script):
-            zf.write(s4_script, arcname="07_Scenarios_and_Simulations/s4_factor_isolation.py")
-            print("  + Added 07_Scenarios_and_Simulations/s4_factor_isolation.py")
-
-        srpi_script = os.path.join(BASE_DIR, "08_GIS_and_Remote_Sensing", "srpi_sensitivity_analysis.py")
-        if os.path.exists(srpi_script):
-            zf.write(srpi_script, arcname="08_GIS_and_Remote_Sensing/srpi_sensitivity_analysis.py")
-            print("  + Added 08_GIS_and_Remote_Sensing/srpi_sensitivity_analysis.py")
+        # Add reviewer analysis scripts and outputs (v1.0.1 + v2.0.0 closure suite)
+        extra_files = [
+            ("01_Data/calibrate_generator_to_noaa.py", "01_Data/calibrate_generator_to_noaa.py"),
+            ("03_Data/calibrate_generator_to_noaa.py", "03_Data/calibrate_generator_to_noaa.py"),
+            ("03_Data/final_dataset_noaa_calibrated.csv", "data/final_dataset_noaa_calibrated.csv"),
+            ("07_Scenarios_and_Simulations/s4_factor_isolation.py", "07_Scenarios_and_Simulations/s4_factor_isolation.py"),
+            ("08_GIS_and_Remote_Sensing/srpi_sensitivity.py", "08_GIS_and_Remote_Sensing/srpi_sensitivity.py"),
+            ("08_GIS_and_Remote_Sensing/srpi_sensitivity_analysis.py", "08_GIS_and_Remote_Sensing/srpi_sensitivity_analysis.py"),
+            ("09_Results/audit_references.py", "09_Results/audit_references.py"),
+            ("09_Results/build_manuscript_numbers.py", "09_Results/build_manuscript_numbers.py"),
+            ("09_Results/build_v3_docx.py", "09_Results/build_v3_docx.py"),
+            ("figures/fig_noaa_calibration_v3.png", "figures/fig_noaa_calibration_v3.png"),
+            ("references_audit.csv", "references_audit.csv"),
+            ("Grupo28B_RodriguezSandoval_HarrySly_v3.docx", "Grupo28B_RodriguezSandoval_HarrySly_v3.docx"),
+            ("Grupo28B_RodriguezSandoval_HarrySly_v3_trackchanges_report.md", "Grupo28B_RodriguezSandoval_HarrySly_v3_trackchanges_report.md"),
+            ("response_to_reviewer_v3.md", "response_to_reviewer_v3.md"),
+            ("Dockerfile", "Dockerfile"),
+            ("verify_release.sh", "verify_release.sh"),
+            ("SHA256SUMS", "SHA256SUMS"),
+        ]
+        for rel_src, arc_dst in extra_files:
+            f_src = os.path.join(BASE_DIR, *rel_src.split("/"))
+            if os.path.exists(f_src):
+                zf.write(f_src, arcname=arc_dst)
+                print(f"  + Added {arc_dst}")
 
         results_dir = os.path.join(BASE_DIR, "results")
         if os.path.exists(results_dir):
-            for fname in os.listdir(results_dir):
-                if fname.startswith("s4_factor_isolation") or fname.startswith("srpi_"):
+            prefixes = (
+                "s4_factor_isolation",
+                "srpi_",
+                "noaa_",
+                "references_audit",
+                "pipeline_execution_log",
+            )
+            for fname in sorted(os.listdir(results_dir)):
+                if fname.startswith(prefixes):
                     fpath = os.path.join(results_dir, fname)
                     if os.path.isfile(fpath):
                         zf.write(fpath, arcname=f"results/{fname}")

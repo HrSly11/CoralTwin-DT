@@ -15,6 +15,7 @@
   "weight_perturbation": 0.2,
   "renormalised": true,
   "n_random_draws": 10000,
+  "n_bootstrap_draws": 10000,
   "seed": 42,
   "n_stations": 30,
   "n_stations_noaa": 29,

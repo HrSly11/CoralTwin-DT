@@ -48,6 +48,11 @@ PIPELINE_STEPS = [
     ("Interventional TreeSHAP & 2D Partial Dependence Analysis", os.path.join("06_AI_and_Modeling", "explainability", "SHAP_analysis", "shap_explain.py")),
     ("Coupled RK4 ODE Decadal Simulation (2025-2050; N=5,000)", os.path.join("07_Scenarios_and_Simulations", "simulation_engine.py")),
     ("Spatial Restoration Priority Index (Eq. 7 SRPI) & Sensitivity", os.path.join("08_GIS_and_Remote_Sensing", "spatial_pipeline.py")),
+    ("NOAA CRW 2015-2024 Generator Calibration (Train/Test)", os.path.join("01_Data", "calibrate_generator_to_noaa.py")),
+    ("S4 vs S3 Factorial Isolation & ANOVA/Sobol (N=5,000)", os.path.join("07_Scenarios_and_Simulations", "s4_factor_isolation.py")),
+    ("SRPI Extended Sensitivity (0.60-0.80, +-20% Weights, Bootstrap 10k, LOSO)", os.path.join("08_GIS_and_Remote_Sensing", "srpi_sensitivity.py")),
+    ("Manuscript v3 DOCX Compilation & Track-Changes Report", os.path.join("09_Results", "build_v3_docx.py")),
+    ("References & Banned Strings Audit (42 References, 0 Orphans)", os.path.join("09_Results", "audit_references.py")),
     ("Master Manuscript Numbers Compilation", os.path.join("09_Results", "build_manuscript_numbers.py")),
     ("Publication Figures Rendering (Figures 1-7 at 300 DPI)", os.path.join("09_Results", "generate_all_figures.py")),
     ("Scientific Manuscript PDF Compilation (DOCX Untouched)", os.path.join("10_Publication", "generate_publication_docs.py")),
@@ -111,8 +116,10 @@ def main():
         "steps": step_logs,
     }
     log_path = os.path.join(RESULTS_DIR, "pipeline_execution_log.json")
-    with open(log_path, "w", encoding="utf-8") as f:
-        json.dump(log_payload, f, indent=2)
+    log_v3_path = os.path.join(RESULTS_DIR, "pipeline_execution_log_v3.json")
+    for lp in [log_path, log_v3_path]:
+        with open(lp, "w", encoding="utf-8") as f:
+            json.dump(log_payload, f, indent=2)
 
     print("\n" + "=" * 80)
     print(f" ALL {total_steps} SCIENTIFIC PIPELINE STEPS EXECUTED SUCCESSFULLY IN {total_time:.2f}s!")

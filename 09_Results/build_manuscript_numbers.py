@@ -188,6 +188,52 @@ def build_manuscript_numbers():
         with open(noaa_crw_path, "r", encoding="utf-8") as f:
             noaa_crw_json = json.load(f)
 
+    # FASE 1 (FON-01): NOAA CRW Generator Calibration (Train 2015-2020 / Test 2021-2024)
+    noaa_cal_summary_path = os.path.join(RESULTS_DIR, "noaa_calibration_summary.json")
+    noaa_cal_summary_json = {}
+    if os.path.exists(noaa_cal_summary_path):
+        with open(noaa_cal_summary_path, "r", encoding="utf-8") as f:
+            noaa_cal_summary_json = json.load(f)
+
+    noaa_cal_metrics_path = os.path.join(RESULTS_DIR, "noaa_calibration_metrics.csv")
+    noaa_cal_metrics_df = pd.read_csv(noaa_cal_metrics_path) if os.path.exists(noaa_cal_metrics_path) else pd.DataFrame()
+
+    # FASE 2 (FON-04): S4 vs S3 Factor Isolation (16 variants, Shapley, Factorial ANOVA & Sobol)
+    s4_iso_summary_path = os.path.join(RESULTS_DIR, "s4_factor_isolation_summary.json")
+    s4_iso_summary_json = {}
+    if os.path.exists(s4_iso_summary_path):
+        with open(s4_iso_summary_path, "r", encoding="utf-8") as f:
+            s4_iso_summary_json = json.load(f)
+
+    s4_variants_path = os.path.join(RESULTS_DIR, "s4_factor_isolation.csv")
+    s4_variants_df = pd.read_csv(s4_variants_path) if os.path.exists(s4_variants_path) else pd.DataFrame()
+
+    s4_shapley_path = os.path.join(RESULTS_DIR, "s4_factor_isolation_shapley.csv")
+    s4_shapley_df = pd.read_csv(s4_shapley_path) if os.path.exists(s4_shapley_path) else pd.DataFrame()
+
+    s4_anova_sobol_path = os.path.join(RESULTS_DIR, "s4_factor_isolation_anova_sobol.csv")
+    s4_anova_sobol_df = pd.read_csv(s4_anova_sobol_path) if os.path.exists(s4_anova_sobol_path) else pd.DataFrame()
+
+    # FASE 3 (FON-05): Extended SRPI Sensitivity (Thresholds 0.60-0.80, Weights +-20%, Bootstrap 10,000, LOSO)
+    srpi_ext_summary_path = os.path.join(RESULTS_DIR, "srpi_sensitivity_summary.json")
+    srpi_ext_summary_json = {}
+    if os.path.exists(srpi_ext_summary_path):
+        with open(srpi_ext_summary_path, "r", encoding="utf-8") as f:
+            srpi_ext_summary_json = json.load(f)
+
+    srpi_boot_path = os.path.join(RESULTS_DIR, "srpi_bootstrap_10000.csv")
+    srpi_boot_df = pd.read_csv(srpi_boot_path) if os.path.exists(srpi_boot_path) else pd.DataFrame()
+
+    srpi_loso_path = os.path.join(RESULTS_DIR, "srpi_loso_sensitivity.csv")
+    srpi_loso_df = pd.read_csv(srpi_loso_path) if os.path.exists(srpi_loso_path) else pd.DataFrame()
+
+    # FASE 5 (FON-07 & FON-08): References Audit
+    ref_audit_summary_path = os.path.join(RESULTS_DIR, "references_audit_summary.json")
+    ref_audit_summary_json = {}
+    if os.path.exists(ref_audit_summary_path):
+        with open(ref_audit_summary_path, "r", encoding="utf-8") as f:
+            ref_audit_summary_json = json.load(f)
+
     zenodo_zip_path = os.path.join(RESULTS_DIR, "zenodo_package", "CoralTwin-DT_Zenodo_Archive_v1.0.0.zip")
     zenodo_size_mb = round(os.path.getsize(zenodo_zip_path) / (1024 * 1024), 2) if os.path.exists(zenodo_zip_path) else None
 
@@ -446,6 +492,16 @@ def build_manuscript_numbers():
             "station_data_file_source": "results/noaa_crw_validation.csv",
             "summary": noaa_crw_json,
         },
+        "noaa_generator_calibration_fase1": {
+            "script_source": "01_Data/calibrate_generator_to_noaa.py",
+            "delegate_script_source": "03_Data/calibrate_generator_to_noaa.py",
+            "metrics_file_source": "results/noaa_calibration_metrics.csv",
+            "summary_file_source": "results/noaa_calibration_summary.json",
+            "figure_file_source": "figures/fig_noaa_calibration_v3.png",
+            "calibrated_dataset_source": "03_Data/final_dataset_noaa_calibrated.csv",
+            "summary": noaa_cal_summary_json,
+            "station_metrics": _clean_records(noaa_cal_metrics_df),
+        },
         "decadal_scenarios_2025_2050": {
             "script_source": "07_Scenarios_and_Simulations/simulation_engine.py",
             "file_source": "results/scenario_2050_summary.csv",
@@ -464,11 +520,26 @@ def build_manuscript_numbers():
                 "file_source": "09_Results/audit/scenario_model_comparison.csv",
                 "rows": _clean_records(scen_comp_df),
             },
+            "s4_factor_isolation_fase2": {
+                "script_source": "07_Scenarios_and_Simulations/s4_factor_isolation.py",
+                "file_source": "results/s4_factor_isolation.csv",
+                "shapley_file_source": "results/s4_factor_isolation_shapley.csv",
+                "anova_sobol_file_source": "results/s4_factor_isolation_anova_sobol.csv",
+                "summary": s4_iso_summary_json,
+                "variants_16": _clean_records(s4_variants_df),
+                "shapley_decomposition": _clean_records(s4_shapley_df),
+                "anova_sobol_decomposition": _clean_records(s4_anova_sobol_df),
+            },
         },
         "spatial_restoration_priority_srpi": {
             "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
+            "sensitivity_script_source": "08_GIS_and_Remote_Sensing/srpi_sensitivity.py",
             "file_source": "results/srpi_sensitivity.csv",
+            "bootstrap_file_source": "results/srpi_bootstrap_10000.csv",
+            "loso_file_source": "results/srpi_loso_sensitivity.csv",
             "sensitivity_analysis": _clean_records(srpi_sens_df),
+            "extended_sensitivity_summary": srpi_ext_summary_json,
+            "bootstrap_10000_summary": _clean_records(srpi_boot_df),
             "top_10_tier1_stations_eq7": {
                 "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
                 "file_source": "09_Results/tables/Table3_spatial_restoration_priority.csv",
@@ -478,6 +549,52 @@ def build_manuscript_numbers():
                 "script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
                 "file_source": "09_Results/tables/Table3_spatial_restoration_priority.csv",
                 "stations": _clean_records(srpi_rank_df[srpi_cols]),
+            },
+        },
+        "equations_and_symbols_fase4": {
+            "script_source": "07_Scenarios_and_Simulations/simulation_engine.py",
+            "spatial_script_source": "08_GIS_and_Remote_Sensing/spatial_pipeline.py",
+            "eq2_dhw_window_days": 84,
+            "eq2_dhw_divisor_days_per_week": 7.0,
+            "eq2_hotspot_threshold_degC": 1.0,
+            "eq4_g_max_kg_CaCO3_m2_yr": 12.5,
+            "eq4_omega_threshold": 1.0,
+            "eq4_omega_ref_scale": 2.8,
+            "eq4_kappa_exponent": 1.2,
+            "eq4_lambda_dhw_decay_inv_degC_wk": 0.06,
+            "eq4_e_bioerosion_kg_CaCO3_m2_yr": 1.85,
+            "eq4_c0_baseline_coral_cover_pct": 33.68,
+            "eq5_r_coral_growth_yr_inv": 0.28,
+            "eq5_d0_natural_mortality_yr_inv": 0.03,
+            "eq5_alpha_thermal_mortality_coeff": 0.0022,
+            "eq5_beta_aragonite_protection_coeff": 0.35,
+            "eq6_a_macroalgae_expansion_yr_inv": 0.42,
+            "eq6_gamma_allelopathic_overgrowth_yr_inv": 0.14,
+            "eq6_epsilon_stabilizer": 1e-6,
+            "eq7_weights": {"w_T": 0.35, "w_U": 0.25, "w_R": 0.25, "w_W": 0.15},
+            "eq7_dhw95_max_scale_degC_wk": 16.0,
+            "eq7_coral_cover_ref_pct": 50.0,
+            "eq7_rugosity_min": 1.0,
+            "eq7_rugosity_span": 2.0,
+            "eq7_kd490_turbidity_factor": 0.04,
+            "eq7_kd490_max_scale_m_inv": 0.25,
+        },
+        "references_and_feature_count_audit_fase5": {
+            "script_source": "09_Results/audit_references.py",
+            "file_source": "results/references_audit.csv",
+            "summary": ref_audit_summary_json,
+            "regime_0_leaked_16_feature_breakdown": {
+                "total_features_in_regime_0": 16,
+                "clean_environmental_features_count": 10,
+                "post_target_benthic_features_count": 4,
+                "collinear_derived_environmental_features_count": 2,
+                "collinear_derived_environmental_features": ["HotSpot_degC", "Kd_490_m_inv"],
+                "post_target_benthic_features": [
+                    "Structural_Rugosity",
+                    "Live_Coral_Cover_Pct",
+                    "Macroalgae_Cover_Pct",
+                    "Shannon_Diversity_H",
+                ],
             },
         },
         "reproducibility_and_execution": {

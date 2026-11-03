@@ -1,0 +1,9 @@
+Metric,Factor,ANOVA_Main_Effect,Sobol_First_Order_S1,Sobol_First_Order_Pct,Sobol_Total_Order_ST,Sobol_Total_Order_Pct,Interaction_Share_Pct_Total
+Cover_2050_pp,g,0.7033,0.029,2.9,0.0294,2.94,0.06
+Cover_2050_pp,Phi,0.7004,0.0287,2.87,0.029,2.9,0.06
+Cover_2050_pp,DHW,3.8955,0.8891,88.91,0.8895,88.95,0.06
+Cover_2050_pp,Omega,0.9478,0.0526,5.26,0.0527,5.27,0.06
+NetCarbonate_2050,g,0.1109,0.008,0.8,0.0081,0.81,0.09
+NetCarbonate_2050,Phi,0.1106,0.0079,0.79,0.008,0.8,0.09
+NetCarbonate_2050,DHW,0.8587,0.4787,47.87,0.4796,47.96,0.09
+NetCarbonate_2050,Omega,0.8815,0.5044,50.44,0.5052,50.52,0.09
