@@ -613,7 +613,16 @@ def main():
     )
     new_p044 = "DHW(t) = (1/7) · Σ_{i=0}^{83} HotSpot(t−i) · 1[HotSpot(t−i) ≥ 1.0]   [°C-semanas]   (2)"
     set_full_par_text(P[42], new_p042)
-    set_equation_2_omml(P[44])
+    set_rich_runs(
+        P[44],
+        [
+            ("DHW(t) = (1/7) · Σ", None, False, "Cambria Math"),
+            ("i=0", "subscript", False, "Cambria Math"),
+            ("83", "superscript", False, "Cambria Math"),
+            (" HotSpot(t−i) · 1[HotSpot(t−i) ≥ 1.0]   [°C-semanas]   (2)", None, False, "Cambria Math"),
+        ],
+        base_sz=22,
+    )
     record_change("Sección 2.3.1 (Ec. 2)", "P042, P044", "FON-06 / BLOQUE-2", old_p044, new_p044)
 
     old_p045 = P[45].text
