@@ -107,12 +107,28 @@ def audit_docx_references(docx_path: str):
 
     # Check banned strings across the entire document (paragraphs + tables)
     full_doc_text = "\n".join(paragraphs) + "\n" + "\n".join(t_str for _, t_str in table_texts)
-    banned_terms = ["Palaros", "partopicales", "Misolot", "Misolol", "[VERIFICAR", "Fare"]
+    banned_terms = [
+        "Palaros",
+        "partopicales",
+        "Misolot",
+        "Misolol",
+        "[VERIFICAR",
+        "Fare",
+        "Deducal",
+        "Sinterótico",
+        "NEA",
+        "Talba",
+        "decaales",
+        "Coral/Twin-DT",
+        "p_Spearman",
+        "p = −0.0921",
+        "p = -0.0921",
+    ]
     banned_counts = {}
     for term in banned_terms:
-        if term == "Fare":
-            # Match whole word Fare
-            cnt = len(re.findall(r"\bFare\b", full_doc_text))
+        if term in ("Fare", "NEA"):
+            # Match whole word
+            cnt = len(re.findall(rf"\b{re.escape(term)}\b", full_doc_text))
         else:
             cnt = full_doc_text.count(term)
         banned_counts[term] = int(cnt)

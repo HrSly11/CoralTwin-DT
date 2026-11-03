@@ -126,6 +126,17 @@ def make_table(tmpl_tbl, widths, header, rows):
     t.append(build_row(hdr_tr, h_tc, header))
     for r in rows:
         t.append(build_row(body_tr, b_tc, r))
+    # Ensure explicit insideH horizontal borders between all rows so rows never visually fuse in PDF/OCR
+    tblPr = t.find(qn("w:tblPr"))
+    if tblPr is not None:
+        borders = tblPr.find(qn("w:tblBorders"))
+        if borders is not None and borders.find(qn("w:insideH")) is None:
+            inside_h = OxmlElement("w:insideH")
+            inside_h.set(qn("w:val"), "single")
+            inside_h.set(qn("w:sz"), "4")
+            inside_h.set(qn("w:space"), "0")
+            inside_h.set(qn("w:color"), "D0D0D0")
+            borders.append(inside_h)
     return t
 
 
@@ -261,14 +272,14 @@ def main():
         "de 12 semanas (84 días, índice diario i = 0, 1, ..., 83) de las anomalías térmicas instantáneas (HotSpot, en °C) que igualan o superan "
         "en al menos 1.0 °C la climatología de la media mensual máxima histórica (MMM, en °C; Liu et al., 2014):"
     )
-    new_p044 = "DHW(t) = (1 / 7) · Σ_{i=0}^{83} HotSpot(t − i) · 1[HotSpot(t − i) ≥ 1.0 °C]   [°C-semanas]   (2)"
+    new_p044 = "DHW(t) = (1/7) · Σ_{i=0}^{83} HotSpot(t−i) · 1[HotSpot(t−i) ≥ 1.0]   [°C-semanas]   (2)"
     set_full_par_text(P[42], new_p042)
     set_full_par_text(P[44], new_p044)
-    record_change("Sección 2.3.1 (Ec. 2)", "P042, P044", "FON-06", old_p044, new_p044)
+    record_change("Sección 2.3.1 (Ec. 2)", "P042, P044", "FON-06 / BLOQUE-2", old_p044, new_p044)
 
     old_p045 = P[45].text
     new_p045 = (
-        "Nota metodológica sobre la Ec. (2): En la formulación física satelital de la Ec. (2), 1[HotSpot(t − i) ≥ 1.0 °C] ∈ {0, 1} es la función "
+        "Nota metodológica sobre la Ec. (2): En la formulación física satelital de la Ec. (2), 1[HotSpot(t−i) ≥ 1.0] ∈ {0, 1} es la función "
         "indicadora de Heaviside (vale 1 cuando la anomalía térmica diaria alcanza o supera 1.0 °C sobre el MMM y 0 en caso contrario), y el factor "
         "1/7 (semanas día⁻¹) convierte los grados-día acumulados en los 84 días previos a unidades de °C-semanas. En el generador sintético base "
         "(03_Data/build_final_dataset.py, semilla 42), DHW se aproxima de forma paramétrica a partir del HotSpot instantáneo del día muestreado y de "
@@ -277,11 +288,11 @@ def main():
         "Sección 3.4)."
     )
     set_full_par_text(P[45], new_p045)
-    record_change("Sección 2.3.1", "P045", "FON-01, FON-06", old_p045, new_p045)
+    record_change("Sección 2.3.1", "P045", "FON-01, FON-06 / BLOQUE-2", old_p045, new_p045)
 
     old_p050, old_p051 = P[50].text, P[51].text
     new_p050 = (
-        "G_net(t) = G_max · [max((Ω_arag(t) − Ω_0) / Ω_ref, 0)]^{κ} · exp(−λ_DHW · DHW(t)) · (C(t) / C_0) − E_bioerosion   [kg CaCO₃ m⁻² año⁻¹]   (4)"
+        "G_net(t) = G_max · [max((Ω_arag(t) − Ω_0) / Ω_ref, 0)]^κ · exp(−λ_DHW · DHW(t)) · (C(t) / C_0) − E_bioerosion   [kg CaCO₃ m⁻² año⁻¹]   (4)"
     )
     new_p051 = (
         "donde cada parámetro tiene significado físico y unidades explícitas conforme a la implementación en 07_Scenarios_and_Simulations/simulation_engine.py: "
@@ -327,7 +338,7 @@ def main():
     sym_rows = [
         ["SST(t), MMM", "Temperatura superficial del mar diaria y media mensual máxima climatológica", "22.0–33.5; 27.5–29.8", "°C"],
         ["HotSpot(t)", "Anomalía térmica positiva instantánea sobre MMM (Ec. 1)", "max(SST − MMM, 0)", "°C"],
-        ["1[HotSpot ≥ 1.0 °C]", "Función indicadora de umbral de blanqueamiento en ventana de 84 días (Ec. 2)", "{0, 1} (divisor 7 días/sem)", "adimensional"],
+        ["1[HotSpot(t−i) ≥ 1.0]", "Función indicadora de umbral de blanqueamiento en ventana de 84 días (Ec. 2)", "{0, 1} (divisor 7 días/sem)", "adimensional"],
         ["DHW(t), DHW_eff(t)", "Estrés térmico acumulado en 12 semanas (Ec. 2) y efectivo tras endurecimiento ΔT", "0.0–22.0 (ΔT = 2.0 en S3/S4)", "°C-semanas"],
         ["Ω_arag, Ω_0, Ω_ref", "Estado de saturación de aragonita (Ec. 3), umbral termodinámico y escala de referencia", "Ω_0 = 1.0; Ω_ref = 2.8", "adimensional"],
         ["G_net(t), G_max", "Tasa neta de calcificación (Ec. 4) y tasa máxima potencial de acreción biogénica", "G_max = 12.5", "kg CaCO₃ m⁻² año⁻¹"],
@@ -435,6 +446,16 @@ def main():
     set_full_par_text(P[127], new_p127)
     record_change("Sección 3.3", "P127", "FON-04", old_p127, new_p127)
 
+    # BLOQUE 2: Ensure Figure 5 caption (P132) explicitly cites Eq. (4) with exponent κ = 1.2
+    old_p132 = P[132].text
+    new_p132 = (
+        "Figura 5. Trayectorias temporales de simulación biofísica 2025–2050 bajo los cuatro regímenes de manejo mediante integración RK4 "
+        "(5,000 corridas Monte Carlo por escenario). (A) Cobertura coralina viva media (%); (B) Tasa neta de calcificación biogénica G_net(t) "
+        "según la Ec. (4) con exponente alométrico κ = 1.2 (kg CaCO₃ m⁻² año⁻¹). Las bandas sombreadas y barras de error denotan los intervalos de dispersión del 95 %."
+    )
+    set_full_par_text(P[132], new_p132)
+    record_change("Figura 5 (Pie de figura)", "P132", "FON-06 / BLOQUE-2", old_p132, new_p132)
+
     # Update Tabla 7b (orig_tables[7]) to include both the factorial variants and the Shapley + ANOVA/Sobol decomposition rows
     old_p134, old_p135 = P[134].text, P[135].text
     new_p134 = (
@@ -513,8 +534,79 @@ def main():
     record_change("Sección 3.3 (Atribución Tabla 7b)", "P136", "FON-04", old_p136, new_p136)
 
     # -------------------------------------------------------------------------
-    # 5. FASE 1 (FON-01) & FASE 3 (FON-05) IN SECTION 3.4 (P148, New Calib Block, P150, Tabla 8b, P153)
+    # 5. FASE 1 (FON-01), BLOQUE 1 (Tabla 8 & Footnote) & FASE 3 (FON-05) IN SECTION 3.4
     # -------------------------------------------------------------------------
+    # BLOQUE 1: Reconstruct Tabla 8 (orig_tables[8]) with 1 row per station (STN_01..STN_30),
+    # 9 explicit columns (ID, Nombre, Región, DHW 95th NOAA Real, DHW 95th Sintético, Diferencia,
+    # SRPI Real, SRPI Sintético, Transición de Nivel), zero merges, and explicit footnote separation.
+    rows_8_v3 = [
+        ["STN_01", "Mesoamerican_Fore_01", "Caribe", "8.274", "1.440", "+6.834", "0.606 (0.576)", "0.756 (0.776)", "Pierde Nivel 1 (pasa a Nivel 2)"],
+        ["STN_02", "Mesoamerican_Crest_02", "Caribe", "8.672", "1.453", "+7.219", "0.499 (0.511)", "0.657 (0.722)", "Pasa de Nivel 2 a Nivel 3 [Pierde T1 en var. lineal]"],
+        ["STN_03", "Mesoamerican_Back_03", "Caribe", "7.850", "10.931", "−3.081", "0.471 (0.531)", "0.403 (0.442)", "Mantiene Nivel 3"],
+        ["STN_04", "Mesoamerican_Lagoon_04", "Caribe", "14.071", "1.433", "+12.638", "0.333 (0.412)", "0.609 (0.720)", "Pasa de Nivel 2 a Nivel 3 [Pierde T1 en var. lineal]"],
+        ["STN_05", "Belize_Barrier_05", "Caribe", "9.200", "11.436", "−2.236", "0.472 (0.487)", "0.423 (0.422)", "Mantiene Nivel 3"],
+        ["STN_06", "Belize_Atoll_06", "Caribe", "9.723", "1.399", "+8.324", "0.583 (0.539)", "0.765 (0.781)", "Pierde Nivel 1 (pasa a Nivel 3)"],
+        ["STN_07", "Cozumel_South_07", "Caribe", "7.971", "1.455", "+6.516", "0.499 (0.523)", "0.642 (0.714)", "Pasa de Nivel 2 a Nivel 3 [Pierde T1 en var. lineal]"],
+        ["STN_08", "Cozumel_Shallow_08", "Caribe", "8.179", "12.494", "−4.315", "0.513 (0.548)", "0.418 (0.436)", "Mantiene Nivel 3"],
+        ["STN_09", "Roatan_North_09", "Caribe", "6.460", "15.339", "−8.879", "0.609 (0.607)", "0.415 (0.446)", "Pasa de Nivel 3 a Nivel 2"],
+        ["STN_10", "Roatan_South_10", "Caribe", "6.840", "1.584", "+5.256", "0.504 (0.567)", "0.619 (0.720)", "Pasa de Nivel 2 a Nivel 3 [Pierde T1 en var. lineal]"],
+        ["STN_11", "Florida_Keys_Uppers_11", "Caribe", "4.884", "1.001", "+3.883", "0.644 (0.654)", "0.729 (0.767)", "Pierde Nivel 1 (pasa a Nivel 2)"],
+        ["STN_12", "Florida_Keys_Lowers_12", "Caribe", "6.466", "1.376", "+5.090", "0.610 (0.611)", "0.722 (0.759)", "Pierde Nivel 1 (pasa a Nivel 2)"],
+        ["STN_13", "GreatBarrier_Northern_13", "Indo-Pacífico", "6.050", "5.507", "+0.543", "0.605 (0.640)", "0.617 (0.656)", "Mantiene Nivel 2"],
+        ["STN_14", "GreatBarrier_Central_14", "Indo-Pacífico", "6.432", "7.643", "−1.211", "0.588 (0.622)", "0.562 (0.587)", "Mantiene Nivel 3"],
+        ["STN_15", "GreatBarrier_Lagoon_15", "Indo-Pacífico", "6.415", "13.237", "−6.822", "0.502 (0.600)", "0.353 (0.437)", "Mantiene Nivel 3"],
+        ["STN_16", "CoralTriangle_RajaAmpat_16", "Indo-Pacífico", "4.361", "10.724", "−6.363", "0.722 (0.736)", "0.583 (0.550)", "Asciende a Nivel 1 (desde Nivel 3)"],
+        ["STN_17", "CoralTriangle_Misool_17", "Indo-Pacífico", "n.d. (tierra 5 km)", "11.424", "n.d.", "n.d.", "0.450 (0.460)", "Sin píxel NOAA (Nivel 3 sint.)"],
+        ["STN_18", "CoralTriangle_Komodo_18", "Indo-Pacífico", "5.935", "10.779", "−4.844", "0.583 (0.626)", "0.477 (0.484)", "Mantiene Nivel 3"],
+        ["STN_19", "CoralTriangle_Sulawesi_19", "Indo-Pacífico", "0.924", "13.957", "−13.033", "0.729 (0.798)", "0.444 (0.474)", "Asciende a Nivel 1 (desde Nivel 3)"],
+        ["STN_20", "CoralTriangle_Bali_20", "Indo-Pacífico", "6.740", "13.459", "−6.719", "0.677 (0.663)", "0.530 (0.510)", "Pasa de Nivel 3 a Nivel 2"],
+        ["STN_21", "Okinawa_Kerama_21", "Indo-Pacífico", "9.888", "1.526", "+8.362", "0.520 (0.535)", "0.703 (0.779)", "Pierde Nivel 1 (pasa a Nivel 3)"],
+        ["STN_22", "Okinawa_Ishigaki_22", "Indo-Pacífico", "8.058", "1.412", "+6.646", "0.533 (0.586)", "0.678 (0.779)", "Pasa de Nivel 2 a Nivel 3 [Pierde T1 en var. lineal]"],
+        ["STN_23", "RedSea_Aqaba_23", "Mar Rojo", "6.030", "0.490", "+5.540", "0.563 (0.585)", "0.685 (0.746)", "Pasa de Nivel 2 a Nivel 3 [Pierde T1 en var. lineal]"],
+        ["STN_24", "RedSea_Shallow_24", "Mar Rojo", "9.586", "0.842", "+8.744", "0.530 (0.502)", "0.721 (0.757)", "Pierde Nivel 1 (pasa a Nivel 3)"],
+        ["STN_25", "RedSea_Farasan_25", "Mar Rojo", "8.090", "0.305", "+7.785", "0.564 (0.551)", "0.734 (0.778)", "Pierde Nivel 1 (pasa a Nivel 3)"],
+        ["STN_26", "Seychelles_Mahe_26", "Océano Índico", "4.480", "1.924", "+2.556", "0.709 (0.681)", "0.765 (0.755)", "Mantiene Nivel 1 (Preservado) [Pierde T1 en var. lineal]"],
+        ["STN_27", "Maldives_AriAtoll_27", "Océano Índico", "2.058", "14.948", "−12.890", "0.638 (0.686)", "0.356 (0.396)", "Pasa de Nivel 3 a Nivel 2"],
+        ["STN_28", "Hawaii_Kaneohe_28", "Pacífico", "0.140", "0.750", "−0.610", "0.772 (0.837)", "0.759 (0.820)", "Mantiene Nivel 1 (Preservado)"],
+        ["STN_29", "Hawaii_OahuFore_29", "Pacífico", "0.290", "0.903", "−0.613", "0.653 (0.748)", "0.639 (0.730)", "Mantiene Nivel 2 [Preserva T1 en var. lineal]"],
+        ["STN_30", "Palau_RockIslands_30", "Pacífico", "5.377", "0.596", "+4.781", "0.621 (0.665)", "0.726 (0.804)", "Pierde Nivel 1 (pasa a Nivel 2)"],
+        ["PROMEDIO", "Global (N = 29 estaciones)", "Global", "6.533 °C-sem", "5.529 °C-sem", "+1.003 °C-sem", "0.581 (0.608)", "0.603 (0.646) [0.598 N=30]", "Ec. 7: 2/10 (20.00 %) │ Var. lineal: 2/17 (11.76 %)"],
+    ]
+    new_tbl8_el = make_table(
+        tmpl_tbl,
+        [700, 1750, 920, 920, 920, 860, 1060, 1060, 1660],
+        [
+            "ID",
+            "Nombre de Estación",
+            "Región Biogeográfica",
+            "DHW 95th NOAA Real (°C-sem)",
+            "DHW 95th Sintético (°C-sem)",
+            "Diferencia (Real − Sint.)",
+            "SRPI Real Ec. 7 (Var. lineal)",
+            "SRPI Sintético Ec. 7 (Var. lineal)",
+            "Transición de Nivel (Ec. 7 estricta [Var. lineal])",
+        ],
+        rows_8_v3,
+    )
+    old_tbl8_el = orig_tables[8]._tbl
+    old_tbl8_el.addnext(new_tbl8_el)
+    body.remove(old_tbl8_el)
+
+    old_p145 = P[145].text
+    new_p145 = (
+        "Nota. Datos satelitales operacionales de NOAA OceanWatch (CRW_dhw_v1_0, 2015–2024, stride = 7 días, 522 semanas por estación; "
+        "correlación sin calibrar ρ_Spearman = −0.0921, p = 0.6346). "
+        "La estación STN_17 (CoralTriangle_Misool_17; DHW 95th sintético = 11.424 °C-sem, SRPI sintético Ec. 7 = 0.450, variante lineal = 0.460, Nivel 3) "
+        "queda en la máscara de tierra a 5 km, por lo que los promedios globales comparativos se calculan sobre las N = 29 estaciones con píxel oceánico válido "
+        "(según results/noaa_crw_validation.csv y 08_GIS_and_Remote_Sensing/geospatial_outputs/spatial_restoration_priority_ranking.csv). "
+        "En las columnas de SRPI se reporta primero el valor de la formulación estricta de la Sección 2.7 y entre paréntesis el valor de la variante lineal "
+        "simplificada de 03_Data/fetch_noaa_crw_real_dhw.py (para N = 30 estaciones, la media sintética de la Ec. 7 estricta es 0.598). "
+        "Ec. (7) estricta: media real = 0.581 vs. sintética = 0.603 (N = 29). "
+        "Variante lineal: media real = 0.608 vs. sintética = 0.646 (N = 29)."
+    )
+    set_full_par_text(P[145], new_p145)
+    record_change("Tabla 8 y Nota (BLOQUE 1 y BLOQUE 3)", "P143-P145, Table_8", "FON-01 / BLOQUE-1 / BLOQUE-3", old_p145, new_p145)
+
     old_p148 = P[148].text
     new_p148 = (
         "Este resultado demuestra que el generador sintético paramétrico original (03_Data/build_final_dataset.py), al emplear constantes regionales "
@@ -739,29 +831,38 @@ def main():
     set_full_par_text(P[178], new_p178)
     record_change("Sección 5 (Conclusiones)", "P178", "FON-01, FON-04, FON-05", old_p178, new_p178)
 
+    doi_file = os.path.join(RESULTS_DIR, "zenodo_v210_doi.txt")
+    v210_doi = os.environ.get("ZENODO_V210_DOI", "10.5281/zenodo.23903246")
+    if os.path.exists(doi_file):
+        with open(doi_file, "r", encoding="utf-8") as dfp:
+            val = dfp.read().strip()
+            if val:
+                v210_doi = val
+
     old_p180, old_p182, old_p183 = P[180].text, P[182].text, P[183].text
     new_p180 = (
         "Todos los artefactos computacionales de esta investigación se publican bajo los principios FAIR. Cada cifra del manuscrito se traza a su "
-        "archivo de origen y script generador mediante results/manuscript_numbers.json. Los análisis de calibración con NOAA CRW (Fase 1), aislamiento "
-        "factorial S4 vs. S3 (Fase 2, Tabla 7b), sensibilidad ampliada del SRPI (Fase 3, Tabla 8b) y auditoría de referencias (Fase 5) se ejecutan con "
-        "01_Data/calibrate_generator_to_noaa.py, 07_Scenarios_and_Simulations/s4_factor_isolation.py, 08_GIS_and_Remote_Sensing/srpi_sensitivity.py y "
-        "09_Results/audit_references.py, integrados en python run_all.py y verificados mediante verify_release.sh y SHA256SUMS en el release v2.0.0."
+        "archivo de origen y script generador mediante results/manuscript_numbers.json y consistency_report.md. Los análisis de calibración con NOAA CRW "
+        "(Fase 1), aislamiento factorial S4 vs. S3 (Fase 2, Tabla 7b), sensibilidad ampliada del SRPI (Fase 3, Tabla 8b) y auditoría de referencias (Fase 5) "
+        "se ejecutan con 01_Data/calibrate_generator_to_noaa.py, 07_Scenarios_and_Simulations/s4_factor_isolation.py, "
+        "08_GIS_and_Remote_Sensing/srpi_sensitivity.py y 09_Results/audit_references.py, integrados en python run_all.py y verificados mediante "
+        "verify_release.sh y SHA256SUMS en el release v2.1.0."
     )
     new_p182 = (
-        "• Depósito inmutable en Zenodo: El archivo de distribución completa (results/zenodo_package/CoralTwin-DT_Zenodo_Archive_v1.0.0.zip), que "
-        "contiene el dataset sintético base y calibrado, los modelos .joblib y PyTorch .pt, las capas GeoJSON, las tablas de sensibilidad y los "
-        "reportes auditados, está depositado de forma permanente en Zenodo bajo el Concept DOI permanente 10.5281/zenodo.23789586 (v1.0.0 DOI: "
-        "10.5281/zenodo.23789587; v1.0.1 DOI: 10.5281/zenodo.23902015; v2.0.0 DOI: 10.5281/zenodo.23903246)."
+        f"• Depósito inmutable en Zenodo: El release v2.1.0 de GitHub (https://github.com/HrSly11/CoralTwin-DT/releases/tag/v2.1.0) está archivado "
+        f"automáticamente en Zenodo; Concept DOI: 10.5281/zenodo.23789586; DOI de la versión: {v210_doi}. "
+        f"La integración Zenodo–GitHub archiva el snapshot del release; el contenido archivado coincide con el commit etiquetado v2.1.0 "
+        f"(versiones históricas previas: v1.0.0 DOI: 10.5281/zenodo.23789587; v1.0.1 DOI: 10.5281/zenodo.23902015; v2.0.0 DOI: 10.5281/zenodo.23903246)."
     )
     new_p183 = (
         "• Contenedor Docker y pipeline reproducible: El entorno reproducible completo (fijado por digest SHA-256 en Dockerfile y verificado con "
-        "verify_release.sh y SHA256SUMS) se ejecuta de extremo a extremo con el comando python run_all.py (22 etapas verificadas en "
-        "results/pipeline_execution_log_v3.json)."
+        "verify_release.sh, SHA256SUMS y consistency_report.md) se ejecuta de extremo a extremo con el comando python run_all.py (22 etapas verificadas en "
+        "results/pipeline_execution_log_v4.json)."
     )
     set_full_par_text(P[180], new_p180)
     set_full_par_text(P[182], new_p182)
     set_full_par_text(P[183], new_p183)
-    record_change("Sección 6 (Disponibilidad y Reproducibilidad)", "P180, P182, P183", "FASE 7", old_p180, new_p180)
+    record_change("Sección 6 (Disponibilidad y Reproducibilidad — BLOQUE 5 y 6)", "P180, P182, P183", "FASE 7 / BLOQUE-5 / BLOQUE-6", old_p182, new_p182)
 
     # Apply keepNext, cantSplit, and tblHeader pagination guards to all 11 tables and captions
     enforce_table_integrity(doc)

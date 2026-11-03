@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CoralTwin-DT v2.0.0 — Clean Release & Reproducibility Verification Script
+# CoralTwin-DT v2.1.0 — Clean Release & Reproducibility Verification Script
 # =============================================================================
 # Validates:
 #   1. Pinned SHA-256 digest in Dockerfile
 #   2. Python environment & core scientific dependencies
-#   3. Existence and non-emptiness of all FASE 1–FASE 8 deliverables
+#   3. Existence and non-emptiness of all FASE 1–FASE 8 & BLOQUE 1–6 deliverables
 #   4. Reference & banned-string audit (0 orphans, 0 uncited, 0 banned terms)
-#   5. End-to-end pipeline execution log (results/pipeline_execution_log_v3.json)
+#   5. End-to-end consistency report (0 discrepancies) & pipeline log (v4)
 #   6. Cryptographic SHA-256 checksums against SHA256SUMS
 # =============================================================================
 
@@ -17,7 +17,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
 echo "============================================================================="
-echo " CoralTwin-DT v2.0.0 Release Verification"
+echo " CoralTwin-DT v2.1.0 Release Verification"
 echo " Workspace: $ROOT_DIR"
 echo "============================================================================="
 
@@ -42,7 +42,7 @@ print('  Python packages verified:', {
 })
 "
 
-echo "[3/6] Verifying existence of all required v2.0.0 scripts, datasets, figures, and manuscript files..."
+echo "[3/6] Verifying existence of all required v2.1.0 scripts, datasets, figures, and manuscript files..."
 REQUIRED_FILES=(
     "01_Data/calibrate_generator_to_noaa.py"
     "03_Data/calibrate_generator_to_noaa.py"
@@ -53,6 +53,7 @@ REQUIRED_FILES=(
     "09_Results/audit_references.py"
     "09_Results/build_manuscript_numbers.py"
     "09_Results/build_v3_docx.py"
+    "09_Results/build_consistency_report.py"
     "results/noaa_calibration_metrics.csv"
     "results/noaa_calibration_summary.json"
     "results/s4_factor_isolation.csv"
@@ -65,13 +66,14 @@ REQUIRED_FILES=(
     "results/references_audit.csv"
     "references_audit.csv"
     "results/manuscript_numbers.json"
-    "results/pipeline_execution_log_v3.json"
+    "results/pipeline_execution_log_v4.json"
     "figures/fig_noaa_calibration_v3.png"
     "Grupo28B_RodriguezSandoval_HarrySly_corregido.docx"
     "Grupo28B_RodriguezSandoval_HarrySly_corregido_v2.docx"
     "Grupo28B_RodriguezSandoval_HarrySly_v3.docx"
     "Grupo28B_RodriguezSandoval_HarrySly_v3_trackchanges_report.md"
     "response_to_reviewer_v3.md"
+    "consistency_report.md"
     "Dockerfile"
     "SHA256SUMS"
 )
@@ -87,7 +89,7 @@ echo "  All ${#REQUIRED_FILES[@]} required artifacts exist and are non-empty."
 echo "[4/6] Verifying citation & banned-string audit on Grupo28B_RodriguezSandoval_HarrySly_v3.docx..."
 python 09_Results/audit_references.py
 python -c "
-import json, sys
+import json
 with open('results/references_audit_summary.json', encoding='utf-8') as f:
     s = json.load(f)
 assert s['orphan_citations_count'] == 0, f'Orphan citations found: {s}'
@@ -97,10 +99,11 @@ for k, v in s['banned_terms_occurrences'].items():
 print('  Audit assertions passed: 0 orphans, 0 uncited, 0 banned strings.')
 "
 
-echo "[5/6] Verifying pipeline execution log (results/pipeline_execution_log_v3.json)..."
+echo "[5/6] Verifying consistency_report.md (0 discrepancies) and pipeline execution log (results/pipeline_execution_log_v4.json)..."
+python 09_Results/build_consistency_report.py
 python -c "
 import json
-with open('results/pipeline_execution_log_v3.json', encoding='utf-8') as f:
+with open('results/pipeline_execution_log_v4.json', encoding='utf-8') as f:
     log = json.load(f)
 assert log['all_steps_succeeded'] is True, 'Pipeline did not succeed on all steps!'
 print(f\"  Pipeline log verified: {log['total_steps']} steps succeeded in {log['total_elapsed_seconds']}s.\")
@@ -126,5 +129,5 @@ print(f'  All {len(lines)} SHA-256 checksums in SHA256SUMS matched bit-for-bit.'
 "
 
 echo "============================================================================="
-echo " VERIFICATION PASSED: CoralTwin-DT v2.0.0 is 100% reproducible and verified."
+echo " VERIFICATION PASSED: CoralTwin-DT v2.1.0 is 100% reproducible and verified."
 echo "============================================================================="

@@ -54,6 +54,7 @@ PIPELINE_STEPS = [
     ("Manuscript v3 DOCX Compilation & Track-Changes Report", os.path.join("09_Results", "build_v3_docx.py")),
     ("References & Banned Strings Audit (42 References, 0 Orphans)", os.path.join("09_Results", "audit_references.py")),
     ("Master Manuscript Numbers Compilation", os.path.join("09_Results", "build_manuscript_numbers.py")),
+    ("End-to-End Consistency & Traceability Report (consistency_report.md)", os.path.join("09_Results", "build_consistency_report.py")),
     ("Publication Figures Rendering (Figures 1-7 at 300 DPI)", os.path.join("09_Results", "generate_all_figures.py")),
     ("Scientific Manuscript PDF Compilation (DOCX Untouched)", os.path.join("10_Publication", "generate_publication_docs.py")),
     ("Scientific Presentation Deck Generation (.pptx)", os.path.join("11_Presentation", "generate_presentation.py")),
@@ -117,13 +118,14 @@ def main():
     }
     log_path = os.path.join(RESULTS_DIR, "pipeline_execution_log.json")
     log_v3_path = os.path.join(RESULTS_DIR, "pipeline_execution_log_v3.json")
-    for lp in [log_path, log_v3_path]:
+    log_v4_path = os.path.join(RESULTS_DIR, "pipeline_execution_log_v4.json")
+    for lp in [log_path, log_v3_path, log_v4_path]:
         with open(lp, "w", encoding="utf-8") as f:
             json.dump(log_payload, f, indent=2)
 
     print("\n" + "=" * 80)
     print(f" ALL {total_steps} SCIENTIFIC PIPELINE STEPS EXECUTED SUCCESSFULLY IN {total_time:.2f}s!")
-    print(f" Execution log written to: {log_path}")
+    print(f" Execution log written to: {log_v4_path}")
     print("=" * 80 + "\n")
 
 

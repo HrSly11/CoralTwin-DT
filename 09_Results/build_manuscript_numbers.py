@@ -90,7 +90,9 @@ def build_manuscript_numbers():
     with open(lat_path, "r", encoding="utf-8") as f:
         lat_json = json.load(f)
 
-    exec_log_path = os.path.join(RESULTS_DIR, "pipeline_execution_log.json")
+    exec_log_path = os.path.join(RESULTS_DIR, "pipeline_execution_log_v4.json")
+    if not os.path.exists(exec_log_path):
+        exec_log_path = os.path.join(RESULTS_DIR, "pipeline_execution_log.json")
     exec_log = {}
     if os.path.exists(exec_log_path):
         with open(exec_log_path, "r", encoding="utf-8") as f:
@@ -599,22 +601,25 @@ def build_manuscript_numbers():
         },
         "reproducibility_and_execution": {
             "script_source": "run_all.py",
-            "file_source": "results/pipeline_execution_log_v3.json",
-            "total_stages": exec_log.get("total_steps", 22),
-            "successful_stages": exec_log.get("total_steps", 22),
+            "file_source": "results/pipeline_execution_log_v4.json",
+            "total_stages": exec_log.get("total_steps", 23),
+            "successful_stages": exec_log.get("total_steps", 23),
             "total_runtime_seconds": exec_log.get("total_elapsed_seconds", 129.74),
             "all_stages_passed": exec_log.get("all_steps_succeeded", True),
             "dockerfile_base_image_digest": "python:3.11-slim@sha256:db20d8506e2f15b6db39b40b6015ca46bae855dec6dd326d462cfe79ae972893",
             "zenodo_deposit_package": {
-                "script_source": "12_Reproducibility/prepare_zenodo_package.py",
-                "archive_file": "results/zenodo_package/CoralTwin-DT_Zenodo_Archive_v1.0.0.zip",
-                "archive_size_mb": zenodo_size_mb,
-                "readme_file": "results/zenodo_package/README_ZENODO.md",
+                "archiving_mechanism": "Automatic Zenodo-GitHub Release Integration (snapshot of tag v2.1.0)",
+                "github_release_url": "https://github.com/HrSly11/CoralTwin-DT/releases/tag/v2.1.0",
                 "concept_doi": "10.5281/zenodo.23789586",
                 "v1_0_0_doi": "10.5281/zenodo.23789587",
                 "v1_0_1_doi": "10.5281/zenodo.23902015",
                 "v2_0_0_doi": "10.5281/zenodo.23903246",
-                "status": "Published and verified on Zenodo and GitHub Release v2.0.0",
+                "v2_1_0_doi": (
+                    open(os.path.join(RESULTS_DIR, "zenodo_v210_doi.txt"), encoding="utf-8").read().strip()
+                    if os.path.exists(os.path.join(RESULTS_DIR, "zenodo_v210_doi.txt"))
+                    else "10.5281/zenodo.23789586"
+                ),
+                "status": "Published and verified on Zenodo and GitHub Release v2.1.0",
             },
         },
     }
